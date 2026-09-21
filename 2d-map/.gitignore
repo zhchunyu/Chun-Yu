@@ -1,0 +1,74 @@
+# ============================================================
+#  虚拟校园 2D 导航地图 —— 不该进仓库的东西
+#
+#  判断标准很简单：
+#    ① AI 读不了的文件（二进制）
+#    ② 一条命令就能重新生成的文件
+#  这两类都不该进仓库。详见 docs/09-协作与开发规范.md 第 8 节。
+# ============================================================
+
+# ---- Python（本项目脚本只用标准库，不需要虚拟环境）----
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+
+# ---- Node（本项目零依赖，不需要 node_modules）----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- 本项目明确不要的二进制 / 工具产物 ----
+# exe 是二进制黑盒，已改用 .bat + Python 源码
+*.exe
+*.dll
+*.so
+*.dylib
+*.msi
+# 影像瓦片：校园是虚拟构建的，不需要真实影像
+web/lib/tiles/
+*.mbtiles
+# GIS 二进制格式（已退役的路线）
+*.qgz
+*.qgs
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.tif
+*.tiff
+*.ecw
+*.img
+# 打包产物
+*.zip
+*.7z
+*.rar
+
+# ---- 编辑器 / IDE（个人偏好，不该共享）----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- 操作系统垃圾 ----
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ---- 日志与临时文件 ----
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+~$*
