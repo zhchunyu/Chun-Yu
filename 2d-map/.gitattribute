@@ -1,0 +1,26 @@
+# 统一换行符，避免 Windows / macOS / Linux 三人协作时产生"整文件都改了"的假 diff。
+#
+# 默认：仓库里一律存 LF；检出时按下面规则处理。
+* text=auto eol=lf
+
+# .bat 必须 CRLF，否则 cmd.exe 可能解析异常（本来就已经是纯 ASCII 内容了）
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 明确的文本类型
+*.md   text
+*.json text
+*.js   text
+*.css  text
+*.html text
+*.py   text
+*.csv  text
+
+# 二进制（本项目只剩 legacy 里的几个图标）
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+
+# 让 GitHub 语言统计不把 legacy 里的第三方库算成本项目代码
+legacy/leaflet-version/lib/** linguist-vendored
