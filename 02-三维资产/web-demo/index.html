@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校园实时态势地图 · 3D 原型</title>
+<link rel="stylesheet" href="./src/styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<!-- 顶部状态栏 -->
+<header id="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    <span class="brand-name">校园实时态势地图</span>
+    <span class="brand-sub">3D 原型 · 单场景闭环演示</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="stat-online">0</b><span>在线</span></div>
+    <div class="stat"><b id="stat-reports">0</b><span>今日上报</span></div>
+    <div class="stat"><b id="stat-merged">0</b><span>AI 合并</span></div>
+    <div class="stat"><b id="stat-latency">0.0s</b><span>平均响应</span></div>
+  </div>
+</header>
+
+<!-- 左侧：事件流 -->
+<aside id="feed">
+  <div class="panel-head">
+    <h2>实时信息流</h2>
+    <span class="tag" id="feed-count">0 条</span>
+  </div>
+  <ul id="feed-list"></ul>
+  <div class="feed-foot">信息由学生上报与官方渠道汇聚，经 AI 判断后发布</div>
+</aside>
+
+<!-- 右侧：详情 -->
+<aside id="detail" class="hidden">
+  <div class="panel-head">
+    <h2 id="detail-title">事件详情</h2>
+    <button id="detail-close" title="关闭">×</button>
+  </div>
+  <div id="detail-body"></div>
+</aside>
+
+<!-- 左下：图例 -->
+<div id="legend">
+  <div class="legend-item"><i style="--c:#ff4d6d"></i>安全预警</div>
+  <div class="legend-item"><i style="--c:#ffb020"></i>通行拥堵</div>
+  <div class="legend-item"><i style="--c:#2ee6a8"></i>生活服务</div>
+  <div class="legend-item"><i style="--c:#4dabff"></i>校园通知</div>
+  <div class="legend-item"><i style="--c:#b07dff"></i>互助求助</div>
+</div>
+
+<!-- 底部：操作 -->
+<div id="actions">
+  <button id="btn-report" class="primary">＋ 上报一条信息</button>
+  <button id="btn-play" class="ghost">▶ 自动演示</button>
+  <button id="btn-reset" class="ghost">↺ 重置视角</button>
+  <span class="hint" id="hint">拖拽旋转 · 滚轮缩放 · 点击光柱查看详情</span>
+</div>
+
+<!-- 上报弹窗 -->
+<div id="modal" class="hidden">
+  <div class="modal-card">
+    <h3>上报校园信息</h3>
+    <p class="modal-tip">先在场景中点击一个位置，或直接使用默认位置</p>
+    <div class="field">
+      <label>位置</label>
+      <div id="pick-pos" class="pos-chip">未选择（点击地图选点）</div>
+    </div>
+    <div class="field">
+      <label>类型</label>
+      <div id="type-grid"></div>
+    </div>
+    <div class="field">
+      <label>描述</label>
+      <textarea id="report-text" rows="3" placeholder="例如：操场东侧道路堵住了，下课人流太大"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button id="modal-cancel" class="ghost">取消</button>
+      <button id="modal-submit" class="primary">提交上报</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI 处理浮层 -->
+<div id="ai-toast" class="hidden">
+  <div class="ai-spinner"></div>
+  <div class="ai-text">
+    <b>AI 正在判断</b>
+    <span id="ai-step">语义解析…</span>
+  </div>
+</div>
+
+<div id="loading">
+  <div class="loading-inner">
+    <div class="ring"></div>
+    <p>正在构建校园场景…</p>
+  </div>
+</div>
+
+<script type="module" src="./src/app.js"></script>
+</body>
+</html>

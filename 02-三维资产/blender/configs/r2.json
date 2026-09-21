@@ -1,0 +1,310 @@
+{
+ "blend": "山河大学_R2_图书馆讲堂.blend",
+ "build_extra": [
+  "build_campus_stage1.py",
+  "build_campus_stage2.py",
+  "build_campus_stage3.py",
+  "build_campus_r0.py",
+  "build_campus_r1.py",
+  "build_campus_r2.py",
+  "palette_retune.py"
+ ],
+ "jobs": [
+  {
+   "name": "R2_图书馆_中轴",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    0,
+    300,
+    40
+   ],
+   "cam_tgt": [
+    0,
+    518.4,
+    24
+   ],
+   "lens": 40,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R2_图书馆_透视",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -200,
+    380,
+    72
+   ],
+   "cam_tgt": [
+    0,
+    518.4,
+    20
+   ],
+   "lens": 45,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R2_图书馆_鸟瞰",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    0,
+    400,
+    135
+   ],
+   "cam_tgt": [
+    0,
+    518.4,
+    18
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R2_图书馆_退台近景",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -140,
+    452,
+    30
+   ],
+   "cam_tgt": [
+    -20,
+    508,
+    26
+   ],
+   "lens": 45,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R2_讲堂_水上低角",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -130,
+    872,
+    5.2
+   ],
+   "cam_tgt": [
+    0,
+    844,
+    9
+   ],
+   "lens": 32,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R2_讲堂_正立面",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    0,
+    700,
+    16
+   ],
+   "cam_tgt": [
+    0,
+    842,
+    11
+   ],
+   "lens": 40,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R2_讲堂_水面回望",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    0,
+    990,
+    8
+   ],
+   "cam_tgt": [
+    0,
+    856,
+    12
+   ],
+   "lens": 35,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R2_讲堂_鸟瞰",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -120,
+    1010,
+    90
+   ],
+   "cam_tgt": [
+    0,
+    845,
+    10
+   ],
+   "lens": 40,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  }
+ ]
+}

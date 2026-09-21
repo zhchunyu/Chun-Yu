@@ -1,0 +1,59 @@
+{
+  "blend": "山河大学_R3_人文区.blend",
+  "build_extra": ["build_campus_stage1.py", "build_campus_stage2.py", "build_campus_stage3.py", "build_campus_r0.py", "build_campus_r1.py", "build_campus_r2.py", "build_campus_r3.py"],
+  "jobs": [
+    {"name": "R3_大礼堂_东南", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [34, 236, 48], "cam_tgt": [-78, 342, 24], "lens": 30,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_大礼堂_中轴", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [60, 470, 42], "cam_tgt": [-58, 340, 26], "lens": 38,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_大礼堂_檐下", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [66, 208, 46], "cam_tgt": [-46, 330, 34], "lens": 82,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_美术馆_中轴", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-70, 452, 44], "cam_tgt": [64, 338, 22], "lens": 36,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_美术馆_入口", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, 200, 34], "cam_tgt": [25, 338, 12], "lens": 35,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_书院_透视", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-272, 96, 92], "cam_tgt": [-105.6, 205, 10], "lens": 40,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_书院_鸟瞰", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-105.6, -10, 236], "cam_tgt": [-105.6, 212, 6], "lens": 45,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_书院_山墙", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [34, 296, 30], "cam_tgt": [-51.6, 225.6, 11], "lens": 58,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R3_人文区_中轴", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, 120, 90], "cam_tgt": [0, 400, 25], "lens": 28,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2}
+  ]
+}

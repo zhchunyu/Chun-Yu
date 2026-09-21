@@ -1,0 +1,53 @@
+{
+  "blend": "山河大学_R1_山门智谷.blend",
+  "build_extra": ["build_campus_stage1.py", "build_campus_stage2.py", "build_campus_stage3.py", "build_campus_r0.py", "build_campus_r1.py"],
+  "jobs": [
+    {"name": "R1_山门_正立面", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, -210, 24], "cam_tgt": [0, 33.6, 27], "lens": 52,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R1_山门_透视", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-175, -165, 62], "cam_tgt": [10, 40, 28], "lens": 50,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R1_山门_近景", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-72, -78, 30], "cam_tgt": [-50, 34, 30], "lens": 40,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R1_山口_仰视", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, -62, 3.8], "cam_tgt": [0, 33.6, 40], "lens": 26,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R1_智谷_谷口", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, 88, 4.5], "cam_tgt": [0, 200, -2], "lens": 30,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R1_智谷_鸟瞰", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, 40, 120], "cam_tgt": [0, 145, -2], "lens": 42,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R1_智谷_谷底", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-14.5, 112, -2.4], "cam_tgt": [21, 152, 0.8], "lens": 26,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R1_中轴_全景", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, -175, 44], "cam_tgt": [0, 300, 26], "lens": 40,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2}
+  ]
+}

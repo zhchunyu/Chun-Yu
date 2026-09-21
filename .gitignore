@@ -1,0 +1,36 @@
+# ---- 三维资产：产物可重生成，源文件与导入件必须保留 ----
+/02-三维资产/cad/STEP/*
+!/02-三维资产/cad/STEP/imported/
+/02-三维资产/cad/DXF/*
+!/02-三维资产/cad/DXF/imported/
+/02-三维资产/cad/STL/*
+!/02-三维资产/cad/STL/imported/
+/02-三维资产/cad/GLB/*
+!/02-三维资产/cad/GLB/imported/
+/02-三维资产/cad/3MF/*
+!/02-三维资产/cad/3MF/imported/
+/02-三维资产/cad/tmp/
+
+# Blender 自动备份与缓存
+*.blend1
+*.blend2
+__pycache__/
+*.pyc
+
+# 临时与系统
+/99-临时工作区/
+.DS_Store
+Thumbs.db
+
+# 依赖与构建
+node_modules/
+dist/
+build/
+.venv/
+venv/
+.env
+.env.local
+
+# 大文件与媒体（按需开启 LFS 或手动管理）
+*.psd
+*.mp4

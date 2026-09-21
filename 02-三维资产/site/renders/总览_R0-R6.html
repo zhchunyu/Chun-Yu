@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>山河大学 · R0~R6 成图总览</title>
+<style>
+:root{--ink:#2B2E33;--paper:#E8E6E0;--wood:#C9A87C;--cu:#B07B45;
+      --line:rgba(43,46,51,.14);--mut:#6C7076;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:14px/1.6 "PingFang SC","Microsoft YaHei","Source Han Sans SC",sans-serif;}
+.wrap{max-width:1500px;margin:0 auto;padding:48px 40px 80px}
+header{border-bottom:2px solid var(--ink);padding-bottom:22px;margin-bottom:34px}
+h1{margin:0 0 8px;font-size:30px;letter-spacing:.04em;font-weight:700}
+h1 em{font-style:normal;color:var(--cu)}
+.lead{color:var(--mut);font-size:13.5px}
+h2{font-size:17px;margin:46px 0 16px;padding-left:11px;border-left:4px solid var(--cu);letter-spacing:.03em}
+h3{font-size:14.5px;margin:0 0 14px;font-weight:500;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+   border-bottom:1px solid var(--line);padding-bottom:9px}
+h3 b{font-size:17px;color:var(--cu);font-weight:700;letter-spacing:.06em}
+.dim{color:var(--mut);font-size:12.5px}
+.avg{margin-left:auto;font-size:12px;color:var(--mut);font-family:ui-monospace,Consolas,monospace}
+.panel{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+.box{background:#F4F3F0;border:1px solid var(--line);border-radius:3px;padding:18px 20px}
+.box h4{margin:0 0 12px;font-size:12.5px;letter-spacing:.14em;color:var(--mut);font-weight:600}
+.lr{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;
+    font-family:ui-monospace,Consolas,monospace;border-bottom:1px dotted var(--line)}
+.lr:last-child{border:0}
+.lr span{color:var(--mut)}
+.sw{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:4px 0}
+.sw i{width:22px;height:14px;border-radius:2px;border:1px solid rgba(0,0,0,.22);flex:none}
+.cmp{margin-bottom:26px}
+.cmp-h{font-size:14px;margin-bottom:9px}
+.cmp-h b{color:var(--cu);letter-spacing:.06em;font-size:16px;margin-right:6px}
+.cmp-p{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp-p.three{grid-template-columns:repeat(3,1fr)}
+.cmp-p.one{grid-template-columns:minmax(0,760px)}
+.cmp-p figure{margin:0}
+.cmp-p img{width:100%;display:block;border:1px solid var(--line);border-radius:3px}
+.cmp-p figure.new img{outline:2px solid var(--cu);outline-offset:-1px}
+figcaption{margin-top:6px;font-size:11.5px;color:var(--mut);
+  font-family:ui-monospace,Consolas,monospace}
+.b{display:inline-block;background:rgba(43,46,51,.07);border-radius:2px;
+   padding:0 5px;margin-right:4px;font-size:11px;color:#4A4E54}
+.d{font-size:11px;margin-right:4px;font-family:ui-monospace,Consolas,monospace}
+.d.up{color:#1F6B45}.d.down{color:#8C4A1E}.d.flat{color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{margin:0}
+.card img{width:100%;display:block;border:1px solid var(--line);border-radius:3px;background:#fff}
+.card figcaption{margin-top:7px;line-height:1.9}
+.fn{display:block;font-size:12px;color:var(--ink);margin-bottom:2px}
+section{margin-bottom:40px}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--mut);line-height:1.9}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.panel{grid-template-columns:1fr}.cmp-p.three{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.grid,.cmp-p,.cmp-p.three{grid-template-columns:1fr}.wrap{padding:28px 18px 60px}}
+.note{font-size:12.5px;color:var(--mut);margin:-6px 0 20px;padding:10px 14px;
+  background:rgba(176,123,69,.07);border-left:3px solid var(--cu);border-radius:2px;line-height:1.85}
+</style></head><body><div class="wrap">
+<header>
+  <h1>山河大学 · <em>R0~R6</em> 成图总览</h1>
+  <div class="lead">全园统一光照与配色验收 ｜ 63 张 / Cycles 110 spp ｜
+    指标统计区间为画面下 55%（建筑与地面主体）</div>
+</header>
+
+<h2>统一基线</h2>
+<div class="panel">
+  <div class="box"><h4>LIGHTING.JSON</h4><div class="lr"><span>sun_elev</span><b>38</b></div><div class="lr"><span>sun_azim</span><b>220</b></div><div class="lr"><span>sun_strength</span><b>5.8</b></div><div class="lr"><span>sky_strength</span><b>0.66</b></div><div class="lr"><span>sky_visible</span><b>0.72</b></div><div class="lr"><span>ambient_tint</span><b>[1.08, 0.92, 0.7]</b></div><div class="lr"><span>exposure</span><b>0.2</b></div><div class="lr"><span>haze_density</span><b>1.2e-05</b></div><div class="lr"><span>cloud_strength</span><b>4.5</b></div><div class="lr"><span>cloud_scale</span><b>2.2</b></div><div class="lr"><span>sun_color</span><b>[1.0, 0.905, 0.775]</b></div><div class="lr"><span>view_transform</span><b>Khronos PBR Neutral</b></div></div>
+  <div class="box"><h4>PALETTE_RETUNE V2.4 · 基色（sRGB 近似）</h4><div class="sw"><i style="background:#5E574C"></i>清水混凝土</div><div class="sw"><i style="background:#32302C"></i>混凝土楼板</div><div class="sw"><i style="background:#15161A"></i>墨灰钢构</div><div class="sw"><i style="background:#1F262A"></i>超白玻璃</div><div class="sw"><i style="background:#744722"></i>竹木格栅</div><div class="sw"><i style="background:#5F3819"></i>胶合木</div><div class="sw"><i style="background:#854C1F"></i>铜饰</div><div class="sw"><i style="background:#20201D"></i>钛锌屋面板</div><div class="sw"><i style="background:#473B2E"></i>中轴铺装</div><div class="sw"><i style="background:#1D2C11"></i>草地</div><div class="sw"><i style="background:#131F24"></i>水面</div></div>
+</div>
+
+<h2>统一前后对照</h2>
+<p class="note"><b>R0 / R1 / R2 / R4 / R5 五行是三栏，R6 是单栏</b> —— 这些阶段在"统一光照"之后又各改过一轮。
+  三栏统一读作：<b>① 旧光照 → ② 统一后·上一版 → ③ 统一后·现版</b>。<br>
+  <b>一、旧语言清障（R0 / R1 / R2）</b><br>
+  · <b>R0</b>（`clear_old_language_r0.py`，20 个构件）：牌坊群 / 东西阙 / 石狮 /
+    明堂地雕·灯柱·灯亭 / 案山方亭 / 钟楼。R0 是"语言样板"，成图里必须看得清新塔本身；
+    未清障时 <code>正立面</code> 的塔身下半被钟楼整个遮住。<br>
+  · <b>R1 / R2</b>（`build_campus_r1.py` 的 `_DROP` 增补）：<b>钟楼</b>。
+    它的拆除原先只写在 r3 里，于是 R1 / R2 成图一直带着它 ——
+    <code>R2_图书馆_中轴</code> 里那座孤零零的旧钟楼就坐在新图书馆前庭广场上
+    （`diag_grid.py` 实测中心行左端命中 <code>BLD_人文_Bell_Tower_屋面</code>）。<br>
+  <b>清障边界</b>：只删 V2 已定<b>"拆除 / 取消"</b>的构件；图书馆、大礼堂、美术馆、书院属于
+  <b>"改造"</b>（原地重建为新语言），保留旧版作为"改造前"语境。<br>
+  <b>二、桥下深色带（R4 / R5）</b><br>
+  环廊纵梁截面 <code>_BEAM_D</code> <b>1.55 → 1.05</b>。原截面下"桥面板底 0.55 + 纵梁 1.55"
+  在侧视角合成一条 <b>2.10 m 高的实心近黑带</b>（纵梁 <code>M_墨灰钢构</code> 反照率 0.082，
+  全园最深一档），读作"一块黑板"而不是结构。5 变体 A/B 实测：<b>改材质只是把"黑块"换成"白块"</b>，
+  带高不变、仍是一整块；压截面后带高 1.60 m，梁与板的关系才读得出来，且保留 V2 的材料分工
+  （钢构 = 结构，清水混凝土 = 围护）。详见 <code>99-临时工作区/AB_桥下深色带/对照.html</code>。<br>
+  ② 一栏一律保留改动前的版本，方便对照。<br>
+  <b>三、R6 滨水基座（单栏）</b><br>
+  <b>R6 是"统一光照之后新增"的阶段，没有旧光照存档可对照</b>，因此只有一栏
+  （硬凑两栏会写出一条 404 的 <code>&lt;img src&gt;</code>）。它把原先
+  <code>Z_TOP 3.0 → Z_BANK −3.4</code> 的 16 m 自然草坡（21.8°，不可上人）
+  改成一条 <b>2618.7 m 连续挑台</b>：台面 Z 2.40、板厚 1.00、内缘落在地面上（不留缝）、
+  常态外挑出水 3.0 m，四处节点按弧长分数放大到 13~16 m 宽。<br>
+  <b>四、配色重标 V2.4（全园 63 张，②→③ 的差异里也含这一项）</b><br>
+  <code>palette_retune.py</code> 此前对 <b>53 个材质里的 32 个静默失效</b>：
+  <code>make_mat(noise_scale&gt;0)</code> 会把 <code>Noise→ColorRamp</code> 挂在
+  <code>Base Color</code> 上，而重标只写 <code>default_value</code> —— <b>连线优先，写入被忽略</b>，
+  且异常被吞 ⇒ 不报错、无效果。中招的恰是<b>占画面最大面积</b>的那批：
+  <code>M_清水混凝土</code> / <code>M_混凝土楼板</code> / <code>M_桥面</code> /
+  <code>M_广场铺装</code> / <code>M_区_*</code>（偏差最大 <code>M_桥面</code> 0.393→0.258）。
+  V2.4 改为<b>改连线源头</b>（ColorRamp 端点色，只动前 3 通道并整体平移以保住噪声质感）。
+  全量重渲后实测（63 张，下半图）：
+  <b>暖% 均值 10.75 → 14.36、冷% 均值 45.84 → 42.01、「冷−暖」+35.08 → +27.65</b>，
+  <b>63/63 张全部变暖</b>；而 <b>Δ亮度均值仅 −0.49</b>（整体明度几乎不变，说明动的是冷暖比不是明暗）。<br>
+  ⚠ <b>② 栏是在 V2.4 之前渲染的</b>（那些中间几何状态已不可复现 —— 清障逻辑写在
+  <code>STAGE_EXTRA</code> 里，旧态没有 config），所以 <b>②→③ 的差异同时包含几何改动与配色重标两项</b>，
+  不宜当作单一变量的对照。<br>
+  <b>五、占位体块压暗（V2.4 补丁）</b><br>
+  主动视觉巡检（把 63 张做成接触表一次看全）发现 <code>R4_环廊_鸟瞰</code> /
+  <code>R3_书院_鸟瞰</code> 里散着二十来个<b>纯白盒子</b>。根因：场地脚本建的 28 栋
+  <b>分区占位体块</b>（<code>M_体块_*</code>，六分区分色）基色是 <code>0.51~0.65</code>，
+  <b>比清水混凝土（0.368）还亮近一倍</b>，而 <code>_RETUNE</code> 表里<b>从来没有它们</b>
+  ⇒ 在 <code>sun_strength 5.8 + exposure +0.20</code> 下直接曝成纯白，整张图读起来像"白模"。<br>
+  修法：六个体块材质一并压到 <b>0.254~0.324</b>（约原值 ×0.5），<b>保留原来的冷暖色相差异</b>
+  （人文/教学/生活偏暖，科技/运动偏冷，实验中性）。判据：<b>占位体块应当"比清水混凝土略暗"</b> ——
+  它们是"既有 / 待改"的体量，不是新建筑；比真建筑亮就是"白模"，比它暗太多又会变成一排黑块。<br>
+  A/B 实测（5 个代表机位）：平均差 0.98~4.01 / <b>受影响像素仅 1.6%~7.0%</b> /
+  最大差 65~67 / Δ亮度 −1.0~−4.0 ⇒ 是<b>局部变化</b>，不是全图偏移，与"只有盒子变暗"完全吻合。</p>
+
+      <div class="cmp">
+        <div class="cmp-h"><b>R0</b> 垂直书院 <span class="dim">renders_20260921_R0_旧语境版</span></div>
+        <div class="cmp-p three">
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_旧光照全量/R0_垂直书院_透视.jpg"><figcaption>① 旧光照 <span class="b">暖 2.7%</span><span class="b">冷 92.3%</span><span class="b">暗 3.2%</span></figcaption></figure>
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_R0_旧语境版/R0_垂直书院_透视.jpg"><figcaption>② 统一光照 · 旧语境 <span class="b">暖 15.7%</span><span class="b">冷 34.7%</span><span class="b">暗 3.5%</span></figcaption></figure>
+          <figure class="new"><img src="./R0_垂直书院_透视.jpg"><figcaption>③ 统一光照 · 清障 <span class="b">暖 11.7%</span><span class="b">冷 34.6%</span><span class="b">暗 3.8%</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-h"><b>R1</b> 山门 + 下沉智谷 <span class="dim">renders_20260921_R1R2_含钟楼版</span></div>
+        <div class="cmp-p three">
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_旧光照全量/R1_山门_透视.jpg"><figcaption>① 旧光照 <span class="b">暖 0.2%</span><span class="b">冷 95.1%</span><span class="b">暗 2.4%</span></figcaption></figure>
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_R1R2_含钟楼版/R1_山门_透视.jpg"><figcaption>② 统一光照 · 含钟楼 <span class="b">暖 14.7%</span><span class="b">冷 16.7%</span><span class="b">暗 2.8%</span></figcaption></figure>
+          <figure class="new"><img src="./R1_山门_透视.jpg"><figcaption>③ 统一光照 · 清障 <span class="b">暖 20.9%</span><span class="b">冷 12.6%</span><span class="b">暗 2.7%</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-h"><b>R2</b> 图书馆 + 漂浮讲堂 <span class="dim">renders_20260921_R1R2_含钟楼版</span></div>
+        <div class="cmp-p three">
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_旧光照全量/R2_图书馆_中轴.jpg"><figcaption>① 旧光照 <span class="b">暖 1.0%</span><span class="b">冷 96.1%</span><span class="b">暗 3.9%</span></figcaption></figure>
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_R1R2_含钟楼版/R2_图书馆_中轴.jpg"><figcaption>② 统一光照 · 含钟楼 <span class="b">暖 5.4%</span><span class="b">冷 52.7%</span><span class="b">暗 4.1%</span></figcaption></figure>
+          <figure class="new"><img src="./R2_图书馆_中轴.jpg"><figcaption>③ 统一光照 · 清障 <span class="b">暖 6.3%</span><span class="b">冷 50.4%</span><span class="b">暗 4.1%</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-h"><b>R3</b> 人文区 <span class="dim">书院 / 大礼堂 / 美术馆</span></div>
+        <div class="cmp-p">
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_旧光照全量/R3_人文区_中轴.jpg"><figcaption>旧光照 <span class="b">暖 0.4%</span><span class="b">冷 97.8%</span><span class="b">暗 2.5%</span></figcaption></figure>
+          <figure class="new"><img src="./R3_人文区_中轴.jpg"><figcaption>统一后 <span class="b">暖 11.0%</span><span class="b">冷 47.8%</span><span class="b">暗 3.2%</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-h"><b>R4</b> 智慧环廊 <span class="dim">renders_20260921_R4R5_纵梁厚版</span></div>
+        <div class="cmp-p three">
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_旧光照全量/R4_环廊_鸟瞰.jpg"><figcaption>① 旧光照 <span class="b">暖 0.0%</span><span class="b">冷 98.6%</span><span class="b">暗 0.4%</span></figcaption></figure>
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_R4R5_纵梁厚版/R4_环廊_鸟瞰.jpg"><figcaption>② 统一光照 · 纵梁厚版 <span class="b">暖 4.0%</span><span class="b">冷 47.1%</span><span class="b">暗 0.4%</span></figcaption></figure>
+          <figure class="new"><img src="./R4_环廊_鸟瞰.jpg"><figcaption>③ 统一光照 · 纵梁薄版 <span class="b">暖 5.1%</span><span class="b">冷 42.0%</span><span class="b">暗 0.4%</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-h"><b>R5</b> 五区总体 <span class="dim">renders_20260921_R4R5_纵梁厚版</span></div>
+        <div class="cmp-p three">
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_旧光照全量/R5_五区_鸟瞰.jpg"><figcaption>① 旧光照 <span class="b">暖 7.8%</span><span class="b">冷 47.0%</span><span class="b">暗 1.8%</span></figcaption></figure>
+          <figure><img src="../_archive/08-交付与归档/renders_20260921_R4R5_纵梁厚版/R5_五区_鸟瞰.jpg"><figcaption>② 统一光照 · 纵梁厚版 <span class="b">暖 7.8%</span><span class="b">冷 47.0%</span><span class="b">暗 1.8%</span></figcaption></figure>
+          <figure class="new"><img src="./R5_五区_鸟瞰.jpg"><figcaption>③ 统一光照 · 纵梁薄版 <span class="b">暖 13.1%</span><span class="b">冷 42.7%</span><span class="b">暗 1.6%</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cmp">
+        <div class="cmp-h"><b>R6</b> 滨水基座 <span class="dim">2.62 km 连续可上人挑台 · 以水为径</span></div>
+        <div class="cmp-p one">
+          <figure class="new"><img src="./R6_滨水_鸟瞰.jpg"><figcaption>统一光照 · 本阶段新增，无旧光照对照 <span class="b">暖 5.0%</span><span class="b">冷 56.7%</span><span class="b">暗 0.4%</span></figcaption></figure>
+        </div>
+      </div>
+
+<h2>分阶段成图</h2>
+
+      <section>
+        <h3><b>R0</b> 垂直书院 <span class="dim">语言样板 · 塔楼</span>
+          <span class="avg">7 张 ｜ 均值 暖 13.1 ／ 冷 42.9 ／ 暗 5.5</span></h3>
+        <div class="grid">
+        <figure class="card">
+          <img loading="lazy" src="./R0_垂直书院_中轴.jpg">
+          <figcaption><span class="fn">R0_垂直书院_中轴</span><span class="b">暖 7.7%</span><span class="b">冷 43.5%</span><span class="b">暗 3.0%</span><span class="d down">冷 -54.4</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R0_垂直书院_中轴近景.jpg">
+          <figcaption><span class="fn">R0_垂直书院_中轴近景</span><span class="b">暖 8.9%</span><span class="b">冷 57.2%</span><span class="b">暗 4.7%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R0_垂直书院_塔冠.jpg">
+          <figcaption><span class="fn">R0_垂直书院_塔冠</span><span class="b">暖 9.9%</span><span class="b">冷 37.6%</span><span class="b">暗 1.7%</span><span class="d down">冷 -54.5</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R0_垂直书院_正立面.jpg">
+          <figcaption><span class="fn">R0_垂直书院_正立面</span><span class="b">暖 22.8%</span><span class="b">冷 40.5%</span><span class="b">暗 2.9%</span><span class="d down">冷 -36.5</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R0_垂直书院_空中庭院.jpg">
+          <figcaption><span class="fn">R0_垂直书院_空中庭院</span><span class="b">暖 9.0%</span><span class="b">冷 50.2%</span><span class="b">暗 10.7%</span><span class="d down">冷 -42.8</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R0_垂直书院_立面近景.jpg">
+          <figcaption><span class="fn">R0_垂直书院_立面近景</span><span class="b">暖 21.7%</span><span class="b">冷 36.7%</span><span class="b">暗 11.3%</span><span class="d down">冷 -42.0</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R0_垂直书院_透视.jpg">
+          <figcaption><span class="fn">R0_垂直书院_透视</span><span class="b">暖 11.7%</span><span class="b">冷 34.6%</span><span class="b">暗 3.8%</span><span class="d down">冷 -57.7</span></figcaption>
+        </figure></div>
+      </section>
+      <section>
+        <h3><b>R1</b> 山门 + 下沉智谷 <span class="dim">校园入口 · 中轴起点</span>
+          <span class="avg">8 张 ｜ 均值 暖 16.1 ／ 冷 28.5 ／ 暗 3.4</span></h3>
+        <div class="grid">
+        <figure class="card">
+          <img loading="lazy" src="./R1_中轴_全景.jpg">
+          <figcaption><span class="fn">R1_中轴_全景</span><span class="b">暖 20.6%</span><span class="b">冷 19.9%</span><span class="b">暗 2.6%</span><span class="d down">冷 -74.3</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R1_山口_仰视.jpg">
+          <figcaption><span class="fn">R1_山口_仰视</span><span class="b">暖 21.5%</span><span class="b">冷 52.1%</span><span class="b">暗 5.5%</span><span class="d down">冷 -37.5</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R1_山门_正立面.jpg">
+          <figcaption><span class="fn">R1_山门_正立面</span><span class="b">暖 21.2%</span><span class="b">冷 15.0%</span><span class="b">暗 2.6%</span><span class="d down">冷 -76.4</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R1_山门_近景.jpg">
+          <figcaption><span class="fn">R1_山门_近景</span><span class="b">暖 20.2%</span><span class="b">冷 25.8%</span><span class="b">暗 2.6%</span><span class="d down">冷 -69.7</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R1_山门_透视.jpg">
+          <figcaption><span class="fn">R1_山门_透视</span><span class="b">暖 20.9%</span><span class="b">冷 12.6%</span><span class="b">暗 2.7%</span><span class="d down">冷 -82.5</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R1_智谷_谷口.jpg">
+          <figcaption><span class="fn">R1_智谷_谷口</span><span class="b">暖 7.5%</span><span class="b">冷 21.3%</span><span class="b">暗 3.9%</span><span class="d down">冷 -77.7</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R1_智谷_谷底.jpg">
+          <figcaption><span class="fn">R1_智谷_谷底</span><span class="b">暖 13.6%</span><span class="b">冷 57.1%</span><span class="b">暗 7.1%</span><span class="d down">冷 -41.0</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R1_智谷_鸟瞰.jpg">
+          <figcaption><span class="fn">R1_智谷_鸟瞰</span><span class="b">暖 3.0%</span><span class="b">冷 24.3%</span><span class="b">暗 0.7%</span><span class="d down">冷 -73.0</span></figcaption>
+        </figure></div>
+      </section>
+      <section>
+        <h3><b>R2</b> 图书馆 + 漂浮讲堂 <span class="dim">中轴尽端核心</span>
+          <span class="avg">8 张 ｜ 均值 暖 11.7 ／ 冷 43.8 ／ 暗 6.1</span></h3>
+        <div class="grid">
+        <figure class="card">
+          <img loading="lazy" src="./R2_图书馆_中轴.jpg">
+          <figcaption><span class="fn">R2_图书馆_中轴</span><span class="b">暖 6.3%</span><span class="b">冷 50.4%</span><span class="b">暗 4.1%</span><span class="d down">冷 -45.7</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R2_图书馆_退台近景.jpg">
+          <figcaption><span class="fn">R2_图书馆_退台近景</span><span class="b">暖 24.9%</span><span class="b">冷 24.4%</span><span class="b">暗 6.0%</span><span class="d down">冷 -53.5</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R2_图书馆_透视.jpg">
+          <figcaption><span class="fn">R2_图书馆_透视</span><span class="b">暖 10.6%</span><span class="b">冷 40.9%</span><span class="b">暗 2.3%</span><span class="d down">冷 -51.4</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R2_图书馆_鸟瞰.jpg">
+          <figcaption><span class="fn">R2_图书馆_鸟瞰</span><span class="b">暖 8.0%</span><span class="b">冷 23.9%</span><span class="b">暗 6.5%</span><span class="d down">冷 -72.1</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R2_讲堂_正立面.jpg">
+          <figcaption><span class="fn">R2_讲堂_正立面</span><span class="b">暖 11.0%</span><span class="b">冷 16.3%</span><span class="b">暗 4.2%</span><span class="d down">冷 -74.2</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R2_讲堂_水上低角.jpg">
+          <figcaption><span class="fn">R2_讲堂_水上低角</span><span class="b">暖 17.9%</span><span class="b">冷 58.2%</span><span class="b">暗 3.5%</span><span class="d down">冷 -23.8</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R2_讲堂_水面回望.jpg">
+          <figcaption><span class="fn">R2_讲堂_水面回望</span><span class="b">暖 13.2%</span><span class="b">冷 51.8%</span><span class="b">暗 17.7%</span><span class="d down">冷 -41.2</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R2_讲堂_鸟瞰.jpg">
+          <figcaption><span class="fn">R2_讲堂_鸟瞰</span><span class="b">暖 1.6%</span><span class="b">冷 84.4%</span><span class="b">暗 4.8%</span><span class="d down">冷 -14.4</span></figcaption>
+        </figure></div>
+      </section>
+      <section>
+        <h3><b>R3</b> 人文区 <span class="dim">书院 / 大礼堂 / 美术馆</span>
+          <span class="avg">9 张 ｜ 均值 暖 8.8 ／ 冷 48.6 ／ 暗 6.3</span></h3>
+        <div class="grid">
+        <figure class="card">
+          <img loading="lazy" src="./R3_书院_山墙.jpg">
+          <figcaption><span class="fn">R3_书院_山墙</span><span class="b">暖 3.1%</span><span class="b">冷 48.3%</span><span class="b">暗 2.6%</span><span class="d down">冷 -49.0</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_书院_透视.jpg">
+          <figcaption><span class="fn">R3_书院_透视</span><span class="b">暖 8.8%</span><span class="b">冷 55.3%</span><span class="b">暗 1.8%</span><span class="d down">冷 -41.1</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_书院_鸟瞰.jpg">
+          <figcaption><span class="fn">R3_书院_鸟瞰</span><span class="b">暖 11.5%</span><span class="b">冷 43.8%</span><span class="b">暗 1.0%</span><span class="d down">冷 -54.1</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_人文区_中轴.jpg">
+          <figcaption><span class="fn">R3_人文区_中轴</span><span class="b">暖 11.0%</span><span class="b">冷 47.8%</span><span class="b">暗 3.2%</span><span class="d down">冷 -50.0</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_大礼堂_东南.jpg">
+          <figcaption><span class="fn">R3_大礼堂_东南</span><span class="b">暖 7.7%</span><span class="b">冷 50.3%</span><span class="b">暗 8.7%</span><span class="d down">冷 -48.3</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_大礼堂_中轴.jpg">
+          <figcaption><span class="fn">R3_大礼堂_中轴</span><span class="b">暖 1.9%</span><span class="b">冷 60.8%</span><span class="b">暗 13.8%</span><span class="d down">冷 -37.4</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_大礼堂_檐下.jpg">
+          <figcaption><span class="fn">R3_大礼堂_檐下</span><span class="b">暖 11.1%</span><span class="b">冷 58.2%</span><span class="b">暗 19.8%</span><span class="d down">冷 -35.2</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_美术馆_中轴.jpg">
+          <figcaption><span class="fn">R3_美术馆_中轴</span><span class="b">暖 7.2%</span><span class="b">冷 52.5%</span><span class="b">暗 3.6%</span><span class="d down">冷 -45.9</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R3_美术馆_入口.jpg">
+          <figcaption><span class="fn">R3_美术馆_入口</span><span class="b">暖 17.0%</span><span class="b">冷 20.1%</span><span class="b">暗 2.0%</span><span class="d down">冷 -75.9</span></figcaption>
+        </figure></div>
+      </section>
+      <section>
+        <h3><b>R4</b> 智慧环廊 <span class="dim">1.2 km 空中廊道 · AI 物理载体</span>
+          <span class="avg">11 张 ｜ 均值 暖 16.3 ／ 冷 39.8 ／ 暗 17.9</span></h3>
+        <div class="grid">
+        <figure class="card">
+          <img loading="lazy" src="./R4_中轴_望环廊.jpg">
+          <figcaption><span class="fn">R4_中轴_望环廊</span><span class="b">暖 14.7%</span><span class="b">冷 11.7%</span><span class="b">暗 1.5%</span><span class="d down">冷 -81.6</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_东段.jpg">
+          <figcaption><span class="fn">R4_环廊_东段</span><span class="b">暖 6.1%</span><span class="b">冷 39.3%</span><span class="b">暗 4.5%</span><span class="d down">冷 -56.2</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_北端节点.jpg">
+          <figcaption><span class="fn">R4_环廊_北端节点</span><span class="b">暖 10.3%</span><span class="b">冷 65.0%</span><span class="b">暗 14.9%</span><span class="d down">冷 -27.9</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_南延_远望.jpg">
+          <figcaption><span class="fn">R4_环廊_南延_远望</span><span class="b">暖 13.9%</span><span class="b">冷 33.3%</span><span class="b">暗 1.8%</span><span class="d down">冷 -63.8</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_断面.jpg">
+          <figcaption><span class="fn">R4_环廊_断面</span><span class="b">暖 25.9%</span><span class="b">冷 37.0%</span><span class="b">暗 13.8%</span><span class="d down">冷 -41.6</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_桥面.jpg">
+          <figcaption><span class="fn">R4_环廊_桥面</span><span class="b">暖 55.1%</span><span class="b">冷 2.2%</span><span class="b">暗 82.9%</span><span class="d down">冷 -44.6</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_结构近景.jpg">
+          <figcaption><span class="fn">R4_环廊_结构近景</span><span class="b">暖 19.6%</span><span class="b">冷 42.3%</span><span class="b">暗 28.6%</span><span class="d down">冷 -41.6</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_跨智谷_谷底.jpg">
+          <figcaption><span class="fn">R4_环廊_跨智谷_谷底</span><span class="b">暖 10.3%</span><span class="b">冷 44.0%</span><span class="b">暗 18.1%</span><span class="d down">冷 -42.8</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_环廊_鸟瞰.jpg">
+          <figcaption><span class="fn">R4_环廊_鸟瞰</span><span class="b">暖 5.1%</span><span class="b">冷 42.0%</span><span class="b">暗 0.4%</span><span class="d down">冷 -56.6</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_站点_S4.jpg">
+          <figcaption><span class="fn">R4_站点_S4</span><span class="b">暖 7.6%</span><span class="b">冷 69.2%</span><span class="b">暗 9.2%</span><span class="d down">冷 -23.5</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R4_站点_近景.jpg">
+          <figcaption><span class="fn">R4_站点_近景</span><span class="b">暖 11.0%</span><span class="b">冷 52.3%</span><span class="b">暗 20.9%</span><span class="d down">冷 -38.7</span></figcaption>
+        </figure></div>
+      </section>
+      <section>
+        <h3><b>R5</b> 五区总体 <span class="dim">教学 / 生活 / 科技 / 实验 / 运动医疗</span>
+          <span class="avg">12 张 ｜ 均值 暖 20.5 ／ 冷 32.4 ／ 暗 6.3</span></h3>
+        <div class="grid">
+        <figure class="card">
+          <img loading="lazy" src="./R5_中轴_天际线.jpg">
+          <figcaption><span class="fn">R5_中轴_天际线</span><span class="b">暖 15.3%</span><span class="b">冷 16.4%</span><span class="b">暗 1.4%</span><span class="d flat">冷 -1.5</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_五区_鸟瞰.jpg">
+          <figcaption><span class="fn">R5_五区_鸟瞰</span><span class="b">暖 13.1%</span><span class="b">冷 42.7%</span><span class="b">暗 1.6%</span><span class="d down">冷 -4.3</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_全园_东南鸟瞰.jpg">
+          <figcaption><span class="fn">R5_全园_东南鸟瞰</span><span class="b">暖 8.7%</span><span class="b">冷 40.2%</span><span class="b">暗 2.7%</span><span class="d down">冷 -6.4</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_全园_天际线_东南.jpg">
+          <figcaption><span class="fn">R5_全园_天际线_东南</span><span class="b">暖 11.7%</span><span class="b">冷 31.9%</span><span class="b">暗 2.6%</span><span class="d down">冷 -2.3</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_实验区.jpg">
+          <figcaption><span class="fn">R5_实验区</span><span class="b">暖 15.5%</span><span class="b">冷 30.8%</span><span class="b">暗 7.2%</span><span class="d down">冷 -14.1</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_教学区.jpg">
+          <figcaption><span class="fn">R5_教学区</span><span class="b">暖 21.0%</span><span class="b">冷 40.8%</span><span class="b">暗 6.5%</span><span class="d down">冷 -6.3</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_教学区_近景.jpg">
+          <figcaption><span class="fn">R5_教学区_近景</span><span class="b">暖 36.0%</span><span class="b">冷 35.1%</span><span class="b">暗 4.1%</span><span class="d down">冷 -2.3</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_生活区.jpg">
+          <figcaption><span class="fn">R5_生活区</span><span class="b">暖 16.6%</span><span class="b">冷 19.9%</span><span class="b">暗 2.0%</span><span class="d flat">冷 -1.7</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_生活区_沿街.jpg">
+          <figcaption><span class="fn">R5_生活区_沿街</span><span class="b">暖 44.9%</span><span class="b">冷 28.6%</span><span class="b">暗 3.2%</span><span class="d flat">冷 -1.0</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_科技区.jpg">
+          <figcaption><span class="fn">R5_科技区</span><span class="b">暖 21.7%</span><span class="b">冷 31.3%</span><span class="b">暗 4.7%</span><span class="d down">冷 -2.2</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_科技区_近景.jpg">
+          <figcaption><span class="fn">R5_科技区_近景</span><span class="b">暖 23.3%</span><span class="b">冷 30.8%</span><span class="b">暗 37.8%</span><span class="d flat">冷 -1.1</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R5_运动医疗区.jpg">
+          <figcaption><span class="fn">R5_运动医疗区</span><span class="b">暖 18.6%</span><span class="b">冷 40.6%</span><span class="b">暗 1.7%</span><span class="d up">冷 +9.7</span></figcaption>
+        </figure></div>
+      </section>
+      <section>
+        <h3><b>R6</b> 滨水基座 <span class="dim">2.62 km 连续可上人挑台 · 以水为径</span>
+          <span class="avg">8 张 ｜ 均值 暖 9.6 ／ 冷 63.2 ／ 暗 5.9</span></h3>
+        <div class="grid">
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_中轴埠头.jpg">
+          <figcaption><span class="fn">R6_滨水_中轴埠头</span><span class="b">暖 16.9%</span><span class="b">冷 33.9%</span><span class="b">暗 2.1%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_书院埠头.jpg">
+          <figcaption><span class="fn">R6_滨水_书院埠头</span><span class="b">暖 2.4%</span><span class="b">冷 84.6%</span><span class="b">暗 3.9%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_断面.jpg">
+          <figcaption><span class="fn">R6_滨水_断面</span><span class="b">暖 13.8%</span><span class="b">冷 42.8%</span><span class="b">暗 11.4%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_水口埠头.jpg">
+          <figcaption><span class="fn">R6_滨水_水口埠头</span><span class="b">暖 2.2%</span><span class="b">冷 88.6%</span><span class="b">暗 4.5%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_运动埠头.jpg">
+          <figcaption><span class="fn">R6_滨水_运动埠头</span><span class="b">暖 6.1%</span><span class="b">冷 84.9%</span><span class="b">暗 4.1%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_近景.jpg">
+          <figcaption><span class="fn">R6_滨水_近景</span><span class="b">暖 15.2%</span><span class="b">冷 60.1%</span><span class="b">暗 16.3%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_远望.jpg">
+          <figcaption><span class="fn">R6_滨水_远望</span><span class="b">暖 15.6%</span><span class="b">冷 53.6%</span><span class="b">暗 4.7%</span></figcaption>
+        </figure>
+        <figure class="card">
+          <img loading="lazy" src="./R6_滨水_鸟瞰.jpg">
+          <figcaption><span class="fn">R6_滨水_鸟瞰</span><span class="b">暖 5.0%</span><span class="b">冷 56.7%</span><span class="b">暗 0.4%</span></figcaption>
+        </figure></div>
+      </section>
+
+<footer>
+  <b>配色度量口径</b>：暖 = 像素 HSV 色相落在 20°~70° 且饱和度 &gt; 0.12 的占比；
+  冷 = 色相 160°~280° 占比；暗 = 明度 &lt; 0.12 的占比。三者互斥，同一像素只计入一类。<br>
+  <b>可复现性</b>：同配置跨进程连跑 3 次，暖/冷/暗统计完全一致（12.07 / 25.11 / 2.67），
+  渲染为确定性过程；归档版差异全部来自光照统一本身，与随机性无关。<br>
+  <b>归档</b>：非正式图 83 张 → <code>08-交付与归档/renders_20260920_非正式图归档/</code>；
+  旧光照全量 129 张 → <code>08-交付与归档/renders_20260921_旧光照全量/</code>；
+  R0 清障前 6 张 → <code>renders_20260921_R0_旧语境版/</code>；
+  R1+R2 清障前 16 张 → <code>renders_20260921_R1R2_含钟楼版/</code>；
+  R4+R5 纵梁改前 23 张 → <code>renders_20260921_R4R5_纵梁厚版/</code>；
+  配色 V2.4 生效前 63 张 → <code>renders_20260921_配色V2.4生效前_63张/</code>
+  （即本页③栏的"前"状态，用于量化配色重标本身的影响）；
+  体块白模版 63 张 → <code>renders_20260921_体块白模版_63张/</code>
+  （即"V2.4 已生效、但占位体块尚未压暗"的状态）。<br>
+  <b>遮挡体检</b>：<code>scripts/diag_grid.py</code> 对全部机位各打 5×3 网格射线，
+  核对"画面中心是否真是该图的主体"。本轮据此发现并修掉了 R2 的钟楼残留。
+</footer>
+</div></body></html>

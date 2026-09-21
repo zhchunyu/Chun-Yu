@@ -1,0 +1,461 @@
+{
+ "blend": "山河大学_R5_五区.blend",
+ "build_extra": [
+  "build_campus_stage1.py",
+  "build_campus_stage2.py",
+  "build_campus_stage3.py",
+  "build_campus_r0.py",
+  "build_campus_r1.py",
+  "build_campus_r2.py",
+  "build_campus_r3.py",
+  "build_campus_r4.py",
+  "build_campus_r5.py",
+  "palette_retune.py"
+ ],
+ "jobs": [
+  {
+   "name": "R5_五区_鸟瞰",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -560,
+    -430,
+    480
+   ],
+   "cam_tgt": [
+    0,
+    420,
+    30
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_中轴_天际线",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    0,
+    -720,
+    95
+   ],
+   "cam_tgt": [
+    0,
+    640,
+    42
+   ],
+   "lens": 60,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_全园_天际线_东南",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    760,
+    -560,
+    130
+   ],
+   "cam_tgt": [
+    0,
+    520,
+    45
+   ],
+   "lens": 48,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_科技区",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -677,
+    293,
+    90
+   ],
+   "cam_tgt": [
+    -370,
+    545,
+    35
+   ],
+   "lens": 50,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_实验区",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    639,
+    252,
+    90
+   ],
+   "cam_tgt": [
+    356,
+    535,
+    35
+   ],
+   "lens": 50,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_运动医疗区",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -360,
+    -140,
+    120
+   ],
+   "cam_tgt": [
+    -320,
+    300,
+    28
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_教学区",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    577,
+    16,
+    85
+   ],
+   "cam_tgt": [
+    337,
+    276,
+    32
+   ],
+   "lens": 46,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_生活区",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -47,
+    -260,
+    70
+   ],
+   "cam_tgt": [
+    -47,
+    90,
+    28
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_生活区_沿街",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -150,
+    -60,
+    16
+   ],
+   "cam_tgt": [
+    -170,
+    130,
+    30
+   ],
+   "lens": 40,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_全园_东南鸟瞰",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    700,
+    -420,
+    520
+   ],
+   "cam_tgt": [
+    0,
+    420,
+    25
+   ],
+   "lens": 40,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_科技区_近景",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -470,
+    430,
+    46
+   ],
+   "cam_tgt": [
+    -330,
+    560,
+    30
+   ],
+   "lens": 62,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R5_教学区_近景",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    170,
+    200,
+    34
+   ],
+   "cam_tgt": [
+    300,
+    340,
+    36
+   ],
+   "lens": 50,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  }
+ ]
+}

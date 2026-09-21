@@ -1,0 +1,47 @@
+{
+  "blend": "山河大学_R0_垂直书院.blend",
+  "build_extra": ["build_campus_stage1.py", "build_campus_stage2.py", "build_campus_stage3.py", "build_campus_r0.py"],
+  "jobs": [
+    {"name": "R0_垂直书院_透视", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-250, 462, 58], "cam_tgt": [0, 648, 44], "lens": 52,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R0_垂直书院_正立面", "res_x": 1000, "res_y": 1600, "samples": 110,
+     "cam_pos": [-340, 648, 44], "cam_tgt": [0, 648, 44], "lens": 78,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R0_垂直书院_空中庭院", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [215, 505, 46], "cam_tgt": [0, 648, 38], "lens": 45,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R0_垂直书院_立面近景", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [95, 570, 26], "cam_tgt": [0, 648, 32], "lens": 60,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R0_垂直书院_塔冠", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-125, 556, 96], "cam_tgt": [0, 648, 86], "lens": 58,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R0_垂直书院_中轴", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, 200, 45], "cam_tgt": [0, 648, 38], "lens": 28,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R0_垂直书院_中轴近景", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, 330, 88], "cam_tgt": [0, 648, 48], "lens": 52,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2}
+  ]
+}

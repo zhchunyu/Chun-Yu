@@ -1,0 +1,71 @@
+{
+  "blend": "山河大学_R4_智慧环廊.blend",
+  "build_extra": ["build_campus_stage1.py", "build_campus_stage2.py", "build_campus_stage3.py", "build_campus_r0.py", "build_campus_r1.py", "build_campus_r2.py", "build_campus_r3.py", "build_campus_r4.py"],
+  "jobs": [
+    {"name": "R4_环廊_鸟瞰", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [300, -520, 700], "cam_tgt": [0, 350, 10], "lens": 36,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_环廊_断面", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-290, 420, 12.5], "cam_tgt": [-232, 424, 12.5], "lens": 70,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_环廊_结构近景", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-288, 470, 26], "cam_tgt": [-225, 448, 13], "lens": 85,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_环廊_东段", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [330, 300, 34], "cam_tgt": [200, 520, 11], "lens": 45,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_环廊_桥面", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [231, 400, 10.4], "cam_tgt": [196, 560, 10.2], "lens": 32,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_站点_S4", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [330, 570, 34], "cam_tgt": [205, 505, 13], "lens": 60,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_站点_近景", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [285, 545, 16], "cam_tgt": [215, 508, 11], "lens": 95,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_环廊_北端节点", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [150, 700, 52], "cam_tgt": [0, 604, 15], "lens": 42,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_环廊_跨智谷_谷底", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, 175, -2.0], "cam_tgt": [0, 112, 11], "lens": 30,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_环廊_南延_远望", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-260, -160, 240], "cam_tgt": [0, 180, 6], "lens": 40,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R4_中轴_望环廊", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, -150, 24], "cam_tgt": [0, 200, 10], "lens": 34,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2}
+  ]
+}

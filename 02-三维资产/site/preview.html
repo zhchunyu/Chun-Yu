@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>山河大学 · 全园模型预览（GLB）</title>
+<!-- 空 data: favicon —— 不设的话浏览器会去要 /favicon.ico，控制台多一条 404 -->
+<link rel="icon" href="data:,">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/"
+  }
+}
+</script>
+<style>
+:root{
+  --ink:#2B2E33; --paper:#E8E6E0; --wood:#C9A87C; --cu:#B07B45;
+  --glass:rgba(20,24,28,.62); --line:rgba(232,230,224,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#0e1216;
+  font:13px/1.6 "PingFang SC","Microsoft YaHei","Source Han Sans SC",sans-serif;color:var(--paper)}
+#scene{display:block;width:100%;height:100%}
+
+.panel{position:fixed;background:var(--glass);backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:4px}
+
+/* 左上：标题 + 模型统计 */
+#head{left:18px;top:18px;padding:14px 18px 13px;max-width:330px}
+#head h1{margin:0 0 2px;font-size:15px;font-weight:700;letter-spacing:.05em}
+#head h1 em{font-style:normal;color:var(--cu)}
+#head .sub{color:rgba(232,230,224,.55);font-size:11.5px;letter-spacing:.02em}
+#head dl{margin:11px 0 0;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;
+  font-family:ui-monospace,Consolas,monospace;font-size:11.5px}
+#head dt{color:rgba(232,230,224,.5)}
+#head dd{margin:0;text-align:right}
+
+/* 右上：运行统计 */
+#stats{right:18px;top:18px;padding:11px 15px;font-family:ui-monospace,Consolas,monospace;
+  font-size:11.5px;line-height:1.9;min-width:150px}
+#stats b{color:var(--wood);font-weight:600}
+#stats .row{display:flex;justify-content:space-between;gap:14px}
+#stats .row span{color:rgba(232,230,224,.5)}
+
+/* 底部：相机预设 */
+#presets{left:50%;transform:translateX(-50%);bottom:18px;padding:9px 10px;
+  display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:min(92vw,860px)}
+#presets button{appearance:none;border:1px solid var(--line);background:transparent;
+  color:rgba(232,230,224,.78);font:inherit;font-size:12px;padding:6px 13px;
+  border-radius:3px;cursor:pointer;transition:.16s;white-space:nowrap}
+#presets button:hover{border-color:var(--wood);color:var(--paper)}
+#presets button.on{background:var(--cu);border-color:var(--cu);color:#1a1207;font-weight:600}
+
+/* 右下：操作提示 */
+#hint{right:18px;bottom:18px;padding:9px 14px;font-size:11.5px;
+  color:rgba(232,230,224,.55);line-height:1.8}
+#hint kbd{font-family:ui-monospace,Consolas,monospace;color:var(--wood)}
+
+/* 加载遮罩 */
+#load{position:fixed;inset:0;background:#0e1216;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;z-index:20;transition:opacity .5s}
+#load.done{opacity:0;pointer-events:none}
+#load .t{font-size:14px;letter-spacing:.14em;color:rgba(232,230,224,.8)}
+#load .bar{width:260px;height:2px;background:rgba(232,230,224,.14);overflow:hidden}
+#load .bar i{display:block;height:100%;width:0;background:var(--cu);transition:width .25s}
+#load .b{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;color:rgba(232,230,224,.45)}
+#load .err{color:#e08a6a;max-width:520px;text-align:center;line-height:1.8;font-size:12.5px}
+</style>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div class="panel" id="head">
+  <h1>山河大学 · <em>全园模型预览</em></h1>
+  <div class="sub">R6 滨水基座 · 路线末版 · 从 Blender 导出的 GLB</div>
+  <dl>
+    <dt>文件</dt><dd id="m-file">—</dd>
+    <dt>大小</dt><dd id="m-size">—</dd>
+    <dt>三角面</dt><dd id="m-tri">—</dd>
+    <dt>网格 / 材质</dt><dd id="m-mesh">—</dd>
+    <dt>加载耗时</dt><dd id="m-load">—</dd>
+  </dl>
+</div>
+
+<div class="panel" id="stats">
+  <div class="row"><span>FPS</span><b id="s-fps">—</b></div>
+  <div class="row"><span>绘制面</span><b id="s-tri">—</b></div>
+  <div class="row"><span>DrawCall</span><b id="s-call">—</b></div>
+  <div class="row"><span>视距</span><b id="s-dist">—</b></div>
+</div>
+
+<div class="panel" id="presets"></div>
+
+<div class="panel" id="hint">
+  <kbd>拖拽</kbd> 旋转 · <kbd>滚轮</kbd> 缩放 · <kbd>右键</kbd> 平移<br>
+  <kbd>1</kbd>–<kbd>7</kbd> 切预设 · <kbd>R</kbd> 自动旋转
+</div>
+
+<div id="load">
+  <div class="t">正在加载全园模型</div>
+  <div class="bar"><i id="load-bar"></i></div>
+  <div class="b" id="load-txt">连接中…</div>
+</div>
+
+<script type="module" src="./src/preview.js"></script>
+</body>
+</html>

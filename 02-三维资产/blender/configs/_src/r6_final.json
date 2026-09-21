@@ -1,0 +1,53 @@
+{
+  "blend": "山河大学_R6_滨水基座.blend",
+  "build_extra": ["build_campus_stage1.py", "build_campus_stage2.py", "build_campus_stage3.py", "build_campus_r0.py", "build_campus_r1.py", "build_campus_r2.py", "build_campus_r3.py", "build_campus_r4.py", "build_campus_r5.py", "build_campus_r6.py"],
+  "jobs": [
+    {"name": "R6_滨水_鸟瞰", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [0, -520, 1080], "cam_tgt": [0, 400, 0], "lens": 30,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R6_滨水_中轴埠头", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-205, 742, 46], "cam_tgt": [0, 856, 2], "lens": 46,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R6_滨水_水口埠头", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [770, 285, 34], "cam_tgt": [586, 381, 2.5], "lens": 45,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R6_滨水_运动埠头", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-700, 78, 32], "cam_tgt": [-524, 212, 2.5], "lens": 45,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R6_滨水_书院埠头", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-648, 906, 32], "cam_tgt": [-414, 744, 2.5], "lens": 45,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R6_滨水_断面", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-726, 452, 7.5], "cam_tgt": [-566, 446, 1.2], "lens": 70,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R6_滨水_近景", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-128, 856, 4.6], "cam_tgt": [96, 849, 3.0], "lens": 36,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2},
+
+    {"name": "R6_滨水_远望", "res_x": 1600, "res_y": 900, "samples": 110,
+     "cam_pos": [-880, 690, 30], "cam_tgt": [-180, 470, 14], "lens": 42,
+     "sun_elev": 38, "sun_azim": 240, "sun_strength": 2.9,
+     "sky_strength": 0.85, "exposure": -0.25, "haze_density": 0.000010,
+     "cloud_strength": 3.2, "cloud_scale": 2.2}
+  ]
+}

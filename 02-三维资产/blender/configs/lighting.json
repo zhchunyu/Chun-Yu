@@ -1,0 +1,22 @@
+{
+ "sun_elev": 38,
+ "sun_azim": 220,
+ "sun_strength": 5.8,
+ "sky_strength": 0.66,
+ "sky_visible": 0.72,
+ "ambient_tint": [
+  1.08,
+  0.92,
+  0.7
+ ],
+ "exposure": 0.2,
+ "haze_density": 1.2e-05,
+ "cloud_strength": 4.5,
+ "cloud_scale": 2.2,
+ "sun_color": [
+  1.0,
+  0.905,
+  0.775
+ ],
+ "view_transform": "Khronos PBR Neutral"
+}

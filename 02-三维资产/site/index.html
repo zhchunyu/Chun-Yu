@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>山河大学 · 三维建模成果</title>
+<style>
+  :root{--ink:#2B2E33;--paper:#F4F2EE;--card:#fff;--line:#D8D4CC;
+        --sub:#6C6862;--wood:#C9A87C;--copper:#B07B45;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font:15px/1.75 "PingFang SC","Microsoft YaHei",-apple-system,sans-serif;}
+  .wrap{max-width:1000px;margin:0 auto;padding:48px 20px 60px;}
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:8px;}
+  h1{font-size:30px;margin:0 0 8px;letter-spacing:.04em;}
+  .sub{color:var(--sub);font-size:13.5px;letter-spacing:.1em;}
+  .concept{font-size:19px;letter-spacing:.2em;color:var(--copper);
+           border-left:3px solid var(--copper);padding-left:14px;margin:26px 0 8px;}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 30px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+  a.card{display:block;background:var(--card);border:1px solid var(--line);
+         border-radius:4px;padding:20px 22px;text-decoration:none;color:inherit;
+         transition:.18s;}
+  a.card:hover{border-color:var(--copper);transform:translateY(-2px);
+               box-shadow:0 6px 20px rgba(0,0,0,.07);}
+  a.card h3{margin:0 0 6px;font-size:16.5px;}
+  a.card p{margin:0;color:var(--sub);font-size:13px;line-height:1.7;}
+  a.card .tag{display:inline-block;font-size:11px;color:var(--copper);
+              border:1px solid var(--line);border-radius:3px;padding:1px 7px;margin-bottom:9px;}
+  h2{font-size:17px;margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;}
+  th{background:#F0EEE9;font-weight:600;white-space:nowrap;}
+  td.v{color:var(--copper);font-weight:600;white-space:nowrap;}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);
+         color:var(--sub);font-size:12.5px;line-height:1.95;}
+  .tw{overflow-x:auto;}
+  @media (max-width:640px){
+    .wrap{padding:30px 16px 44px;} h1{font-size:23px;}
+    .concept{font-size:16px;letter-spacing:.14em;}
+  }
+</style></head><body><div class="wrap">
+
+<header>
+  <h1>山河大学 · 三维建模成果</h1>
+  <div class="sub">校园场景程序化建模 / 实景渲染 / 轻量化交付</div>
+</header>
+
+<div class="concept">藏山纳智 · 云廊书院</div>
+<p class="lead">
+  以山为院 · 以水为径 · 以云为廊 —— 七个设计阶段（R0~R6），
+  63 张实景渲染成图，全园轻量化 GLB。全部几何由脚本生成，渲染为确定性过程。
+</p>
+
+<div class="grid">
+  <a class="card" href="./preview.html">
+    <span class="tag">交互</span>
+    <h3>全园 3D 预览</h3>
+    <p>浏览器里直接浏览 112 万面的全园模型，含 7 个机位预设。
+       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位。</p>
+  </a>
+  <a class="card" href="./建模图集/山河大学_三维建模图集.html">
+    <span class="tag">图集</span>
+    <h3>三维建模图集</h3>
+    <p>五章陈列：设计概念 / 技术路线 / 分阶段成果（24 张代表图 + 几何要点）/
+       成果指标 / 说明。</p>
+  </a>
+  <a class="card" href="./renders/总览_R0-R6.html">
+    <span class="tag">对照</span>
+    <h3>分阶段对照总览</h3>
+    <p>R0~R6 每一版的改动前后并排对照，附逐像素 A/B 量化与配色合规度。</p>
+  </a>
+  <a class="card" href="./建模图集/山河大学_三维建模图集_手机版.html">
+    <span class="tag">手机</span>
+    <h3>图集 · 手机版</h3>
+    <p>单文件版，图片全部内嵌。适合手机上翻看，也可离线保存。</p>
+  </a>
+</div>
+
+<h2>成果指标</h2>
+<div class="tw"><table>
+  <tr><th>指标</th><th>数值</th><th>口径</th></tr>
+  <tr><td class="k">成图总量</td><td class="v">63 张</td><td>R0~R6 七个阶段，1600 × 900（R0 正立面 1000 × 1600）</td></tr>
+  <tr><td class="k">渲染引擎</td><td class="v">Cycles · Khronos PBR Neutral</td><td>sun 38° / strength 5.8 · 天空 0.66 · 雾密度 1.2e-5</td></tr>
+  <tr><td class="k">全园模型</td><td class="v">1,660,979 面</td><td>375 mesh · 60 材质（导出前）</td></tr>
+  <tr><td class="k">GLB 交付</td><td class="v">4.62 MB</td><td>1,118,087 面 · 42 材质 · 0 贴图 · Draco 压缩</td></tr>
+  <tr><td class="k">智慧环廊</td><td class="v">1631.9 m</td><td>沿 18 顶点折线，绕案山不跨案山，沿线七个站点</td></tr>
+  <tr><td class="k">滨水挑台</td><td class="v">2618.7 m</td><td>连续可上人岸线，常态外挑出水 3.0 m</td></tr>
+  <tr><td class="k">垂直书院</td><td class="v">93.00 m</td><td>基座 42 × 42 × 11.25 + 塔身 9 层 × 7.40（塔 / 楼 = 2.04）</td></tr>
+</table></div>
+
+<footer>
+  <b>说明</b>：校园为完全虚构设定，与任何现实院校无关；图面与模型中不含校名、Logo、
+  指导教师信息，也不含任何题字（匾额均为空白石板）。<br>
+  模型按 1 : 1 真实尺度建立（1 单位 = 1 米）；总平面阶段以 1 SVG 像素 = 2.4 m 换算。<br>
+  本页与图集均由脚本从渲染产物生成，可重新构建。
+</footer>
+
+</div></body></html>
