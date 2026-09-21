@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园2D导航 · 演示</title>
+  <link rel="stylesheet" href="lib/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside id="sidebar">
+    <h1>校园2D导航</h1>
+    <p class="sub">QGIS + GeoJSON + Leaflet + Dijkstra 流水线演示</p>
+
+    <section class="panel">
+      <h2>路径查询</h2>
+      <div class="row">
+        <label for="sel-start">起点</label>
+        <select id="sel-start"></select>
+      </div>
+      <div class="row">
+        <label for="sel-end">终点</label>
+        <select id="sel-end"></select>
+      </div>
+      <div class="btns">
+        <button id="btn-route" class="primary">计算路径</button>
+        <button id="btn-clear">清除</button>
+      </div>
+      <div id="result" class="result hidden">
+        <div class="stat"><span>总距离</span><b id="r-dist">-</b></div>
+        <div class="stat"><span>预计步行</span><b id="r-time">-</b></div>
+        <div class="stat"><span>经过节点</span><b id="r-nodes">-</b></div>
+        <ol id="r-seq"></ol>
+      </div>
+      <p id="msg" class="msg"></p>
+    </section>
+
+    <section class="panel">
+      <h2>使用方法</h2>
+      <ol class="tips">
+        <li>依次点击地图上的两个<b>节点圆点</b>（先起点后终点），或用上方下拉框选择；</li>
+        <li>点击「计算路径」，橙色粗线即为最短步行路线；</li>
+        <li>「清除」可重新选点。</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2>图例</h2>
+      <ul class="legend">
+        <li><i class="sw building"></i>建筑</li>
+        <li><i class="sw field"></i>操场/绿地</li>
+        <li><i class="sw road"></i>机动车道</li>
+        <li><i class="sw footway"></i>人行步道</li>
+        <li><i class="sw node"></i>路网节点（交叉口/出入口）</li>
+        <li><i class="sw route"></i>规划路线</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>数据更新流程</h2>
+      <p class="flow">QGIS 数字化 → 导出 GeoJSON（data/raw）→<br>
+        <code>geojson_to_graph.py</code> 生成 graph.json → 刷新本页</p>
+    </section>
+  </aside>
+
+  <main id="map"></main>
+
+  <script src="lib/leaflet/leaflet.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

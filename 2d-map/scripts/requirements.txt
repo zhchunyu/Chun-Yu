@@ -1,0 +1,20 @@
+# 本项目**不需要任何第三方 Python 包**。
+#
+# 所有脚本只用标准库：
+#   scripts/start_server.py   静态服务 + 自动开浏览器  (http.server / socket)
+#   scripts/build_graph.py    校园数据 -> graph.json    (json / math / heapq)
+#   scripts/make_campus.py    一次性坐标转换（已用过）  (json / math)
+#
+# 因此原来的 .venv 已随路线迁移一并删除（省 65.6 MB）。
+# 用系统 Python 3.10+ 即可直接运行：
+#   python scripts/start_server.py
+#
+# 前端（web/）同样是零依赖，不需要 npm install。
+#
+# 唯一的可选工具是 Node.js：用来跑 web/verify.js 的 37 项自动化断言
+# （AI 改完代码后的回归门禁）。没有 Node 也不影响功能，只是少一层自检。
+#
+# ---- 以下依赖已随旧路线退役，如确需可自行恢复 ----
+# networkx   # 旧 geojson_to_graph.py 用于复核最短路；现由 web/verify.js 覆盖
+# pyproj     # 旧 WGS84/UTM 转换；虚拟校园用平面米坐标，不再需要
+# pyinstaller# 旧 exe 打包；已改用 .bat + python 源码，见 legacy/README.md

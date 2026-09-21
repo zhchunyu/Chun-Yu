@@ -1,0 +1,74 @@
+{
+ "format": "campus-plan/1",
+ "unit": "meter",
+ "origin": "原点 (0,0) = 西南角；x 向东、y 向北",
+ "layer": "roads",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "south_gate",
+    "to": "cross_main",
+    "name": "校园主干道",
+    "type": "road"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      260.3,
+      0.0
+     ],
+     [
+      260.3,
+      139.6
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "road_w",
+    "to": "cross_main",
+    "name": "校园主干道",
+    "type": "road"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      0.0,
+      139.6
+     ],
+     [
+      260.3,
+      139.6
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "cross_main",
+    "to": "road_e",
+    "name": "校园主干道",
+    "type": "road"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      260.3,
+      139.6
+     ],
+     [
+      520.6,
+      139.6
+     ]
+    ]
+   }
+  }
+ ]
+}

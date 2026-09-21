@@ -1,0 +1,246 @@
+{
+ "format": "campus-plan/1",
+ "unit": "meter",
+ "origin": "原点 (0,0) = 西南角；x 向东、y 向北",
+ "layer": "nodes",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "south_gate",
+    "name": "南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     260.3,
+     0.0
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "cross_main",
+    "name": "主干道交叉口"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     260.3,
+     139.6
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "road_w",
+    "name": "主干道西端"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.0,
+     139.6
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "road_e",
+    "name": "主干道东端"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     520.6,
+     139.6
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "A_s",
+    "name": "教学楼A南路口"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     100.1,
+     179.5
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "teachA_gate",
+    "name": "教学楼A南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     100.1,
+     239.3
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "A_w",
+    "name": "教学楼A西侧路口"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     20.0,
+     239.3
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "W1",
+    "name": "西北路口"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     20.0,
+     378.9
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "W2",
+    "name": "教学楼B南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     160.2,
+     378.9
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "W3",
+    "name": "图书馆北门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     260.3,
+     378.9
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "W4",
+    "name": "食堂南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     340.4,
+     378.9
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "W5",
+    "name": "宿舍南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     420.5,
+     378.9
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "W6",
+    "name": "操场西门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     560.7,
+     378.9
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "lib_gate",
+    "name": "图书馆南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     260.3,
+     239.3
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "lab_gate",
+    "name": "实验楼南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     420.5,
+     239.3
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "gym_gate",
+    "name": "体育馆南门"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     500.6,
+     239.3
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "E1",
+    "name": "东侧路口"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     560.7,
+     239.3
+    ]
+   }
+  }
+ ]
+}

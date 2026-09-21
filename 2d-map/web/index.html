@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园2D导航 · 方案B（纯 SVG 原型）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside id="sidebar">
+    <h1>校园2D导航</h1>
+    <p class="sub">方案B 原型 · 纯 SVG + 原生 JS · 零依赖</p>
+
+    <section class="panel">
+      <h2>路径查询</h2>
+      <div class="row">
+        <label for="sel-start">起点</label>
+        <select id="sel-start"></select>
+      </div>
+      <div class="row">
+        <label for="sel-end">终点</label>
+        <select id="sel-end"></select>
+      </div>
+      <div class="btns">
+        <button id="btn-route" class="primary">计算路径</button>
+        <button id="btn-clear">清除</button>
+        <button id="btn-fit">适应窗口</button>
+      </div>
+      <div id="result" class="result hidden">
+        <div class="stat"><span>总距离</span><b id="r-dist">-</b></div>
+        <div class="stat"><span>预计步行</span><b id="r-time">-</b></div>
+        <div class="stat"><span>经过节点</span><b id="r-nodes">-</b></div>
+        <ol id="r-seq"></ol>
+      </div>
+      <p id="msg" class="msg"></p>
+    </section>
+
+    <section class="panel">
+      <h2>操作</h2>
+      <ol class="tips">
+        <li>依次点击两个<b>节点圆点</b>（先起点后终点），或用下拉框；</li>
+        <li>滚轮缩放、按住拖拽平移；</li>
+        <li>「适应窗口」回到全景。</li>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2>图例</h2>
+      <ul class="legend">
+        <li><i class="sw building"></i>建筑</li>
+        <li><i class="sw field"></i>操场/绿地</li>
+        <li><i class="sw road"></i>机动车道</li>
+        <li><i class="sw footway"></i>人行步道</li>
+        <li><i class="sw node"></i>路网节点</li>
+        <li><i class="sw route"></i>规划路线</li>
+      </ul>
+    </section>
+  </aside>
+
+  <!-- 地图本体：一张 SVG。每个要素都是真实 DOM 节点，带 data-* 语义属性。
+       分组顺序 = 绘制层级（先画的在下），viewBox 由 app.js 按数据包围盒设定。 -->
+  <main id="stage">
+    <svg id="map" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <g id="l-footways"></g>
+      <g id="l-roads"></g>
+      <g id="l-buildings"></g>
+      <g id="l-labels" class="no-pointer"></g>
+      <g id="l-route" class="no-pointer"></g>
+      <g id="l-nodes"></g>
+    </svg>
+  </main>
+
+  <script src="geo.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

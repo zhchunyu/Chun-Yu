@@ -1,0 +1,81 @@
+/* 校园2D导航演示页样式 */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  display: flex;
+  height: 100vh;
+  font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  color: #1e293b;
+}
+
+/* ---------- 左侧面板 ---------- */
+#sidebar {
+  width: 320px;
+  flex: none;
+  overflow-y: auto;
+  padding: 18px 16px 32px;
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+}
+
+#sidebar h1 { font-size: 20px; }
+#sidebar .sub { font-size: 12px; color: #64748b; margin: 4px 0 14px; }
+
+.panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.panel h2 { font-size: 14px; margin-bottom: 8px; color: #0f172a; }
+
+.row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.row label { width: 34px; font-size: 13px; color: #475569; }
+.row select {
+  flex: 1; padding: 5px 6px; font-size: 13px;
+  border: 1px solid #cbd5e1; border-radius: 6px; background: #fff;
+}
+
+.btns { display: flex; gap: 8px; margin-top: 4px; }
+.btns button {
+  flex: 1; padding: 7px 0; font-size: 13px; cursor: pointer;
+  border: 1px solid #cbd5e1; border-radius: 6px; background: #fff;
+}
+.btns button.primary { background: #f97316; border-color: #f97316; color: #fff; }
+.btns button.primary:hover { background: #ea580c; }
+
+.result { margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 8px; }
+.result.hidden { display: none; }
+.stat { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+.stat b { color: #f97316; }
+#r-seq { margin: 8px 0 0 18px; font-size: 12px; color: #475569; }
+#r-seq li { margin-bottom: 2px; }
+
+.msg { font-size: 12px; color: #dc2626; margin-top: 6px; min-height: 1em; }
+.msg.ok { color: #16a34a; }
+
+.tips { margin-left: 18px; font-size: 12px; color: #475569; line-height: 1.7; }
+
+.legend { list-style: none; font-size: 12px; color: #475569; }
+.legend li { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.sw { display: inline-block; width: 22px; height: 12px; border-radius: 3px; }
+.sw.building { background: #cbd5e1; border: 1px solid #94a3b8; }
+.sw.field   { background: #bbf7d0; border: 1px solid #4ade80; }
+.sw.road    { background: #64748b; height: 6px; }
+.sw.footway { background: repeating-linear-gradient(90deg,#16a34a 0 6px,transparent 6px 10px); height: 4px; }
+.sw.node    { background: #2563eb; width: 12px; height: 12px; border-radius: 50%; }
+.sw.route   { background: #f97316; height: 6px; }
+
+.flow { font-size: 12px; color: #475569; line-height: 1.8; }
+.flow code {
+  background: #f1f5f9; padding: 1px 5px; border-radius: 4px;
+  font-size: 11px; color: #0f172a;
+}
+
+/* ---------- 地图 ---------- */
+#map { flex: 1; height: 100%; }
+
+/* 路径起终点标记（Leaflet circleMarker 为 SVG path，用 drop-shadow 加立体感） */
+.pulse-start { filter: drop-shadow(0 0 3px rgba(34, 197, 94, .9)); }
+.pulse-end   { filter: drop-shadow(0 0 3px rgba(239, 68, 68, .9)); }

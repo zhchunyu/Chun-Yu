@@ -1,0 +1,324 @@
+{
+ "format": "campus-plan/1",
+ "unit": "meter",
+ "origin": "原点 (0,0) = 西南角；x 向东、y 向北",
+ "layer": "buildings",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "图书馆",
+    "type": "教学",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       220.3,
+       259.2
+      ],
+      [
+       300.4,
+       259.2
+      ],
+      [
+       300.4,
+       339.0
+      ],
+      [
+       220.3,
+       339.0
+      ],
+      [
+       220.3,
+       259.2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "教学楼A",
+    "type": "教学",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       40.0,
+       259.2
+      ],
+      [
+       120.1,
+       259.2
+      ],
+      [
+       120.1,
+       339.0
+      ],
+      [
+       40.0,
+       339.0
+      ],
+      [
+       40.0,
+       259.2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "教学楼B",
+    "type": "教学",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       120.1,
+       408.8
+      ],
+      [
+       200.2,
+       408.8
+      ],
+      [
+       200.2,
+       468.6
+      ],
+      [
+       120.1,
+       468.6
+      ],
+      [
+       120.1,
+       408.8
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "实验楼",
+    "type": "教学",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       380.5,
+       259.2
+      ],
+      [
+       460.6,
+       259.2
+      ],
+      [
+       460.6,
+       339.0
+      ],
+      [
+       380.5,
+       339.0
+      ],
+      [
+       380.5,
+       259.2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "体育馆",
+    "type": "体育",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       460.6,
+       259.2
+      ],
+      [
+       540.7,
+       259.2
+      ],
+      [
+       540.7,
+       339.0
+      ],
+      [
+       460.6,
+       339.0
+      ],
+      [
+       460.6,
+       259.2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "食堂",
+    "type": "生活",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       300.4,
+       408.8
+      ],
+      [
+       380.5,
+       408.8
+      ],
+      [
+       380.5,
+       468.6
+      ],
+      [
+       300.4,
+       468.6
+      ],
+      [
+       300.4,
+       408.8
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "宿舍1号楼",
+    "type": "生活",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       390.5,
+       408.8
+      ],
+      [
+       450.6,
+       408.8
+      ],
+      [
+       450.6,
+       468.6
+      ],
+      [
+       390.5,
+       468.6
+      ],
+      [
+       390.5,
+       408.8
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "宿舍2号楼",
+    "type": "生活",
+    "floors": 4
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       470.6,
+       408.8
+      ],
+      [
+       530.7,
+       408.8
+      ],
+      [
+       530.7,
+       468.6
+      ],
+      [
+       470.6,
+       468.6
+      ],
+      [
+       470.6,
+       408.8
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "操场",
+    "type": "体育",
+    "floors": 0,
+    "kind": "ground"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       590.7,
+       259.2
+      ],
+      [
+       690.9,
+       259.2
+      ],
+      [
+       690.9,
+       438.7
+      ],
+      [
+       590.7,
+       438.7
+      ],
+      [
+       590.7,
+       259.2
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

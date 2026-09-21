@@ -1,0 +1,703 @@
+{
+ "meta": {
+  "format": "campus-graph/1",
+  "unit": "meter",
+  "crs": "local",
+  "walk_speed_mps": 1.2,
+  "generated_at": "2026-09-21T22:14:37",
+  "snap_tolerance_m": 3.0
+ },
+ "nodes": [
+  {
+   "id": "south_gate",
+   "name": "南门",
+   "x": 260.3,
+   "y": 0.0
+  },
+  {
+   "id": "cross_main",
+   "name": "主干道交叉口",
+   "x": 260.3,
+   "y": 139.6
+  },
+  {
+   "id": "road_w",
+   "name": "主干道西端",
+   "x": 0.0,
+   "y": 139.6
+  },
+  {
+   "id": "road_e",
+   "name": "主干道东端",
+   "x": 520.6,
+   "y": 139.6
+  },
+  {
+   "id": "A_s",
+   "name": "教学楼A南路口",
+   "x": 100.1,
+   "y": 179.5
+  },
+  {
+   "id": "teachA_gate",
+   "name": "教学楼A南门",
+   "x": 100.1,
+   "y": 239.3
+  },
+  {
+   "id": "A_w",
+   "name": "教学楼A西侧路口",
+   "x": 20.0,
+   "y": 239.3
+  },
+  {
+   "id": "W1",
+   "name": "西北路口",
+   "x": 20.0,
+   "y": 378.9
+  },
+  {
+   "id": "W2",
+   "name": "教学楼B南门",
+   "x": 160.2,
+   "y": 378.9
+  },
+  {
+   "id": "W3",
+   "name": "图书馆北门",
+   "x": 260.3,
+   "y": 378.9
+  },
+  {
+   "id": "W4",
+   "name": "食堂南门",
+   "x": 340.4,
+   "y": 378.9
+  },
+  {
+   "id": "W5",
+   "name": "宿舍南门",
+   "x": 420.5,
+   "y": 378.9
+  },
+  {
+   "id": "W6",
+   "name": "操场西门",
+   "x": 560.7,
+   "y": 378.9
+  },
+  {
+   "id": "lib_gate",
+   "name": "图书馆南门",
+   "x": 260.3,
+   "y": 239.3
+  },
+  {
+   "id": "lab_gate",
+   "name": "实验楼南门",
+   "x": 420.5,
+   "y": 239.3
+  },
+  {
+   "id": "gym_gate",
+   "name": "体育馆南门",
+   "x": 500.6,
+   "y": 239.3
+  },
+  {
+   "id": "E1",
+   "name": "东侧路口",
+   "x": 560.7,
+   "y": 239.3
+  }
+ ],
+ "edges": [
+  {
+   "id": "e001",
+   "from": "south_gate",
+   "to": "cross_main",
+   "name": "校园主干道",
+   "type": "road",
+   "weight": 139.6,
+   "geometry": [
+    [
+     260.3,
+     0.0
+    ],
+    [
+     260.3,
+     139.6
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e002",
+   "from": "road_w",
+   "to": "cross_main",
+   "name": "校园主干道",
+   "type": "road",
+   "weight": 260.3,
+   "geometry": [
+    [
+     0.0,
+     139.6
+    ],
+    [
+     260.3,
+     139.6
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e003",
+   "from": "cross_main",
+   "to": "road_e",
+   "name": "校园主干道",
+   "type": "road",
+   "weight": 260.3,
+   "geometry": [
+    [
+     260.3,
+     139.6
+    ],
+    [
+     520.6,
+     139.6
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e004",
+   "from": "cross_main",
+   "to": "A_s",
+   "name": "中央步道",
+   "type": "footway",
+   "weight": 165.09,
+   "geometry": [
+    [
+     260.3,
+     139.6
+    ],
+    [
+     100.1,
+     179.5
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e005",
+   "from": "A_s",
+   "to": "teachA_gate",
+   "name": "教学楼A步道",
+   "type": "footway",
+   "weight": 59.8,
+   "geometry": [
+    [
+     100.1,
+     179.5
+    ],
+    [
+     100.1,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e006",
+   "from": "teachA_gate",
+   "to": "A_w",
+   "name": "教学楼A西侧步道",
+   "type": "footway",
+   "weight": 80.1,
+   "geometry": [
+    [
+     100.1,
+     239.3
+    ],
+    [
+     20.0,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e007",
+   "from": "A_w",
+   "to": "W1",
+   "name": "西侧步道",
+   "type": "footway",
+   "weight": 139.6,
+   "geometry": [
+    [
+     20.0,
+     239.3
+    ],
+    [
+     20.0,
+     378.9
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e008",
+   "from": "cross_main",
+   "to": "lib_gate",
+   "name": "图书馆步道",
+   "type": "footway",
+   "weight": 99.7,
+   "geometry": [
+    [
+     260.3,
+     139.6
+    ],
+    [
+     260.3,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e009",
+   "from": "cross_main",
+   "to": "lab_gate",
+   "name": "实验楼步道",
+   "type": "footway",
+   "weight": 188.69,
+   "geometry": [
+    [
+     260.3,
+     139.6
+    ],
+    [
+     420.5,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e010",
+   "from": "teachA_gate",
+   "to": "lib_gate",
+   "name": "南侧步道",
+   "type": "footway",
+   "weight": 160.2,
+   "geometry": [
+    [
+     100.1,
+     239.3
+    ],
+    [
+     260.3,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e011",
+   "from": "lib_gate",
+   "to": "lab_gate",
+   "name": "南侧步道",
+   "type": "footway",
+   "weight": 160.2,
+   "geometry": [
+    [
+     260.3,
+     239.3
+    ],
+    [
+     420.5,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e012",
+   "from": "lab_gate",
+   "to": "gym_gate",
+   "name": "体育馆步道",
+   "type": "footway",
+   "weight": 80.1,
+   "geometry": [
+    [
+     420.5,
+     239.3
+    ],
+    [
+     500.6,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e013",
+   "from": "gym_gate",
+   "to": "E1",
+   "name": "东侧步道",
+   "type": "footway",
+   "weight": 60.1,
+   "geometry": [
+    [
+     500.6,
+     239.3
+    ],
+    [
+     560.7,
+     239.3
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e014",
+   "from": "E1",
+   "to": "W6",
+   "name": "东侧步道",
+   "type": "footway",
+   "weight": 139.6,
+   "geometry": [
+    [
+     560.7,
+     239.3
+    ],
+    [
+     560.7,
+     378.9
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e015",
+   "from": "W1",
+   "to": "W2",
+   "name": "北部步道",
+   "type": "footway",
+   "weight": 140.2,
+   "geometry": [
+    [
+     20.0,
+     378.9
+    ],
+    [
+     160.2,
+     378.9
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e016",
+   "from": "W2",
+   "to": "W3",
+   "name": "北部步道",
+   "type": "footway",
+   "weight": 100.1,
+   "geometry": [
+    [
+     160.2,
+     378.9
+    ],
+    [
+     260.3,
+     378.9
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e017",
+   "from": "W3",
+   "to": "W4",
+   "name": "北部步道",
+   "type": "footway",
+   "weight": 80.1,
+   "geometry": [
+    [
+     260.3,
+     378.9
+    ],
+    [
+     340.4,
+     378.9
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e018",
+   "from": "W4",
+   "to": "W5",
+   "name": "北部步道",
+   "type": "footway",
+   "weight": 80.1,
+   "geometry": [
+    [
+     340.4,
+     378.9
+    ],
+    [
+     420.5,
+     378.9
+    ]
+   ],
+   "props": {}
+  },
+  {
+   "id": "e019",
+   "from": "W5",
+   "to": "W6",
+   "name": "北部步道",
+   "type": "footway",
+   "weight": 140.2,
+   "geometry": [
+    [
+     420.5,
+     378.9
+    ],
+    [
+     560.7,
+     378.9
+    ]
+   ],
+   "props": {}
+  }
+ ],
+ "adjacency": {
+  "south_gate": [
+   {
+    "to": "cross_main",
+    "weight": 139.6,
+    "edge": "e001"
+   }
+  ],
+  "cross_main": [
+   {
+    "to": "south_gate",
+    "weight": 139.6,
+    "edge": "e001"
+   },
+   {
+    "to": "road_w",
+    "weight": 260.3,
+    "edge": "e002"
+   },
+   {
+    "to": "road_e",
+    "weight": 260.3,
+    "edge": "e003"
+   },
+   {
+    "to": "A_s",
+    "weight": 165.09,
+    "edge": "e004"
+   },
+   {
+    "to": "lib_gate",
+    "weight": 99.7,
+    "edge": "e008"
+   },
+   {
+    "to": "lab_gate",
+    "weight": 188.69,
+    "edge": "e009"
+   }
+  ],
+  "road_w": [
+   {
+    "to": "cross_main",
+    "weight": 260.3,
+    "edge": "e002"
+   }
+  ],
+  "road_e": [
+   {
+    "to": "cross_main",
+    "weight": 260.3,
+    "edge": "e003"
+   }
+  ],
+  "A_s": [
+   {
+    "to": "cross_main",
+    "weight": 165.09,
+    "edge": "e004"
+   },
+   {
+    "to": "teachA_gate",
+    "weight": 59.8,
+    "edge": "e005"
+   }
+  ],
+  "teachA_gate": [
+   {
+    "to": "A_s",
+    "weight": 59.8,
+    "edge": "e005"
+   },
+   {
+    "to": "A_w",
+    "weight": 80.1,
+    "edge": "e006"
+   },
+   {
+    "to": "lib_gate",
+    "weight": 160.2,
+    "edge": "e010"
+   }
+  ],
+  "A_w": [
+   {
+    "to": "teachA_gate",
+    "weight": 80.1,
+    "edge": "e006"
+   },
+   {
+    "to": "W1",
+    "weight": 139.6,
+    "edge": "e007"
+   }
+  ],
+  "W1": [
+   {
+    "to": "A_w",
+    "weight": 139.6,
+    "edge": "e007"
+   },
+   {
+    "to": "W2",
+    "weight": 140.2,
+    "edge": "e015"
+   }
+  ],
+  "W2": [
+   {
+    "to": "W1",
+    "weight": 140.2,
+    "edge": "e015"
+   },
+   {
+    "to": "W3",
+    "weight": 100.1,
+    "edge": "e016"
+   }
+  ],
+  "W3": [
+   {
+    "to": "W2",
+    "weight": 100.1,
+    "edge": "e016"
+   },
+   {
+    "to": "W4",
+    "weight": 80.1,
+    "edge": "e017"
+   }
+  ],
+  "W4": [
+   {
+    "to": "W3",
+    "weight": 80.1,
+    "edge": "e017"
+   },
+   {
+    "to": "W5",
+    "weight": 80.1,
+    "edge": "e018"
+   }
+  ],
+  "W5": [
+   {
+    "to": "W4",
+    "weight": 80.1,
+    "edge": "e018"
+   },
+   {
+    "to": "W6",
+    "weight": 140.2,
+    "edge": "e019"
+   }
+  ],
+  "W6": [
+   {
+    "to": "E1",
+    "weight": 139.6,
+    "edge": "e014"
+   },
+   {
+    "to": "W5",
+    "weight": 140.2,
+    "edge": "e019"
+   }
+  ],
+  "lib_gate": [
+   {
+    "to": "cross_main",
+    "weight": 99.7,
+    "edge": "e008"
+   },
+   {
+    "to": "teachA_gate",
+    "weight": 160.2,
+    "edge": "e010"
+   },
+   {
+    "to": "lab_gate",
+    "weight": 160.2,
+    "edge": "e011"
+   }
+  ],
+  "lab_gate": [
+   {
+    "to": "cross_main",
+    "weight": 188.69,
+    "edge": "e009"
+   },
+   {
+    "to": "lib_gate",
+    "weight": 160.2,
+    "edge": "e011"
+   },
+   {
+    "to": "gym_gate",
+    "weight": 80.1,
+    "edge": "e012"
+   }
+  ],
+  "gym_gate": [
+   {
+    "to": "lab_gate",
+    "weight": 80.1,
+    "edge": "e012"
+   },
+   {
+    "to": "E1",
+    "weight": 60.1,
+    "edge": "e013"
+   }
+  ],
+  "E1": [
+   {
+    "to": "gym_gate",
+    "weight": 60.1,
+    "edge": "e013"
+   },
+   {
+    "to": "W6",
+    "weight": 139.6,
+    "edge": "e014"
+   }
+  ]
+ }
+}

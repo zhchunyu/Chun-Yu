@@ -1,0 +1,71 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "south_gate",
+    "to": "cross_main",
+    "name": "校园主干道",
+    "type": "road"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      112.5785,
+      37.42092371541502
+     ],
+     [
+      112.5785,
+      37.422181351060004
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "road_w",
+    "to": "cross_main",
+    "name": "校园主干道",
+    "type": "road"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      112.57555906322484,
+      37.422181351060004
+     ],
+     [
+      112.5785,
+      37.422181351060004
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "cross_main",
+    "to": "road_e",
+    "name": "校园主干道",
+    "type": "road"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      112.5785,
+      37.422181351060004
+     ],
+     [
+      112.58144093677517,
+      37.422181351060004
+     ]
+    ]
+   }
+  }
+ ]
+}

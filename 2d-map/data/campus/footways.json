@@ -1,0 +1,360 @@
+{
+ "format": "campus-plan/1",
+ "unit": "meter",
+ "origin": "原点 (0,0) = 西南角；x 向东、y 向北",
+ "layer": "footways",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "cross_main",
+    "to": "A_s",
+    "name": "中央步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      260.3,
+      139.6
+     ],
+     [
+      100.1,
+      179.5
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "A_s",
+    "to": "teachA_gate",
+    "name": "教学楼A步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      100.1,
+      179.5
+     ],
+     [
+      100.1,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "teachA_gate",
+    "to": "A_w",
+    "name": "教学楼A西侧步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      100.1,
+      239.3
+     ],
+     [
+      20.0,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "A_w",
+    "to": "W1",
+    "name": "西侧步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      20.0,
+      239.3
+     ],
+     [
+      20.0,
+      378.9
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "cross_main",
+    "to": "lib_gate",
+    "name": "图书馆步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      260.3,
+      139.6
+     ],
+     [
+      260.3,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "cross_main",
+    "to": "lab_gate",
+    "name": "实验楼步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      260.3,
+      139.6
+     ],
+     [
+      420.5,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "teachA_gate",
+    "to": "lib_gate",
+    "name": "南侧步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      100.1,
+      239.3
+     ],
+     [
+      260.3,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "lib_gate",
+    "to": "lab_gate",
+    "name": "南侧步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      260.3,
+      239.3
+     ],
+     [
+      420.5,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "lab_gate",
+    "to": "gym_gate",
+    "name": "体育馆步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      420.5,
+      239.3
+     ],
+     [
+      500.6,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "gym_gate",
+    "to": "E1",
+    "name": "东侧步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      500.6,
+      239.3
+     ],
+     [
+      560.7,
+      239.3
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "E1",
+    "to": "W6",
+    "name": "东侧步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      560.7,
+      239.3
+     ],
+     [
+      560.7,
+      378.9
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "W1",
+    "to": "W2",
+    "name": "北部步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      20.0,
+      378.9
+     ],
+     [
+      160.2,
+      378.9
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "W2",
+    "to": "W3",
+    "name": "北部步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      160.2,
+      378.9
+     ],
+     [
+      260.3,
+      378.9
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "W3",
+    "to": "W4",
+    "name": "北部步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      260.3,
+      378.9
+     ],
+     [
+      340.4,
+      378.9
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "W4",
+    "to": "W5",
+    "name": "北部步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      340.4,
+      378.9
+     ],
+     [
+      420.5,
+      378.9
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "from": "W5",
+    "to": "W6",
+    "name": "北部步道",
+    "type": "footway"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      420.5,
+      378.9
+     ],
+     [
+      560.7,
+      378.9
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,191 @@
+/* 方案B 原型样式：全部通过 CSS 控制 SVG 要素外观。
+   这是 SVG 方案相对 Canvas 的核心优势——地图就是 DOM，样式就是 CSS。 */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font: 14px/1.6 "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  color: #e2e8f0;
+  background: #0f172a;
+}
+
+body { display: flex; }
+
+/* ---------------- 侧栏 ---------------- */
+#sidebar {
+  width: 320px;
+  flex: 0 0 320px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 18px 16px 40px;
+  background: #111827;
+  border-right: 1px solid #1f2937;
+}
+
+#sidebar h1 { margin: 0 0 2px; font-size: 20px; letter-spacing: .5px; }
+#sidebar .sub { margin: 0 0 18px; font-size: 12px; color: #64748b; }
+
+.panel {
+  margin-bottom: 18px;
+  padding: 14px;
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+}
+.panel h2 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 1px;
+}
+
+.row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.row label { flex: 0 0 34px; font-size: 13px; color: #94a3b8; }
+.row select {
+  flex: 1;
+  padding: 6px 8px;
+  color: #e2e8f0;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.btns { display: flex; gap: 8px; margin-top: 10px; }
+.btns button {
+  flex: 1;
+  padding: 7px 8px;
+  color: #e2e8f0;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btns button:hover { background: #273449; }
+.btns button.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+.btns button.primary:hover { background: #1d4ed8; }
+
+.result { margin-top: 12px; padding-top: 10px; border-top: 1px dashed #334155; }
+.result.hidden { display: none; }
+.stat { display: flex; justify-content: space-between; font-size: 13px; padding: 2px 0; }
+.stat span { color: #94a3b8; }
+#r-seq { margin: 8px 0 0; padding-left: 20px; font-size: 12px; color: #cbd5e1; }
+#r-seq li { padding: 1px 0; }
+
+.msg { margin: 10px 0 0; font-size: 12px; color: #f59e0b; min-height: 18px; }
+.msg.ok { color: #4ade80; }
+
+.tips { margin: 0; padding-left: 18px; font-size: 12px; color: #94a3b8; }
+.tips li { padding: 2px 0; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font-size: 12px; color: #cbd5e1; }
+.legend li { display: flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 10px; border-radius: 2px; display: inline-block; }
+.sw.building { background: #cbd5e1; }
+.sw.field { background: #bbf7d0; }
+.sw.road { background: #64748b; }
+.sw.footway { background: #16a34a; }
+.sw.node { background: #2563eb; border-radius: 50%; width: 10px; height: 10px; }
+.sw.route { background: #f97316; }
+
+/* ---------------- 地图区 ---------------- */
+#stage { flex: 1; height: 100vh; background: #0b1220; overflow: hidden; }
+#map { width: 100%; height: 100%; display: block; cursor: grab; --s: 1; }
+#map.grabbing { cursor: grabbing; }
+.no-pointer { pointer-events: none; }
+
+/* --s 由 app.js 按 viewBox 宽度写入（1 = 全景）。
+   字号/描边都用它反向缩放，于是屏幕上的文字尺寸恒定，放大不会糊满屏。 */
+
+/* ---------------- SVG 要素样式（方案B 的定制入口） ---------------- */
+.building {
+  fill: #cbd5e1;
+  fill-opacity: .72;
+  stroke: #94a3b8;
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;   /* 缩放时线宽不变，始终清晰 */
+}
+.building[data-type="体育"] { fill: #bbf7d0; stroke: #4ade80; }
+.building[data-type="生活"] { fill: #fde68a; stroke: #f59e0b; }
+/* kind=ground 是面状设施（操场/广场），不是可挤出的体块，3D 里高度为 0 */
+.building[data-kind="ground"] {
+  fill: #14532d;
+  fill-opacity: .5;
+  stroke: #4ade80;
+  stroke-dasharray: 10 8;
+}
+.building.hole { fill: #0b1220; stroke: none; }
+
+.bld-label {
+  font-size: calc(var(--s) * 10px);
+  fill: #1e293b;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: #f1f5f9;
+  stroke-width: calc(var(--s) * 3px);
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.road {
+  fill: none;
+  stroke: #64748b;
+  stroke-width: 13;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.footway {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 6;
+  stroke-dasharray: 14 12;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.node { cursor: pointer; }
+.node circle {
+  fill: #2563eb;
+  stroke: #fff;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+  transition: r .12s ease;
+}
+.node:hover circle { fill: #3b82f6; r: 9; }
+.node.is-start circle { fill: #22c55e; }
+.node.is-end circle { fill: #ef4444; }
+
+.node-label {
+  font-size: calc(var(--s) * 9px);
+  fill: #e2e8f0;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #0b1220;
+  stroke-width: calc(var(--s) * 3px);
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity .12s ease;
+  pointer-events: none;
+}
+.node:hover .node-label,
+.node.is-start .node-label,
+.node.is-end .node-label { opacity: 1; }
+
+.route-line {
+  fill: none;
+  stroke: #f97316;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.route-pin { stroke: #fff; stroke-width: 3; vector-effect: non-scaling-stroke; }
+.route-pin.start { fill: #22c55e; }
+.route-pin.end { fill: #ef4444; }
