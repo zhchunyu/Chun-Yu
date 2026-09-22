@@ -277,7 +277,31 @@ def upload_blob(mode, sha, path, cache):
     return got
 
 
-def push_stage(stage, dry_run=False, probe=0):
+def local_head_message():
+    """读本地 HEAD 的提交信息。读不到返回 None（退回硬编码文案）。"""
+    try:
+        p = subprocess.run(['git', 'log', '-1', '--format=%B'], cwd=WS,
+                           capture_output=True, text=True, encoding='utf-8', timeout=20)
+        if p.returncode == 0 and p.stdout.strip():
+            return p.stdout.strip()
+    except Exception as e:
+        log('   读取本地提交信息失败：%s' % e)
+    return None
+
+
+def get_remote_parents():
+    """取远端当前 head 提交的 parents —— 用于 --amend：新提交直接接在**祖父**上，
+    等于把刚推错的那一条替换掉（tree 不变，只改提交信息）。"""
+    sha = get_ref_sha()
+    if not sha:
+        return []
+    r = SESSION.get('%s/repos/%s/git/commits/%s' % (API, REPO, sha), timeout=60)
+    if r.status_code != 200:
+        return []
+    return [p['sha'] for p in r.json().get('parents', [])]
+
+
+def push_stage(stage, dry_run=False, probe=0, message_override=None, amend=False):
     global _done_blobs, _total_blobs, _uploaded_bytes
     entries = list_tree('HEAD')
     light = [e for e in entries if not e[2].endswith('.blend')]
@@ -289,6 +313,18 @@ def push_stage(stage, dry_run=False, probe=0):
         todo, message, base = blend, MSG_BLEND, 'prev'
     else:
         todo, message, base = light + blend, MSG_LIGHT + '\n' + MSG_BLEND, None
+
+    # ★ 提交信息默认取**本地 HEAD 的提交信息**（`git log -1 --format=%B`），
+    #   只有本地拿不到时才退回上面那两条硬编码文案。
+    #   否则会出现"本地写了一条准确的提交信息，推上去却变成另一条"的情况 ——
+    #   Git Data API 建的是**新的 commit 对象**，不会继承本地那条。
+    if message_override:
+        message = message_override
+    else:
+        local_msg = local_head_message()
+        if local_msg:
+            message = local_msg
+            log('   提交信息取自本地 HEAD（%d 字符）' % len(local_msg))
 
     if probe:
         # 冒烟测试：只上传前 N 个文件的 blob，不建 tree/commit —— 用来验证网络与鉴权通路
@@ -342,7 +378,12 @@ def push_stage(stage, dry_run=False, probe=0):
 
     # ---- 3) commit
     remote_sha = get_ref_sha()
-    if base == 'prev':
+    if amend:
+        # 用远端 head 的父提交当 parent ⇒ 新提交**替换**掉刚推的那条（非快进，需 force）
+        parents = get_remote_parents()
+        log('   ⚠ --amend：将以 %s 为 parent，强制替换远端 %s'
+            % ([p[:12] for p in parents], remote_sha[:12] if remote_sha else '(无)'))
+    elif base == 'prev':
         parents = [state['commit_sha']]
     elif remote_sha:
         parents = [remote_sha]          # 远端已有历史 → 线性接上，不丢初始提交
@@ -357,8 +398,9 @@ def push_stage(stage, dry_run=False, probe=0):
 
     # ---- 4) ref
     if remote_sha:
-        api('PATCH', '/repos/%s/git/refs/heads/%s' % (REPO, BRANCH), json={'sha': commit_sha, 'force': False})
-        log('   refs/heads/%s 已更新' % BRANCH)
+        api('PATCH', '/repos/%s/git/refs/heads/%s' % (REPO, BRANCH),
+            json={'sha': commit_sha, 'force': bool(amend)})
+        log('   refs/heads/%s 已更新%s' % (BRANCH, '（force）' if amend else ''))
     else:
         api('POST', '/repos/%s/git/refs' % REPO, json={'ref': 'refs/heads/%s' % BRANCH, 'sha': commit_sha})
         log('   refs/heads/%s 已创建' % BRANCH)
@@ -372,9 +414,16 @@ def main():
     ap.add_argument('--stage', choices=['light', 'blend', 'all'], required=True)
     ap.add_argument('--dry-run', action='store_true')
     ap.add_argument('--probe', type=int, default=0, help='只上传前 N 个 blob 做冒烟测试，不建提交')
+    ap.add_argument('--message-file', help='提交信息取自该文件（默认取本地 HEAD 的提交信息）')
+    ap.add_argument('--amend', action='store_true',
+                    help='替换远端当前 head（parent 取祖父提交），用于修正刚推的提交信息；会 force 更新 ref')
     a = ap.parse_args()
+    msg = None
+    if a.message_file:
+        with open(a.message_file, encoding='utf-8') as fh:
+            msg = fh.read().strip()
     log('仓库 %s ｜ 分支 %s ｜ 工作区 %s' % (REPO, BRANCH, WS))
-    push_stage(a.stage, a.dry_run, a.probe)
+    push_stage(a.stage, a.dry_run, a.probe, message_override=msg, amend=a.amend)
 
 
 if __name__ == '__main__':

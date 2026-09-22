@@ -52,6 +52,8 @@ INDEX = """<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>山河大学 · 三维建模成果</title>
+<!-- 内联 favicon：避免浏览器请求 /favicon.ico 拿到 404（控制台会报一条无意义的错） -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232B2E33'/%3E%3Cpath d='M5 23 L12.5 12 L17.5 18 L21.5 13.5 L27 23 Z' fill='%23C9A87C'/%3E%3C/svg%3E">
 <style>
   :root{--ink:#2B2E33;--paper:#F4F2EE;--card:#fff;--line:#D8D4CC;
         --sub:#6C6862;--wood:#C9A87C;--copper:#B07B45;}

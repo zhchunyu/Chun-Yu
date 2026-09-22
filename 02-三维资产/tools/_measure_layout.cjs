@@ -48,6 +48,15 @@ const EXE = process.env.BR_EDGE ||
 
   const r = await page.evaluate((vw) => {
     const de = document.documentElement;
+    // 元素自身不滚动、但**祖先**在滚动时，它超宽是正常的（典型的 `.tw{overflow-x:auto}` 包宽表格）。
+    // ★ 只比自身 scrollWidth/clientWidth 会把这种误判成"溢出"。
+    const inScroller = (el) => {
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        const ox = getComputedStyle(p).overflowX;
+        if ((ox === 'auto' || ox === 'scroll' || ox === 'hidden') && p.clientWidth < el.scrollWidth) return true;
+      }
+      return false;
+    };
     const over = [];
     for (const el of document.querySelectorAll('body *')) {
       const b = el.getBoundingClientRect();
@@ -56,7 +65,8 @@ const EXE = process.env.BR_EDGE ||
           tag: el.tagName.toLowerCase(),
           cls: (el.className || '').toString().slice(0, 40),
           w: Math.round(b.width), left: Math.round(b.left), right: Math.round(b.right),
-          scrollW: el.scrollWidth, clientW: el.clientWidth,
+          selfScroll: el.scrollWidth > el.clientWidth + 1,
+          clipped: inScroller(el),
           txt: (el.textContent || '').trim().slice(0, 24),
         });
       }
@@ -65,6 +75,7 @@ const EXE = process.env.BR_EDGE ||
       vw, scrollW: de.scrollWidth, clientW: de.clientWidth,
       bodyScrollW: document.body.scrollWidth,
       over: over.slice(0, 25), overCount: over.length,
+      realOver: over.filter(o => !o.selfScroll && !o.clipped).length,
     };
   }, W);
 
@@ -73,15 +84,13 @@ const EXE = process.env.BR_EDGE ||
   console.log(r.scrollW > r.clientW
     ? '✗ 存在横向溢出（页面可左右滚动）'
     : '✓ 无横向溢出');
-  console.log('比视口宽的元素 %d 个（**在可横向滚动的容器里是正常的**，见下表）:', r.overCount);
+  console.log('比视口宽的元素 %d 个，其中**真溢出** %d 个（其余在可滚动容器内，属正常）:',
+    r.overCount, r.realOver);
   for (const o of r.over) {
-    const inScroller = o.scrollW > o.clientW + 1;
-    console.log('   %s %s  w=%d left=%d right=%d  %s | %s',
-      inScroller ? '[可滚动]' : '[!溢出]',
-      (o.tag + (o.cls ? '.' + o.cls : '')).padEnd(28),
-      o.w, o.left, o.right,
-      inScroller ? 'scrollW=' + o.scrollW + ' clientW=' + o.clientW : '—',
-      o.txt.replace(/\s+/g, ' '));
+    const why = o.selfScroll ? '[自身可滚动]' : (o.clipped ? '[被父级裁切]' : '[!真溢出]');
+    console.log('   %s %s  w=%d left=%d right=%d | %s',
+      why, (o.tag + (o.cls ? '.' + o.cls : '')).padEnd(28),
+      o.w, o.left, o.right, o.txt.replace(/\s+/g, ' '));
   }
   await browser.close();
 })();
