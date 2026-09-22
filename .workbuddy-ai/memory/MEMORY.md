@@ -19,7 +19,11 @@
 - 交付层 `02-三维资产/建模图集/`（桌面打印版 + **单文件手机版** 1.9 MB base64 内嵌 + `选图清单.md`）
   ★ **总览 = 对照页（内部，讲改了什么）／图集 = 陈列页（对外，讲设计是什么）**
 - ★★ **HTML 交付物必须自包含**：相对路径 + 中文文件名 = 换设备就缺图（已实测手机全裂）
-- **GitHub 推送 + 公网部署已完成**（见 §3）；下一步 = `06-竞赛材料` 的方案 PDF / 视频 / PPT 正文（守 §0）
+- **GitHub 推送 + 公网部署已完成**（详见当日日志）；下一步 = `06-竞赛材料` 的方案 PDF / 视频 / PPT 正文（守 §0）
+- ★ **远程仓库**：`https://github.com/zhchunyu/Chun-Yu`（**private**），交付分支 **`main`**；
+  另有旧分支 `feat/2d-map-initial`。`.blend` 工程走 Release（tag **`blend-projects`**，24 个 / 1112.4 MB）
+- ★ **公网地址**：`https://2cb735b0c4814c359bab62cc039d9c7a.sg2.agentos-app.run`
+  （`workbuddy_sites_deploy` 发布 `02-三维资产/site/`，同一目录重发**链接不变**）
 
 ## 3 环境与网络（★ 2026-09-21 实测修正）
 - **无头渲染一律用便携版** `C:/Users/31967/Blender/blender-4.5.9-windows-x64/blender.exe`（MSIX 5.2.2 不能命令行调用）
