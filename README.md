@@ -143,16 +143,61 @@ C 端应用（Web / 小程序 / 桌面）
 
 ---
 
-## 六、待办（人工步骤）
+## 六、交付与发布
+
+### 在线访问（公网）
+
+**https://2cb735b0c4814c359bab62cc039d9c7a.sg2.agentos-app.run**
+
+静态站点，内容 = `02-三维资产/site/`（由 `tools/make_site.py` 生成，约 17 MB）：
+
+| 页面 | 内容 |
+| --- | --- |
+| `/` | 入口页（链接中枢 + 成果指标） |
+| `/preview.html` | **全园 3D 预览**（three.js + GLB，112 万面，7 个机位预设） |
+| `/建模图集/山河大学_三维建模图集.html` | 三维建模图集（五章，A4 横向可打印成 PDF） |
+| `/建模图集/…_手机版.html` | 图集单文件版（图片内嵌，可离线） |
+| `/renders/总览_R0-R6.html` | 分阶段改动对照 + A/B 量化 |
+
+> ★ 同一目录**重新发布链接不变**，更新内容不必换链接。
+> ★ 站点用**中文文件名的百分号编码相对路径**引用图片 —— 已实测线上 24/24、81/81 图片正常加载。
+
+### 代码仓库
+
+**https://github.com/zhchunyu/Chun-Yu**（**私有**）｜ 交付分支 **`main`**
+
+| 内容 | 位置 |
+| --- | --- |
+| 全部源文件（711 个 / 533 MB） | 仓库树 |
+| Blender 工程文件（24 个 / 1112 MB） | **Release** `blend-projects`（见下） |
+
+> ★ **`.blend` 为什么走 Release 而不是仓库树**：GitHub API 的 blob 端点有**单请求体积**限制
+> （实测 34 MB 通过 / 40 MB 起 `422 too large`，与"单文件 100 MB"的名义上限无关）。
+> 24 个 `.blend` 里 16 个过不去 ⇒ 改以 Release 资产分发（走 `uploads.github.com`，
+> 原始字节直传，单资产上限 2 GB）。
+> 下载页：`https://github.com/zhchunyu/Chun-Yu/releases/tag/blend-projects`
+
+> ★ **本机 `git push` 走不通**：代理按域名拦截，`github.com` 返回 `CONNECT 502`，
+> 但 `api.github.com` 可达 ⇒ 推送改走 **Git Data API**（`tools/push_via_api.py`，
+> blobs → tree → commit → ref，含 blob 缓存续传与 SHA 校验）。
+
+---
+
+## 七、待办（人工步骤）
 
 - [x] 安装 Blender（已有 Store 版 5.2.2）
 - [x] 安装 MCP 插件到 Blender 插件目录
 - [ ] **在 Blender 中启用插件**：`Edit → Preferences → Add-ons` → 搜索 `MCP for Blender` → 勾选启用
 - [ ] **启动服务**：3D 视口按 `N` → **MCP for Blender** 标签 → 点击 **Start MCP Server**
 - [ ] 连接器管理页「信任」`blender` 服务
-- [ ] 在 `01-产品设计/` 中补齐需求与用户画像
+- [x] 在 `01-产品设计/` 中补齐需求与用户画像
 - [ ] 确定技术栈并初始化 `04-应用开发/`
+- [ ] `06-竞赛材料/`：作品简介 / 方案书 PDF / 演示视频 / 答辩 PPT / 佐证材料 / 网盘链接
+      （★ 建模层面的取图入口见 `06-竞赛材料/README.md` 与 `02-三维资产/建模图集/选图清单.md`）
+
+> ★ **无头渲染用便携版** `C:\Users\31967\Blender\blender-4.5.9-windows-x64\blender.exe` ——
+> Store（MSIX）版**无法从命令行调用**，只适合手动开界面。
 
 ---
 
-*最后更新：2026-09-19*
+*最后更新：2026-09-22*
