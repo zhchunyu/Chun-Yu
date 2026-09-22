@@ -112,6 +112,14 @@ def get_or_create_release():
 
 
 def existing_assets(rel_id):
+    """返回 {name: {'id':…, 'size':…, 'state':…}}。
+
+    ★ 必须连 `state` 一起取 —— 只比 size 会把**上传中断的残缺资产**当成已完成：
+      Release 资产上传被打断时会留下一条 `state == "starter"` 的记录，
+      它的 `size` 字段仍然等于**目标大小**（实测 archfix_r4.blend：
+      本地 50609801 / 远端 size 50609801 / state starter）。
+      ⇒ 只判 size 会永久跳过它，仓库里留下一个下不下来的坏文件。
+    """
     out, page = {}, 1
     while True:
         r = S.get('%s/repos/%s/releases/%s/assets?per_page=100&page=%d' % (API, REPO, rel_id, page), timeout=60)
@@ -120,9 +128,14 @@ def existing_assets(rel_id):
         if not data:
             break
         for a in data:
-            out[a['name']] = a['size']
+            out[a['name']] = {'id': a['id'], 'size': a['size'], 'state': a['state']}
         page += 1
     return out
+
+
+def delete_asset(asset_id):
+    r = S.delete('%s/repos/%s/releases/assets/%d' % (API, REPO, asset_id), timeout=60)
+    return r.status_code in (204, 404)
 
 
 def main():
@@ -148,10 +161,16 @@ def main():
     t0 = time.time()
     for i, (size, path) in enumerate(files, 1):
         name = asset_name(os.path.basename(path))
-        if have.get(name) == size:
+        prev = have.get(name)
+        if prev and prev['size'] == size and prev['state'] == 'uploaded':
             done_bytes += size
             log('   [%2d/%d] %-40s 已存在，跳过' % (i, len(files), name))
             continue
+        if prev:
+            # 存在但不可用（残缺 / 大小不符）⇒ 必须先删掉，否则同名上传会被拒
+            log('   [%2d/%d] %-40s 已有残留（state=%s, size=%s）→ 删除后重传'
+                % (i, len(files), name, prev['state'], prev['size']))
+            delete_asset(prev['id'])
         url = '%s/repos/%s/releases/%s/assets' % (UPLOAD, REPO, rel['id'])
         t1 = time.time()
         # ★ 资产上传会撞上 GitHub 的"滥用检测"限流：HTTP 400
