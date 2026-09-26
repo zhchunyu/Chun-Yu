@@ -13,7 +13,11 @@
          山河大学_三维建模图集_手机版.html ← 单文件，原样复制
        preview.html + src/ + serve.cmd + vendor/ + assets/campus.glb
                                        ← 3D 全园预览（three.js + GLB）
+                                          src/preview.js            （页面主逻辑）
+                                          src/navigation.campus.js  （AI 导航 / 路径特效）
                                           serve.cmd = 本地起静态服务的双击脚本
+   ★ src/ 下**只允许**上面这两个 .js —— 脚本会把不在清单里的 .js 当孤儿清掉，
+     因为 `site/` 是产物，手工放进去的文件会在下一次构建时变成"新旧混搭"。
 
 为什么不能直接部署 `02-三维资产/`：
   该目录 **1.9 GB**，其中 `blender/projects/*.blend` 占 1.2 GB —— 都是**可由脚本重新生成**
@@ -108,8 +112,9 @@ INDEX = """<!DOCTYPE html>
   <a class="card" href="./preview.html">
     <span class="tag">交互</span>
     <h3>全园 3D 预览</h3>
-    <p>浏览器里直接浏览 153 万面的全园模型，含 7 个机位预设。
-       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位。<br>
+    <p>浏览器里直接浏览 153 万面的全园模型，含 7 个机位预设，以及
+       <b>AI 智能导航</b>（选起终点或直接说人话）。<br>
+       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位、点击建筑看名称。<br>
        <span style="color:#B07B45">★ 必须通过 http(s) 打开；本地请双击 <code>serve.cmd</code>，
        不要直接双击 HTML 文件。</span></p>
   </a>
@@ -152,6 +157,8 @@ METRICS = [
     ('渲染引擎', 'Cycles · Khronos PBR Neutral', 'sun 38° / strength 5.8 · 天空 0.66 · 雾密度 1.2e-5'),
     ('全园模型', '2,317,949 面', '393 对象 · 72 材质（导出前，r6 定版）'),
     ('GLB 交付', '5.70 MB', '1,535,187 面 · 54 材质 · Draco 压缩 · 剔除 Haze 与 7 个未引用材质'),
+    ('预览每帧', '1,535,669 面 / 405 call', '阴影只算一次（太阳与几何均静止）· 原为 3,070,710 面 / 788 call'),
+    ('画质分级', 'high / balanced / perf', '?quality= 切换；另有 ?dpr= ?shadow= ?aa= ?adapt= 单项覆盖'),
     ('智慧环廊', '1631.9 m', '沿 18 顶点折线，绕案山不跨案山，沿线 15 处垂直交通'),
     ('滨水挑台', '2618.7 m', '连续可上人岸线，常态外挑出水 3.0 m'),
     ('垂直书院', '93.00 m', '基座 42 × 42 × 11.25 + 塔身 9 层 × 7.40（塔 / 楼 = 2.04）'),
@@ -265,8 +272,38 @@ def main():
     # ---- 4. 3D 预览（three.js + GLB）----
     shutil.copy2(os.path.join(WEB, 'preview.html'), os.path.join(SITE, 'preview.html'))
     os.makedirs(os.path.join(SITE, 'src'), exist_ok=True)
-    shutil.copy2(os.path.join(WEB, 'src', 'preview.js'),
-                 os.path.join(SITE, 'src', 'preview.js'))
+    # ★★ `src/` 下要拷**全部**被 preview.html 直接/间接引用的模块（2026-09-26 修）
+    #   原脚本只拷了 `preview.js`，而 `preview.js` 里是
+    #     `import { … } from './navigation.campus.js'`
+    #   ⇒ 只拷 preview.js、不拷 navigation.campus.js，线上必然 404，
+    #     而 ES module 的 404 会让**整个脚本不执行** —— 页面只剩一个转圈的遮罩。
+    #   另外这里会**清掉 src/ 里不在清单内的 .js**：
+    #     `site/` 是产物，历史上有人手工往里放过文件（旧版 navigation.js 就是这样
+    #     进去的）。不清的话，重跑一次构建就会留下"新 preview.js + 旧 navigation.js"
+    #     这种孤儿组合，排查起来极其费时。
+    SRC_FILES = ('preview.js', 'navigation.campus.js', 'events.js')
+    for _f in SRC_FILES:
+        _s = os.path.join(WEB, 'src', _f)
+        if os.path.exists(_s):
+            shutil.copy2(_s, os.path.join(SITE, 'src', _f))
+        else:
+            print('[site] ⚠ 缺少 web-demo/src/%s —— 3D 预览页会 404！' % _f)
+    for _f in sorted(os.listdir(os.path.join(SITE, 'src'))):
+        if _f.endswith('.js') and _f not in SRC_FILES:
+            os.remove(os.path.join(SITE, 'src', _f))
+            print('[site] 清掉 src/ 里的孤儿脚本：%s' % _f)
+    # ★★ 兼容垫片：删了还要写回一份同名文件（2026-09-26 加，安全相关，别删这段）
+    #   为什么：线上沙箱是**覆盖解压**，不是镜像同步 —— 本地删掉的文件
+    #   **不会从沙箱里消失**。旧版 `site/src/navigation.js` 里硬编码过一个真实
+    #   API Key，本地删除后它**仍然在公网可读**（实测 200 / 45,049 B，命中 sk- 一处）。
+    #   ⇒ 唯一的清法是用同名文件把它**覆盖**掉。本垫片只做转发，不含任何密钥。
+    _stub = os.path.join(SITE, 'src', 'navigation.js')
+    with open(_stub, 'w', encoding='utf-8') as _fh:
+        _fh.write('// 兼容垫片：实现已更名为 navigation.campus.js\n'
+                  '// 保留本文件只为覆盖早期部署遗留的同名旧脚本（其中曾含硬编码 API Key）。\n'
+                  '// ★ 任何情况下都不要在这里写密钥。\n'
+                  "export * from './navigation.campus.js';\n")
+    print('[site] 兼容垫片 src/navigation.js（覆盖线上遗留的旧脚本）')
     # ★ serve.cmd：本地起静态服务的双击脚本（2026-09-25 加）。
     #   为什么站点里要带它：preview.html 的脚本是 ES module，`file://` 下会被
     #   CORS 拒绝 ⇒ 双击 index.html 打开的人会看到 3D 预览"永远转圈"。
@@ -283,7 +320,8 @@ def main():
         if os.path.isdir(t):
             shutil.rmtree(t)
         shutil.copytree(s, t)
-    print('[site] 3D 预览：preview.html + src/preview.js + serve.cmd + vendor/ + assets/campus.glb')
+    print('[site] 3D 预览：preview.html + src/{preview.js, navigation.campus.js} '
+          '+ serve.cmd + vendor/ + assets/campus.glb')
 
     # ---- 5. 入口页 ----
     rows = '\n  '.join('<tr><td class="k">%s</td><td class="v">%s</td><td>%s</td></tr>' % m

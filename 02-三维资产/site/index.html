@@ -56,8 +56,9 @@
   <a class="card" href="./preview.html">
     <span class="tag">交互</span>
     <h3>全园 3D 预览</h3>
-    <p>浏览器里直接浏览 153 万面的全园模型，含 7 个机位预设。
-       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位。<br>
+    <p>浏览器里直接浏览 153 万面的全园模型，含 7 个机位预设，以及
+       <b>AI 智能导航</b>（选起终点或直接说人话）。<br>
+       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位、点击建筑看名称。<br>
        <span style="color:#B07B45">★ 必须通过 http(s) 打开；本地请双击 <code>serve.cmd</code>，
        不要直接双击 HTML 文件。</span></p>
   </a>
@@ -86,6 +87,8 @@
   <tr><td class="k">渲染引擎</td><td class="v">Cycles · Khronos PBR Neutral</td><td>sun 38° / strength 5.8 · 天空 0.66 · 雾密度 1.2e-5</td></tr>
   <tr><td class="k">全园模型</td><td class="v">2,317,949 面</td><td>393 对象 · 72 材质（导出前，r6 定版）</td></tr>
   <tr><td class="k">GLB 交付</td><td class="v">5.70 MB</td><td>1,535,187 面 · 54 材质 · Draco 压缩 · 剔除 Haze 与 7 个未引用材质</td></tr>
+  <tr><td class="k">预览每帧</td><td class="v">1,535,669 面 / 405 call</td><td>阴影只算一次（太阳与几何均静止）· 原为 3,070,710 面 / 788 call</td></tr>
+  <tr><td class="k">画质分级</td><td class="v">high / balanced / perf</td><td>?quality= 切换；另有 ?dpr= ?shadow= ?aa= ?adapt= 单项覆盖</td></tr>
   <tr><td class="k">智慧环廊</td><td class="v">1631.9 m</td><td>沿 18 顶点折线，绕案山不跨案山，沿线 15 处垂直交通</td></tr>
   <tr><td class="k">滨水挑台</td><td class="v">2618.7 m</td><td>连续可上人岸线，常态外挑出水 3.0 m</td></tr>
   <tr><td class="k">垂直书院</td><td class="v">93.00 m</td><td>基座 42 × 42 × 11.25 + 塔身 9 层 × 7.40（塔 / 楼 = 2.04）</td></tr>
