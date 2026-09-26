@@ -1,4 +1,4 @@
-"""全园配色重标 V2.4 —— **共享模块，所有阶段共用一份**。
+"""全园配色重标 V2.6 —— **共享模块，所有阶段共用一份**。
 
 作为 `build_extra` 的**最后一项**执行（必须在所有阶段脚本之后，
 因为要改的材质分散在 site / stage1-3 / r0~r5 各处）。
@@ -64,9 +64,75 @@ import os
 
 import bpy
 
-_RETUNE_VER = 'V2.4'
+_RETUNE_VER = 'V2.6'
+# ★ V2.6（2026-09-26，S4-d）：**屋面按分区分色**（V3 §3.4）——
+#   蓝灰钛锌 → **暖灰**（教学 / 科研实验 / 生活 / 中轴）+ **铜绿**（科技 / 运动）。
+#   ★★ 顺带修掉一个**一直没人发现的静默失效**：
+#     本工程有两个"钛锌"材质 —— `M_钛锌屋面板`（r0 建，**只有 1 个对象**在用）
+#     与 `M_钛锌板`（r1 起把全局 `M_ZINC` **重绑**成这个名字，**32 个对象**在用）。
+#     V2.4 的配色表**只写了前者** ⇒ 整个第五立面（32 个屋面）从来没被重标过，
+#     基色一直是建材质时的原始蓝灰 (0.172,0.180,0.190)、金属度一直是 **0.42**。
+#     后果：屋面在鸟瞰里仍是一大片"照天的镜子"；而所有针对"屋面"的调色实验
+#     其实都做在了那**唯一一个**对象上 —— 于是"把 metallic 压到 0.15 成图几乎没变"
+#     这个结论本身就是错的（见 skill「材质名对不上 = 静默失效」）。
+# ★ V2.5（2026-09-24）：草坪/林地/土丘草**提高饱和度、略压亮度**。
+#   依据是**从实景参考图实测**出来的，不是凭感觉：
+#     参考图草地 sRGB (54,105,4) → 线性 (0.037, 0.141, 0.001)
+#       亮度 0.109 / 饱和度 0.991
+#     改前 M_草地 线性 (0.112,0.172,0.068) → 亮度 0.152 / 饱和度 0.605
+#   ⇒ 关键认知：参考图的草**更饱和但更暗** —— 鲜亮感来自**饱和度**，不是亮度。
+#     所以这里是把绿通道提上去、蓝通道压下去，总亮度反而略降。
+#     改后 M_草地 (0.072,0.185,0.026) → 亮度 0.150 / 饱和度 0.859
+#   ★ 代价：整园绿色都变了，**现有 63 张成图全部作废，需整批重渲**。
 # 是否处理"Base Color 被连线"的材质。默认处理；置 0 退回 V2.3 的旧行为。
 _MODE_LINKED = os.environ.get('BR_PALETTE_LINKED', '1') != '0'
+
+# ★ A/B 开关：`BR_GRASS_V24=1` 退回 V2.4 的**旧绿值**（草地/林地/土丘草）。
+#   只为"改前 vs 改后"同机位量化对照 —— 交付一律用默认（V2.5）。
+#   理由：V2.5 动的是全园绿色，若不设开关就只能靠"翻 git 改回来再渲一遍"，
+#   那种做法迟早会把交付版留在错误的一侧（本项目"静默失效"的第 N 种形态）。
+_GRASS_V24 = os.environ.get('BR_GRASS_V24', '0') == '1'
+
+# ★ A/B 开关：`BR_ROOF_V2=1` 退回 V2.5 的**旧屋面**（蓝灰钛锌 0.172/0.180/0.190 +
+#   金属度 0.42 + 不按分区区分）。同样只为同机位量化对照，交付一律用默认。
+_ROOF_V2 = os.environ.get('BR_ROOF_V2', '0') == '1'
+
+# ---- S4-d 屋面三色（线性 RGB）----
+#   ★★ 色值怎么定的 —— 不是"挑个好看的"，是**先定关系再定数字**：
+#     V2.4 定过一条：**屋面是全园最深的一档**（鸟瞰里屋面占 ~26% 的画面，
+#     压到墙之下才不抢画面、才读得出体量）。S4-d 只该改**色相**（蓝灰 → 暖灰/铜绿），
+#     **不该顺手把明度也提上去**。
+#     第一版就踩了这个坑：暖灰给到 (0.216,0.188,0.150)（sRGB 128,120,108）——
+#     单看是"暖灰"，但 `metallic 0.42 → 0.10` 之后屋面从"反射天光的镜面"
+#     变成"纯漫反射"，**水平面吃满天光 ⇒ 成图反而比改前更亮**，
+#     3× 放大一对比，屋面已经和近白的墙体拉不开（体量读平了）。
+#   ⇒ 定案按"**明度对齐旧屋面、只换色相**"来给：
+#       旧蓝灰 (0.172,0.180,0.190) 的相对亮度 = 0.179
+#       暖灰 (0.155,0.136,0.112)   = 0.146   （略压一档，补掉漫反射提亮）
+#       铜绿 (0.085,0.172,0.144)   = 0.150
+#     sRGB 分别 ≈ (110,103,93) 与 (82,115,106)。
+#   ★ 铜绿：**蓝通道必须给足**（0.144 vs 草地的 0.026）——
+#     否则会和满园的草坪绿混成一片；但也别给成"湖蓝"，那是另一回事。
+#   ★ 旧蓝灰：仅 A/B 用。
+_ROOF_WARM = (0.155, 0.136, 0.112)
+_ROOF_COPPER = (0.085, 0.172, 0.144)
+_ROOF_OLD = (0.172, 0.180, 0.190)
+#   金属度 0.42 → 0.10、粗度 0.58 → 0.78：钛锌原先是**镜面金属**，
+#   屋面接近水平，掠射角下反射的正是蓝天 —— 鸟瞰里近 40% 的画面是屋面，
+#   等于把天铺了一地。（这一条 V2.4 写过，但当时只落到那 1 个对象上，等于没做。）
+_ROOF_RG, _ROOF_MT = 0.78, 0.10
+_COPPER_ZONES = ('BLD_科技_', 'BLD_运动_', 'R5_运动_')
+
+# 三档绿：草地 / 林地（树下与坡地）/ 土丘草（案山等土丘顶面）
+_GRASS = (
+    ('M_草地',   (0.112, 0.172, 0.068), 0.93, None),   # V2.4 旧值
+    ('M_林地',   (0.074, 0.124, 0.050), 0.95, None),
+    ('M_土丘草', (0.124, 0.180, 0.076), 0.92, None),
+) if _GRASS_V24 else (
+    ('M_草地',   (0.072, 0.185, 0.026), 0.93, None),   # V2.5 新值
+    ('M_林地',   (0.048, 0.132, 0.016), 0.95, None),
+    ('M_土丘草', (0.080, 0.196, 0.032), 0.92, None),
+)
 
 _RETUNE = (
     # ---- 亮场：实墙（V2.2 的 0.330 偏中性，这里再暖一档）----
@@ -80,14 +146,10 @@ _RETUNE = (
     ('M_竹木格栅',   (0.455, 0.278, 0.135), 0.72, None),
     ('M_胶合木',     (0.372, 0.218, 0.098), 0.68, None),
     ('M_铜饰',       (0.520, 0.300, 0.120), 0.30, 1.0),
-    # ---- 屋面：★ 全园最深的一档。
-    #  两个数字都是为"第五立面"服务的：
-    #   · metallic 0.60 → 0.10：钛锌原先是镜面金属，反射的正是蓝天 ——
-    #     鸟瞰里近 40% 的画面是屋面，等于把天铺了一地。
-    #   · roughness 0.58 → 0.80：**光压金属度不够**。屋面接近水平，
-    #     掠射角下菲涅耳反射仍然很强，粗度不提上去，压了金属度也没用 ——
-    #     实测把 metallic 从 0.60 压到 0.15 后成图几乎没变，就是这个原因。
-    ('M_钛锌屋面板', (0.126, 0.122, 0.114), 0.80, 0.10),
+    # ---- 屋面：★ **不在本表里** —— 见文件末尾「S4-d 屋面分区分色」一节。
+    #   V2.4 的教训就写在那里：本表原先只写了 `M_钛锌屋面板`（**只有 1 个对象**在用），
+    #   而真正的第五立面是 `M_钛锌板`（**32 个对象**）—— 漏标，且不报错。
+    #   ★ 定义只许有一处：屋面的一切色值 / 粗糙度 / 金属度都归那一节。
     # ---- 地面：中间调 ----
     ('M_广场铺装',   (0.252, 0.242, 0.222), 0.76, None),
     ('M_庭院铺装',   (0.215, 0.203, 0.183), 0.90, None),
@@ -96,9 +158,7 @@ _RETUNE = (
     ('M_驳岸石',     (0.232, 0.222, 0.204), 0.90, None),
     ('M_桥面',       (0.258, 0.252, 0.240), 0.74, None),
     ('M_水',         (0.075, 0.122, 0.140), 0.090, None),
-    ('M_草地',       (0.112, 0.172, 0.068), 0.93, None),
-    ('M_林地',       (0.074, 0.124, 0.050), 0.95, None),
-    ('M_土丘草',     (0.124, 0.180, 0.076), 0.92, None),
+) + _GRASS + (
     # ---- 分区铺装：统一压到 0.22 档，靠色相（而非明度）区分七区 ----
     ('M_区_人文',    (0.244, 0.244, 0.222), 0.86, None),
     ('M_区_科技',    (0.212, 0.232, 0.230), 0.86, None),
@@ -124,8 +184,53 @@ _RETUNE = (
     ('M_体块_实验',  (0.288, 0.285, 0.288), 0.82, None),
 )
 
+if _ROOF_V2:
+    # ★ A/B：退回 V2.5 的**旧屋面** —— 只重标 `M_钛锌屋面板`，`M_钛锌板` 原样不动。
+    #   这不是"随便挑个旧值"，而是**如实复现 V2.4 的真实状态**：
+    #   32 个屋面（`M_钛锌板`）从未被重标过，所以它们保持建材质时的 (0.172,0.180,0.190)/0.58/0.42。
+    _RETUNE = _RETUNE + (('M_钛锌屋面板', (0.126, 0.122, 0.114), 0.80, 0.10),)
+
 _TUNED, _MISSING = 0, []
 _N_CONST, _N_LINK, _N_SKIP, _LINKED_NAMES = 0, 0, 0, []
+
+
+def _apply_base(_M, _col, _rg=None, _mt=None):
+    """把一个材质的 Base Color 打到目标色，并可选地打粗糙度/金属度。
+
+    ★ 连线优先：`Base Color` 被 `Noise → ColorRamp` 占着时，写 `default_value` **静默无效**
+      ⇒ 必须改**连线源头**（ColorRamp 端点），而且是**平移**而非赋值（保留端点间明暗差 = 保留噪声质感）。
+    返回 `'const'` / `'link'` / `'skip'`（连线源不是 ColorRamp 或 `BR_PALETTE_LINKED=0`）/ `'missing'`。
+    """
+    _bsdf = principled(_M)
+    _s = _bsdf.inputs.get('Base Color') if _bsdf else None
+    if _s is None:
+        return 'missing'
+    if _s.is_linked:
+        _src = _s.links[0].from_node
+        if _src.bl_idname != 'ShaderNodeValToRGB' or not _MODE_LINKED:
+            return 'skip'
+        _els = list(_src.color_ramp.elements)
+        # 注意：_col 是 **3 元组**（RGB），ColorRamp 端点是 **4 元组**（RGBA）
+        # ⇒ 只能对前 3 个通道做平移，alpha 原样保留。
+        #   （V2.4 首版这里写成了 range(4)，直接 IndexError: tuple index out of range）
+        _mean = [sum(e.color[i] for e in _els) / len(_els) for i in range(3)]
+        for _e in _els:
+            _c = list(_e.color)
+            for _i in range(3):
+                _c[_i] = min(1.0, max(0.0, _c[_i] + (_col[_i] - _mean[_i])))
+            _e.color = tuple(_c)
+        set_in(_bsdf, 'Base Color', (_col[0], _col[1], _col[2], 1.0))
+        _r = 'link'
+    else:
+        set_in(_bsdf, 'Base Color', (_col[0], _col[1], _col[2], 1.0))
+        _r = 'const'
+
+    if _rg is not None:
+        set_in(_bsdf, 'Roughness', _rg)
+    if _mt is not None:
+        set_in(_bsdf, 'Metallic', _mt)
+    return _r
+
 
 for _nm, _col, _rg, _mt in _RETUNE:
     _M = bpy.data.materials.get(_nm)
@@ -133,45 +238,126 @@ for _nm, _col, _rg, _mt in _RETUNE:
         # 该阶段还没建出这个材质 —— 正常（例如 R0 阶段没有 M_胶合木），跳过即可
         _MISSING.append(_nm)
         continue
-    _bsdf = principled(_M)
-    _s = _bsdf.inputs.get('Base Color') if _bsdf else None
-    if _s is None:
+    _r = _apply_base(_M, _col, _rg, _mt)
+    if _r == 'missing':
         _MISSING.append(_nm)
         continue
-
-    if _s.is_linked:
-        # ---- 插槽被 ColorRamp 连线占着：必须改**连线源头**，写 default_value 无效 ----
-        _src = _s.links[0].from_node
-        if _src.bl_idname != 'ShaderNodeValToRGB' or not _MODE_LINKED:
-            _N_SKIP += 1
-            _LINKED_NAMES.append(_nm)
-            continue
-        _els = list(_src.color_ramp.elements)
-        # 注意：_col 是 **3 元组**（RGB），ColorRamp 端点是 **4 元组**（RGBA）
-        # ⇒ 只能对前 3 个通道做平移，alpha 原样保留。
-        #   （V2.4 首版这里写成了 range(4)，直接 IndexError: tuple index out of range）
-        _mean = [sum(e.color[i] for e in _els) / len(_els) for i in range(3)]
-        for _e in _els:
-            # **平移**而非赋值：保留端点间原有的明暗差（= 保留噪声质感）
-            _c = list(_e.color)
-            for _i in range(3):
-                _c[_i] = min(1.0, max(0.0, _c[_i] + (_col[_i] - _mean[_i])))
-            _e.color = tuple(_c)
-        set_in(_bsdf, 'Base Color', (_col[0], _col[1], _col[2], 1.0))
+    if _r == 'skip':
+        _N_SKIP += 1
+        _LINKED_NAMES.append(_nm)
+        continue
+    if _r == 'link':
         _N_LINK += 1
     else:
-        set_in(_bsdf, 'Base Color', (_col[0], _col[1], _col[2], 1.0))
         _N_CONST += 1
-
-    if _rg is not None:
-        set_in(_bsdf, 'Roughness', _rg)
-    if _mt is not None:
-        set_in(_bsdf, 'Metallic', _mt)
     _TUNED += 1
 
-print('[PALETTE] 配色重标 %s：%d/%d 个材质已改（墙 0.368 / 玻璃 0.120 / '
-      '楼板 0.196 / 屋面 0.126·金属度 0.10 / 地面 0.21~0.28）%s'
-      % (_RETUNE_VER, _TUNED, len(_RETUNE),
+# ==================================================================
+# ★★ S4-d 屋面分区分色（2026-09-26）
+# ==================================================================
+# V3 §3.4：蓝灰钛锌 → **暖灰**（教学 / 科研实验 / 生活 / 中轴）+ **铜绿**（科技 / 运动），按分区区分。
+#
+# ★★ 先说这一节真正修掉的东西 —— 一个藏了很久的静默失效：
+#   本工程有**两个**"钛锌"材质：
+#     `M_钛锌屋面板`  r0 建，**1 个对象**（BLD_人文_Vertical_Academy_Roof）
+#     `M_钛锌板`      r1 起把全局 `M_ZINC` **重绑**成这个名字，**32 个对象** ← 真正的第五立面
+#   V2.4 的 `_RETUNE` 表**只写了前者** ⇒ 32 个屋面的基色一直是建材质时的原始蓝灰
+#   (0.172, 0.180, 0.190)、金属度一直是 **0.42**（镜面金属，掠射角反射的正是蓝天）。
+#   后果有两层：
+#     ① 鸟瞰里屋面仍是一大片"照天的镜子"（鸟瞰近 40% 的画面是屋面 = 把天铺了一地）；
+#     ② `_RETUNE` 里那句"**实测把 metallic 从 0.60 压到 0.15 后成图几乎没变**"
+#        —— 这个结论本身就是错的：那次实验只落在**那一个**对象上，32 个屋面从未被改过。
+#   ⇒ 教训与 skill「材质名对不上 = 静默失效」同源：**改材质前先数用户数**。
+#
+# ★★ 为什么必须**拆材质**，而不是"一个材质两个色"：
+#   32 个对象共用**同一个** `M_钛锌板`，而材质是对象级的共享资源 ——
+#   想让教学屋面暖灰、科技屋面铜绿，只能**按对象把它复制成两份**，再把对象上的槽位引用改指过去。
+#   这是"分区上色"在 Blender 里唯一诚实的做法（别去想顶点色 / attribute，那要动几何、会毁掉 GLB 的抽稀）。
+_ROOF_ZONED = ('M_钛锌板', 'M_钛锌屋面板')
+_SUF = {'warm': '暖灰', 'copper': '铜绿'}
+_ROOF_COL = {'warm': _ROOF_WARM, 'copper': _ROOF_COPPER}
+_ROOF_WHICH = {}          # 材质名 → 'warm' | 'copper'
+_ROOF_DEAD = set()        # 被搬空的原材质（不登记的话会误报成"僵尸材质"）
+
+
+def _roof_objs_of(name):
+    """★ 必须遍历 `bpy.data.objects` —— 材质**不记录**"谁在用我"，`users` 只是个计数。"""
+    out = []
+    for _o in bpy.data.objects:
+        _sl = getattr(getattr(_o, 'data', None), 'materials', None)
+        if _sl is None:
+            continue
+        for _s in _sl:
+            if _s is not None and _s.name == name:
+                out.append(_o)
+                break
+    return out
+
+
+def _roof_split(base, name, objs):
+    """把 `base` 复制成 `name`，并把 `objs` 上对 `base` 的引用改指过去。"""
+    _new = bpy.data.materials.get(base).copy()
+    _new.name = name
+    for _o in objs:
+        # 网格数据可能是共享的（users > 1）—— 直接改槽位会连带改到别的对象
+        if _o.data.users > 1:
+            _o.data = _o.data.copy()
+        for _i, _s in enumerate(_o.data.materials):
+            if _s is not None and _s.name == base:
+                _o.data.materials[_i] = _new
+    return _new
+
+
+if not _ROOF_V2:
+    for _base in _ROOF_ZONED:
+        if bpy.data.materials.get(_base) is None:
+            continue
+        _objs = _roof_objs_of(_base)
+        if not _objs:
+            continue
+        _by = {}
+        for _o in _objs:
+            _by.setdefault('copper' if _o.name.startswith(_COPPER_ZONES) else 'warm', []).append(_o)
+        if len(_by) == 1:
+            # 只出现在一个分区里 ⇒ 不必拆，直接改原材质（少一个材质）
+            _ROOF_WHICH[_base] = list(_by)[0]
+        else:
+            for _k in sorted(_by):
+                _nn = '%s_%s' % (_base, _SUF[_k])
+                _roof_split(_base, _nn, _by[_k])
+                _ROOF_WHICH[_nn] = _k
+            _ROOF_DEAD.add(_base)
+
+for _nm, _k in sorted(_ROOF_WHICH.items()):
+    _M = bpy.data.materials.get(_nm)
+    if _M is None:
+        continue
+    _r = _apply_base(_M, _ROOF_COL[_k], _ROOF_RG, _ROOF_MT)
+    if _r == 'link':
+        _N_LINK += 1
+    elif _r == 'const':
+        _N_CONST += 1
+    _n = len(_roof_objs_of(_nm))
+    print('[PALETTE]   屋面 %-18s → %-6s %-22s 粗度 %.2f 金属度 %.2f  %d 个对象（%s）'
+          % (_nm, _k, tuple(round(_v, 3) for _v in _ROOF_COL[_k]),
+             _ROOF_RG, _ROOF_MT, _n, _r))
+
+if _ROOF_V2:
+    print('[PALETTE]   ★A/B：屋面退回 V2.5 旧蓝灰 %s（BR_ROOF_V2=1；`M_钛锌板` 32 个屋面原样不动）'
+          % (_ROOF_OLD,))
+else:
+    # ★ 这一行是防"静默失效"复发的哨兵：32 个屋面必须真的被改到。
+    _tot = {}
+    for _nm, _k in _ROOF_WHICH.items():
+        _tot[_k] = _tot.get(_k, 0) + len(_roof_objs_of(_nm))
+    print('[PALETTE]   屋面分色合计：%s%s'
+          % ('；'.join('%s %d 个对象' % (_k, _v) for _k, _v in sorted(_tot.items())),
+             ('（原材质已搬空：' + ' '.join(sorted(_ROOF_DEAD)) + '）') if _ROOF_DEAD else ''))
+
+print('[PALETTE] 配色重标 %s%s：%d/%d 个材质已改（墙 0.368 / 玻璃 0.120 / '
+      '楼板 0.196 / 屋面见上 / 地面 0.21~0.28）%s'
+      % (_RETUNE_VER, '（★A/B：草地用 V2.4 旧值）' if _GRASS_V24 else '',
+         _TUNED, len(_RETUNE),
          ('；本阶段未建：' + ' '.join(_MISSING)) if _MISSING else ''))
 print('[PALETTE]   Base Color 为常量 %d 个 ／ 由 ColorRamp 连线驱动 %d 个'
       % (_N_CONST, _N_LINK))
@@ -179,3 +365,29 @@ if _N_SKIP:
     # ★ 这一行是防"静默失效"复发的哨兵：出现它说明重标没落到这些材质上
     print('[PALETTE]   ⚠ 因连线被跳过 %d 个（BR_PALETTE_LINKED=0 或连线源不是 ColorRamp）：%s'
           % (_N_SKIP, ' '.join(_LINKED_NAMES)))
+
+# ==================================================================
+# ★★ 僵尸材质哨兵（2026-09-24 加）
+# ==================================================================
+# 起因：`M_树叶`（全园 605 株低模树的树冠材质）**用户数 = 0** 却没人发现 ——
+# 因为 `build_campus_r0.py` 把共享全局 `M_LEAF` 重绑成了 `M_庭院绿植`，
+# 于是 `_trees_hero.py` 重建 `SITE_树冠` 时拿到的是平色绿植材质。
+# 不报错、不变色，只是"树看着有点平" —— 事后所有针对 `M_树叶` 的调色/透光
+# **一次都没进过画面**。这类"建了但没挂上"的材质，只能靠**数用户数**抓。
+#
+# ★ 会误报的两类，需要白名单：
+#   · 本阶段还没建的（上面的 `_MISSING` 已单独处理）
+#   · 只在导出/后续阶段才挂上的
+_ZOMBIE_OK = {
+    'M_远山',        # 由 make_mat_grad 建，挂在 SITE_远山 上
+}
+_zombies = [m.name for m in bpy.data.materials
+            if m.users == 0 and m.name.startswith('M_')
+            and m.name not in _ZOMBIE_OK and m.name not in _MISSING
+            # ★ S4-d：被"屋面分区分色"拆走全部对象的原材质 —— 这是**有意**搬空的，
+            #   不是僵尸（它已经被 `M_钛锌板_暖灰` / `_铜绿` 顶替）。
+            and m.name not in _ROOF_DEAD]
+if _zombies:
+    print('[PALETTE]   ⚠⚠ 僵尸材质 %d 个（建出来了但**没有任何对象在用**，'
+          '本阶段对它们的调色/透光全部白做）：%s'
+          % (len(_zombies), ' '.join(sorted(_zombies))))

@@ -7,6 +7,9 @@
   "build_campus_r0.py",
   "build_campus_r1.py",
   "build_campus_r2.py",
+  "_trees_hero.py",
+  "_entrance_all.py",
+  "build_campus_r7_landscape.py",
   "palette_retune.py"
  ],
  "jobs": [

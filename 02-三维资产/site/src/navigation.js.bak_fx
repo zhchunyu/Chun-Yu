@@ -1,0 +1,1660 @@
+/**
+ * navigation.js —— 山河大学全园 GLB 预览 · AI 智能导航模块
+ * ---------------------------------------------------------------
+ * 大楼坐标来自 Blender 脚本（SVG → 世界坐标换算），
+ * 路径在 three.js 场景中绘制为发光指引线。
+ *
+ * 坐标换算：
+ *   Blender SVG:  sx, sy（像素）
+ *   Blender 世界: wx = (sx - 340) * 2.4,  wy = (516 - sy) * 2.4
+ *   three.js:     x = wx,  z = -wy（因为 GLB 已 export_yup，Y 朝上）
+ *                  （不对：export_yup 后 Blender 的 Y 变成 three 的 Y，
+ *                    Blender 的 Z 变成 three 的 Z？需要看实际模型方向）
+ *   实际：从 preview.js 的预设机位反推：
+ *     Blender pos[0,-520,1080] → three cam [0, 1080, 520]
+ *     所以 Blender (x, y, z) → three (x, z, -y)
+ *     即 three.x = blender.x, three.y = blender.z, three.z = -blender.y
+ *
+ * 大楼位置（x, z）= （Blender wx, -Blender wy）
+ */
+
+import * as THREE from 'three';
+
+/* ================================================================
+   1. AI 配置（预留接口，等用户提供 API Key）
+================================================================ */
+export const AI_CONFIG = {
+  apiKey: 'sk-cdef5af34e8b4fc39b21608e2ab55d58',
+  endpoint: 'https://api.deepseek.com/anthropic',
+  model: 'deepseek-chat',
+  enabled: true,
+};
+
+export function setAIConfig(cfg) {
+  Object.assign(AI_CONFIG, cfg);
+  AI_CONFIG.enabled = !!(AI_CONFIG.apiKey && AI_CONFIG.endpoint);
+}
+
+/* ================================================================
+   2. 大楼数据（从 Blender 脚本提取，SVG → 世界坐标换算）
+   坐标格式：three.js (x, z)，单位：米
+================================================================ */
+
+// 换算辅助：SVG(sx, sy) → three.js(x, z)
+//   wx = (sx - 340) * 2.4  → three.x
+//   wy = (516 - sy) * 2.4  → three.z = -wy
+function svgToWorld(sx, sy) {
+  return {
+    x: (sx - 340) * 2.4,
+    z: -(516 - sy) * 2.4,
+  };
+}
+
+export const BUILDINGS = [
+  // —— 中轴人文区（从南到北：主校门 → 智谷 → 图书馆 → 垂直书院 → 讲堂）——
+  // 坐标依据：build_campus_site.py 中轴序列 N_GATE/N_PLAZA/N_LIB/N_TOWER/FLY
+  // 建筑入口均朝南（面向中轴大道来向）
+  { name: '主校门',     sx: 340, sy: 502,  shx: 14, shy: 6,   type: 'landmark', accent: 0x4dabff, entrance: 'south' },
+  { name: '智谷谷底',   sx: 340, sy: 462,  shx: 18, shy: 28,  type: 'landmark', accent: 0x2ee6a8, entrance: 'south' },
+  { name: '亭兰图书馆', sx: 340, sy: 300,  shx: 32, shy: 28,  type: 'landmark', accent: 0x7fd4ff, entrance: 'south' },
+  { name: '垂直书院',   sx: 340, sy: 246,  shx: 18, shy: 18,  type: 'landmark', accent: 0xc9a87c, entrance: 'south' },
+  { name: '讲堂',       sx: 340, sy: 165,  shx: 26, shy: 18,  type: 'landmark', accent: 0xb07dff, entrance: 'south' },
+
+  // —— 科技区（西北，入口朝东，面向环廊）——
+  { name: '创新中心',   sx: 171.8, sy: 268.1, shx: 16.8,  shy: 20.16, type: 'tech',    accent: 0x66d9ff, entrance: 'east' },
+  { name: '学生中心',   sx: 219.0, sy: 268.1, shx: 16.8,  shy: 20.16, type: 'tech',    accent: 0x66d9ff, entrance: 'east' },
+  { name: '演艺中心',   sx: 171.8, sy: 321.8, shx: 16.8,  shy: 20.16, type: 'tech',    accent: 0xb07dff, entrance: 'east' },
+  { name: '创客工坊',   sx: 219.0, sy: 321.8, shx: 16.8,  shy: 20.16, type: 'tech',    accent: 0xffc266, entrance: 'east' },
+
+  // —— 实验区（东北，入口朝西，面向环廊）——
+  { name: '科研中心',   sx: 478.0, sy: 268.0, shx: 35.26, shy: 15.58, type: 'lab',     accent: 0x5aa9ff, entrance: 'west' },
+  { name: '实验楼A',    sx: 450.8, sy: 311.8, shx: 15.83, shy: 15.83, type: 'lab',     accent: 0x5aa9ff, entrance: 'west' },
+  { name: '实验楼B',    sx: 495.0, sy: 311.8, shx: 15.83, shy: 15.83, type: 'lab',     accent: 0x5aa9ff, entrance: 'west' },
+
+  // —— 运动医疗区（西南，入口朝东，面向环廊）——
+  { name: '体育馆',     sx: 212.5, sy: 374.0, shx: 16.67, shy: 14.17, type: 'sports',  accent: 0xff7b6b, entrance: 'east' },
+  { name: '校医院',     sx: 170.0, sy: 374.0, shx: 15.0,  shy: 15.0,  type: 'sports',  accent: 0x6fe3c4, entrance: 'east' },
+  { name: '体育场',     sx: 198.0, sy: 426.0, shx: 42.0,  shy: 24.0,  type: 'sports',  accent: 0x2ee6a8, entrance: 'north' },
+
+  // —— 教学区（东南，入口朝西，面向环廊）——
+  { name: '公共教学楼', sx: 456.8, sy: 374.8, shx: 16.8,  shy: 16.8,  type: 'teach',   accent: 0x5aa9ff, entrance: 'west' },
+  { name: '教学B楼',    sx: 505.2, sy: 374.8, shx: 14.28, shy: 16.8,  type: 'teach',   accent: 0x5aa9ff, entrance: 'west' },
+  { name: '教学C楼',    sx: 456.8, sy: 429.2, shx: 16.8,  shy: 16.8,  type: 'teach',   accent: 0x5aa9ff, entrance: 'west' },
+  { name: '教学D楼',    sx: 505.2, sy: 429.2, shx: 14.28, shy: 16.8,  type: 'teach',   accent: 0x5aa9ff, entrance: 'west' },
+
+  // —— 生活区（南，入口朝北，面向环廊/宿舍区道路）——
+  { name: '宿舍A',      sx: 216.25, sy: 469.75, shx: 22.09, shy: 7.92,  type: 'dorm',    accent: 0xff9d7a, entrance: 'north' },
+  { name: '宿舍B',      sx: 216.25, sy: 498.08, shx: 22.09, shy: 7.92,  type: 'dorm',    accent: 0xff9d7a, entrance: 'north' },
+  { name: '研究生公寓', sx: 273.75, sy: 469.75, shx: 22.09, shy: 7.92,  type: 'dorm',    accent: 0xffb380, entrance: 'north' },
+  { name: '宿舍D',      sx: 273.75, sy: 498.08, shx: 22.09, shy: 7.92,  type: 'dorm',    accent: 0xff9d7a, entrance: 'north' },
+  { name: '宿舍E',      sx: 409.83, sy: 469.75, shx: 22.09, shy: 7.92,  type: 'dorm',    accent: 0xff9d7a, entrance: 'north' },
+  { name: '宿舍F',      sx: 467.33, sy: 469.75, shx: 22.09, shy: 7.92,  type: 'dorm',    accent: 0xff9d7a, entrance: 'north' },
+  { name: '食堂',       sx: 409.83, sy: 498.08, shx: 22.09, shy: 7.92,  type: 'canteen', accent: 0xffc266, entrance: 'north' },
+  { name: '商业街',     sx: 467.33, sy: 498.08, shx: 22.09, shy: 7.92,  type: 'canteen', accent: 0xffc266, entrance: 'north' },
+
+  // —— 智慧环廊站点 ——
+  { name: '环廊S1站',   sx: 260, sy: 260,  shx: 6, shy: 6, type: 'ring',     accent: 0x2ee6a8 },
+  { name: '环廊S4站',   sx: 340, sy: 340,  shx: 6, shy: 6, type: 'ring',     accent: 0x2ee6a8 },
+  { name: '环廊S7站',   sx: 420, sy: 420,  shx: 6, shy: 6, type: 'ring',     accent: 0x2ee6a8 },
+];
+
+// 应用坐标换算：SVG → three.js 世界坐标
+BUILDINGS.forEach((b) => {
+  const w = svgToWorld(b.sx, b.sy);
+  b.x = w.x;
+  b.z = w.z;
+  // 建筑半宽半深（米）：SVG单位 × 2.4
+  b.halfW = b.shx * 2.4;
+  b.halfD = b.shy * 2.4;
+});
+
+/** 按名称查找大楼（支持模糊匹配） */
+export function findBuilding(name) {
+  if (!name) return null;
+  const n = name.trim().toLowerCase();
+  let hit = BUILDINGS.find((b) => b.name.toLowerCase() === n);
+  if (hit) return hit;
+  hit = BUILDINGS.find((b) => b.name.toLowerCase().includes(n));
+  if (hit) return hit;
+  hit = BUILDINGS.find((b) => b.name.toLowerCase().startsWith(n));
+  return hit || null;
+}
+
+export function getBuildingNames() {
+  return BUILDINGS.map((b) => b.name);
+}
+
+/* ================================================================
+   3. 道路网络 & A* 路径规划
+================================================================ */
+
+/**
+ * 道路网络（从 Blender build_campus_site.py 提取的真实坐标）
+ * 坐标系：Blender 世界坐标（X东/Y北），转 three.js 时 z = -y
+ * 数据来源：
+ *   - RING_ROAD: 外环主路（12m 宽）
+ *   - RING_LOOP: 内环次路 / 环廊同线（12m 宽）
+ *   - R_EW_MAIN: 东西主路（y=404，12m 宽）
+ *   - 中轴：南北主干道
+ */
+
+// ---- 道路节点（Blender 世界坐标 x, y，单位：米） ----
+// 数据来源：build_campus_site.py 的 RING_ROAD / RING_LOOP / R_EW_MAIN / axis_pts
+// 坐标系：Blender (x=东, y=北)，three.js 中 z = -y
+const ROAD_NODES = {
+  // ===== 外环主路（RING_ROAD，顺时针从南段西端开始） =====
+  'outer_s_w':    { x: -373, y: 77.5  },
+  'outer_s1':     { x: -200, y: 77.5  },
+  'outer_s2':     { x: 0,    y: 77.5  },
+  'outer_s3':     { x: 200,  y: 77.5  },
+  'outer_s_e':    { x: 373,  y: 77.5  },
+  // 东南段
+  'outer_se1':    { x: 373,  y: 108   },
+  'outer_se2':    { x: 384,  y: 126   },
+  'outer_se3':    { x: 399,  y: 134   },
+  'outer_se4':    { x: 420,  y: 148   },
+  'outer_se5':    { x: 440,  y: 160   },
+  'outer_se6':    { x: 465,  y: 205   },
+  'outer_se7':    { x: 478,  y: 280   },
+  // 东中段
+  'outer_e1':     { x: 481,  y: 380   },
+  'outer_e2':     { x: 481,  y: 470   },
+  // 东北段
+  'outer_ne1':    { x: 480,  y: 560   },
+  'outer_ne2':    { x: 470,  y: 620   },
+  'outer_ne3':    { x: 440,  y: 675   },
+  'outer_ne4':    { x: 390,  y: 715   },
+  'outer_ne5':    { x: 320,  y: 748   },
+  'outer_ne6':    { x: 220,  y: 768   },
+  // 北段
+  'outer_n':      { x: 0,    y: 780   },
+  // 西北段
+  'outer_nw1':    { x: -220, y: 768   },
+  'outer_nw2':    { x: -320, y: 748   },
+  'outer_nw3':    { x: -390, y: 715   },
+  'outer_nw4':    { x: -440, y: 675   },
+  'outer_nw5':    { x: -470, y: 620   },
+  'outer_nw6':    { x: -480, y: 560   },
+  // 西中段
+  'outer_w1':     { x: -481, y: 470   },
+  'outer_w2':     { x: -481, y: 380   },
+  // 西南段
+  'outer_sw1':    { x: -478, y: 280   },
+  'outer_sw2':    { x: -465, y: 205   },
+  'outer_sw3':    { x: -440, y: 160   },
+  'outer_sw4':    { x: -420, y: 148   },
+  'outer_sw5':    { x: -399, y: 134   },
+  'outer_sw6':    { x: -384, y: 126   },
+  'outer_sw7':    { x: -373, y: 108   },
+
+  // ===== 内环次路 / 智慧环廊（RING_LOOP，廊下即街） =====
+  // 东侧（从南到北，智谷断开处开始）
+  'inner_e_s':    { x: 0,    y: 146   },  // 智谷断开处（东端）
+  'inner_e_s1':   { x: 60,   y: 147   },
+  'inner_e_s2':   { x: 110,  y: 147.5 },
+  'inner_e_s3':   { x: 150,  y: 147.5 },
+  'inner_e_s4':   { x: 178,  y: 148   },
+  'inner_e_s5':   { x: 190,  y: 166   },
+  'inner_e_s6':   { x: 196,  y: 210   },
+  'inner_e_s7':   { x: 198,  y: 262   },
+  'inner_e_s8':   { x: 202,  y: 320   },
+  'inner_e_mid':  { x: 206,  y: 380   },  // 东中点（S4站）
+  'inner_e_mid2': { x: 206,  y: 440   },
+  'inner_e_n1':   { x: 202,  y: 500   },
+  'inner_e_n2':   { x: 186,  y: 546   },
+  'inner_e_n3':   { x: 148,  y: 568   },
+  'inner_e_n4':   { x: 96,   y: 574   },
+  'inner_e_n5':   { x: 60,   y: 580   },
+  'inner_e_n6':   { x: 30,   y: 588   },
+  // 北端
+  'inner_n':      { x: 0,    y: 596   },  // 环廊最北点（S3站附近）
+  // 西侧（从北到南）
+  'inner_w_n1':   { x: -30,  y: 588   },
+  'inner_w_n2':   { x: -60,  y: 580   },
+  'inner_w_n3':   { x: -96,  y: 574   },
+  'inner_w_n4':   { x: -148, y: 568   },
+  'inner_w_n5':   { x: -186, y: 546   },
+  'inner_w_n6':   { x: -202, y: 500   },
+  'inner_w_mid2': { x: -206, y: 440   },
+  'inner_w_mid':  { x: -206, y: 380   },  // 西中点
+  'inner_w_s1':   { x: -202, y: 320   },
+  'inner_w_s2':   { x: -198, y: 262   },
+  'inner_w_s3':   { x: -196, y: 210   },
+  'inner_w_s4':   { x: -190, y: 166   },
+  'inner_w_s5':   { x: -178, y: 148   },
+  'inner_w_s6':   { x: -150, y: 147.5 },
+  'inner_w_s7':   { x: -110, y: 147.5 },
+  'inner_w_s8':   { x: -60,  y: 147   },
+  'inner_w_s':    { x: 0,    y: 146   },  // 智谷断开处（西端）
+
+  // ===== 环廊站点 =====
+  'ring_s1':  { x: -148, y: 568   },  // S1站（西北）
+  'ring_s4':  { x: 206,  y: 380   },  // S4站（东中）
+  'ring_s7':  { x: 196,  y: 210   },  // S7站（东南）
+
+  // ===== 中轴大道（从南到图书馆南，以北有建筑，不能穿）=====
+  // 坐标依据：build_campus_site.py axis_pts
+  'axis_south':   { x: 0, y: 0      },  // 南端入口（校门外）
+  'axis_gate':    { x: 0, y: 33.6   },  // 主校门牌坊
+  'axis_plaza':   { x: 0, y: 129.6  },  // 明堂广场 / 智谷谷底南
+  'axis_valley_n':{ x: 0, y: 188    },  // 智谷谷底北（下沉智谷北端 Y≈188）
+  'axis_mound_s': { x: 0, y: 210.8  },  // 案山南坡
+  'axis_mound_n': { x: 0, y: 278.8  },  // 案山北坡
+  'axis_mid':     { x: 0, y: 360    },  // 中段（图书馆南侧绿地）
+  'axis_ew404':   { x: 0, y: 404    },  // 东西主路口
+  'axis_lib_s':   { x: 0, y: 466.4  },  // 图书馆南（丹陛脚下，中轴大道终点）
+
+  // ===== 东西主路（R_EW_MAIN，中段人文区断开） =====
+  'ew_west_w':    { x: -478, y: 404   },
+  'ew_west_e':    { x: -180, y: 404   },  // 西半段东端
+  'ew_east_w':    { x: 180,  y: 404   },  // 东半段西端
+  'ew_east_e':    { x: 478,  y: 404   },
+
+  // ===== 放射支路（连接内环 ↔ 外环） =====
+  // 西侧
+  'rad_w_s':      { x: -300, y: 160   },  // 西南放射
+  'rad_w_mid':    { x: -280, y: 280   },  // 西中放射
+  'rad_w_n':      { x: -250, y: 500   },  // 西北放射
+  // 东侧
+  'rad_e_s':      { x: 300,  y: 160   },  // 东南放射
+  'rad_e_mid':    { x: 280,  y: 280   },  // 东中放射
+  'rad_e_n':      { x: 250,  y: 500   },  // 东北放射
+
+  // ===== 生活区道路（西南角，宿舍区） =====
+  'dorm_access_w': { x: -340, y: 160   },  // 宿舍区西入口
+  'dorm_access_e': { x: -220, y: 160   },  // 宿舍区东入口（接内环）
+
+  // ===== 运动区道路（东南角，体育区） =====
+  'sport_access_w': { x: 220, y: 160   },  // 体育区西入口（接内环）
+  'sport_access_e': { x: 340, y: 160   },  // 体育区东入口
+};
+
+// ---- 道路边（双向连接） ----
+const ROAD_EDGES = [
+  // ===== 外环主路（顺时针闭合环） =====
+  // 南段
+  ['outer_s_w', 'outer_s1'],
+  ['outer_s1', 'outer_s2'],
+  ['outer_s2', 'outer_s3'],
+  ['outer_s3', 'outer_s_e'],
+  // 东南段
+  ['outer_s_e', 'outer_se1'],
+  ['outer_se1', 'outer_se2'],
+  ['outer_se2', 'outer_se3'],
+  ['outer_se3', 'outer_se4'],
+  ['outer_se4', 'outer_se5'],
+  ['outer_se5', 'outer_se6'],
+  ['outer_se6', 'outer_se7'],
+  // 东中段
+  ['outer_se7', 'outer_e1'],
+  ['outer_e1', 'outer_e2'],
+  // 东北段
+  ['outer_e2', 'outer_ne1'],
+  ['outer_ne1', 'outer_ne2'],
+  ['outer_ne2', 'outer_ne3'],
+  ['outer_ne3', 'outer_ne4'],
+  ['outer_ne4', 'outer_ne5'],
+  ['outer_ne5', 'outer_ne6'],
+  // 北段
+  ['outer_ne6', 'outer_n'],
+  ['outer_n', 'outer_nw1'],
+  // 西北段
+  ['outer_nw1', 'outer_nw2'],
+  ['outer_nw2', 'outer_nw3'],
+  ['outer_nw3', 'outer_nw4'],
+  ['outer_nw4', 'outer_nw5'],
+  ['outer_nw5', 'outer_nw6'],
+  // 西中段
+  ['outer_nw6', 'outer_w1'],
+  ['outer_w1', 'outer_w2'],
+  // 西南段
+  ['outer_w2', 'outer_sw1'],
+  ['outer_sw1', 'outer_sw2'],
+  ['outer_sw2', 'outer_sw3'],
+  ['outer_sw3', 'outer_sw4'],
+  ['outer_sw4', 'outer_sw5'],
+  ['outer_sw5', 'outer_sw6'],
+  ['outer_sw6', 'outer_sw7'],
+  ['outer_sw7', 'outer_s_w'],
+
+  // ===== 内环 / 智慧环廊（廊下即街，智谷处断开） =====
+  // 东侧（从南到北）
+  ['inner_e_s', 'inner_e_s1'],
+  ['inner_e_s1', 'inner_e_s2'],
+  ['inner_e_s2', 'inner_e_s3'],
+  ['inner_e_s3', 'inner_e_s4'],
+  ['inner_e_s4', 'inner_e_s5'],
+  ['inner_e_s5', 'inner_e_s6'],
+  ['inner_e_s6', 'inner_e_s7'],
+  ['inner_e_s7', 'inner_e_s8'],
+  ['inner_e_s8', 'inner_e_mid'],
+  ['inner_e_mid', 'inner_e_mid2'],
+  ['inner_e_mid2', 'inner_e_n1'],
+  ['inner_e_n1', 'inner_e_n2'],
+  ['inner_e_n2', 'inner_e_n3'],
+  ['inner_e_n3', 'inner_e_n4'],
+  ['inner_e_n4', 'inner_e_n5'],
+  ['inner_e_n5', 'inner_e_n6'],
+  ['inner_e_n6', 'inner_n'],
+  // 西侧（从北到南）
+  ['inner_n', 'inner_w_n1'],
+  ['inner_w_n1', 'inner_w_n2'],
+  ['inner_w_n2', 'inner_w_n3'],
+  ['inner_w_n3', 'inner_w_n4'],
+  ['inner_w_n4', 'inner_w_n5'],
+  ['inner_w_n5', 'inner_w_n6'],
+  ['inner_w_n6', 'inner_w_mid2'],
+  ['inner_w_mid2', 'inner_w_mid'],
+  ['inner_w_mid', 'inner_w_s1'],
+  ['inner_w_s1', 'inner_w_s2'],
+  ['inner_w_s2', 'inner_w_s3'],
+  ['inner_w_s3', 'inner_w_s4'],
+  ['inner_w_s4', 'inner_w_s5'],
+  ['inner_w_s5', 'inner_w_s6'],
+  ['inner_w_s6', 'inner_w_s7'],
+  ['inner_w_s7', 'inner_w_s8'],
+  ['inner_w_s8', 'inner_w_s'],
+
+  // ===== 环廊站点（就在内环路上，直接连接） =====
+  ['ring_s1', 'inner_w_n4'],
+  ['ring_s4', 'inner_e_mid'],
+  ['ring_s7', 'inner_e_s6'],
+
+  // ===== 中轴大道（从南到图书馆南）=====
+  ['axis_south', 'axis_gate'],
+  ['axis_gate', 'axis_plaza'],
+  ['axis_plaza', 'axis_valley_n'],
+  ['axis_valley_n', 'axis_mound_s'],
+  ['axis_mound_s', 'axis_mound_n'],
+  ['axis_mound_n', 'axis_mid'],
+  ['axis_mid', 'axis_ew404'],
+  ['axis_ew404', 'axis_lib_s'],
+
+  // ===== 中轴 ↔ 内环连接（智谷断开处，两侧绕行）=====
+  // 智谷处：下沉智谷 Y 95~188，中轴从谷底穿过
+  // 内环两端从智谷两侧接入中轴
+  ['axis_plaza', 'inner_e_s'],     // 智谷南口东侧
+  ['axis_plaza', 'inner_w_s'],     // 智谷南口西侧
+  ['axis_valley_n', 'inner_e_s'],  // 智谷北口东侧
+  ['axis_valley_n', 'inner_w_s'],  // 智谷北口西侧
+
+  // ===== 东西主路（中段人文区断开，不连中轴） =====
+  ['ew_west_w', 'ew_west_e'],
+  ['ew_east_w', 'ew_east_e'],
+  // 东西主路 ↔ 外环
+  ['ew_west_w', 'outer_w2'],
+  ['ew_east_e', 'outer_e1'],
+  // 东西主路 ↔ 内环
+  ['ew_west_e', 'inner_w_mid'],
+  ['ew_east_w', 'inner_e_mid'],
+
+  // ===== 放射支路（内环 ↔ 外环） =====
+  // 西侧
+  ['rad_w_s', 'outer_sw3'],
+  ['rad_w_s', 'inner_w_s5'],
+  ['rad_w_mid', 'outer_sw1'],
+  ['rad_w_mid', 'inner_w_s2'],
+  ['rad_w_n', 'outer_w1'],
+  ['rad_w_n', 'inner_w_n6'],
+  // 东侧
+  ['rad_e_s', 'outer_se5'],
+  ['rad_e_s', 'inner_e_s5'],
+  ['rad_e_mid', 'outer_se7'],
+  ['rad_e_mid', 'inner_e_s7'],
+  ['rad_e_n', 'outer_e2'],
+  ['rad_e_n', 'inner_e_n1'],
+
+  // ===== 生活区道路（西南宿舍区） =====
+  ['dorm_access_w', 'outer_sw3'],
+  ['dorm_access_e', 'inner_w_s4'],
+  ['dorm_access_w', 'dorm_access_e'],
+
+  // ===== 运动区道路（东南体育区） =====
+  ['sport_access_e', 'outer_se5'],
+  ['sport_access_w', 'inner_e_s4'],
+  ['sport_access_e', 'sport_access_w'],
+];
+
+/** 两点距离 */
+function nodeDist(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+/** 构建邻接表 */
+function buildGraph() {
+  const adj = {};
+  Object.keys(ROAD_NODES).forEach((id) => { adj[id] = []; });
+  ROAD_EDGES.forEach(([a, b]) => {
+    const d = nodeDist(ROAD_NODES[a], ROAD_NODES[b]);
+    adj[a].push({ to: b, dist: d });
+    adj[b].push({ to: a, dist: d });
+  });
+  return adj;
+}
+const GRAPH = buildGraph();
+
+/**
+ * A* 寻路
+ */
+function aStar(startId, goalId) {
+  const openSet = new Set([startId]);
+  const cameFrom = {};
+  const gScore = {};
+  const fScore = {};
+
+  Object.keys(ROAD_NODES).forEach((id) => {
+    gScore[id] = Infinity;
+    fScore[id] = Infinity;
+  });
+  gScore[startId] = 0;
+  fScore[startId] = nodeDist(ROAD_NODES[startId], ROAD_NODES[goalId]);
+
+  while (openSet.size > 0) {
+    // fScore 最小节点
+    let current = null;
+    let minF = Infinity;
+    openSet.forEach((id) => {
+      if (fScore[id] < minF) { minF = fScore[id]; current = id; }
+    });
+
+    if (current === goalId) {
+      const path = [current];
+      while (cameFrom[current]) {
+        current = cameFrom[current];
+        path.unshift(current);
+      }
+      return path;
+    }
+
+    openSet.delete(current);
+
+    GRAPH[current].forEach((neighbor) => {
+      const tentativeG = gScore[current] + neighbor.dist;
+      if (tentativeG < gScore[neighbor.to]) {
+        cameFrom[neighbor.to] = current;
+        gScore[neighbor.to] = tentativeG;
+        fScore[neighbor.to] = tentativeG + nodeDist(ROAD_NODES[neighbor.to], ROAD_NODES[goalId]);
+        openSet.add(neighbor.to);
+      }
+    });
+  }
+
+  return null;
+}
+
+/**
+ * 找建筑入口方向上最近的道路节点
+ * 不使用全局最近点，避免从建筑背面/侧面接入导致穿墙
+ */
+function nearestRoadNode(building) {
+  // building: { x, z } (three.js) → Blender: bx = x, by = -z
+  const bx = building.x;
+  const by = -building.z;
+  const entrance = building.entrance || 'south';
+
+  let bestId = null, bestDist = Infinity;
+
+  Object.entries(ROAD_NODES).forEach(([id, node]) => {
+    const dx = node.x - bx;
+    const dy = node.y - by;
+    const d = Math.hypot(dx, dy);
+
+    // 根据入口方向筛选节点：只考虑入口侧的节点
+    let valid = false;
+    switch (entrance) {
+      case 'south':
+        // 入口朝南：节点在建筑南边（dy < 0），且 X 方向偏差不大
+        valid = dy < -5 && Math.abs(dx) < 80;
+        break;
+      case 'north':
+        // 入口朝北：节点在建筑北边（dy > 0）
+        valid = dy > 5 && Math.abs(dx) < 80;
+        break;
+      case 'east':
+        // 入口朝东：节点在建筑东边（dx > 0）
+        valid = dx > 5 && Math.abs(dy) < 80;
+        break;
+      case 'west':
+        // 入口朝西：节点在建筑西边（dx < 0）
+        valid = dx < -5 && Math.abs(dy) < 80;
+        break;
+      default:
+        valid = true;
+    }
+
+    if (valid && d < bestDist) {
+      bestDist = d;
+      bestId = id;
+    }
+  });
+
+  // 如果入口方向没找到节点，退回全局最近
+  if (!bestId) {
+    Object.entries(ROAD_NODES).forEach(([id, node]) => {
+      const d = Math.hypot(node.x - bx, node.y - by);
+      if (d < bestDist) { bestDist = d; bestId = id; }
+    });
+  }
+
+  return { id: bestId, dist: bestDist };
+}
+
+/**
+ * 计算建筑门口点（Blender 坐标）
+ * 基于建筑入口方向，在建筑入口侧边缘外 3m 处
+ * 避免路径从建筑中心直接穿墙
+ */
+function buildingDoorPoint(building, roadNode) {
+  const bx = building.x;           // Blender x = three.x
+  const by = -building.z;          // Blender y = -three.z
+  const entrance = building.entrance || 'south';
+
+  // 建筑半宽半深（米）
+  const hw = building.halfW || 30;  // x 方向半宽
+  const hd = building.halfD || 30;  // y 方向半深
+
+  let doorX = bx, doorY = by;
+
+  // 根据入口方向确定门口位置
+  switch (entrance) {
+    case 'south':
+      // 南入口：建筑南边中央
+      doorX = bx;
+      doorY = by - hd - 3;
+      break;
+    case 'north':
+      // 北入口：建筑北边中央
+      doorX = bx;
+      doorY = by + hd + 3;
+      break;
+    case 'east':
+      // 东入口：建筑东边中央
+      doorX = bx + hw + 3;
+      doorY = by;
+      break;
+    case 'west':
+      // 西入口：建筑西边中央
+      doorX = bx - hw - 3;
+      doorY = by;
+      break;
+    default:
+      // 没有指定入口方向时，朝向最近道路节点
+      const nx = roadNode.x, ny = roadNode.y;
+      const dx = nx - bx, dy = ny - by;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 0.1) return { x: bx, y: by };
+      const dirX = dx / dist, dirY = dy / dist;
+      let tMin = Infinity;
+      if (Math.abs(dirX) > 0.001) {
+        const tEast = hw / dirX;
+        const tWest = -hw / dirX;
+        [tEast, tWest].forEach(t => {
+          if (t > 0.1) {
+            const yHit = by + t * dirY;
+            if (Math.abs(yHit - by) <= hd + 0.5 && t < tMin) tMin = t;
+          }
+        });
+      }
+      if (Math.abs(dirY) > 0.001) {
+        const tNorth = hd / dirY;
+        const tSouth = -hd / dirY;
+        [tNorth, tSouth].forEach(t => {
+          if (t > 0.1) {
+            const xHit = bx + t * dirX;
+            if (Math.abs(xHit - bx) <= hw + 0.5 && t < tMin) tMin = t;
+          }
+        });
+      }
+      if (!isFinite(tMin)) tMin = Math.min(hw, hd);
+      const doorT = tMin + 3;
+      doorX = bx + dirX * doorT;
+      doorY = by + dirY * doorT;
+  }
+
+  return { x: doorX, y: doorY };
+}
+
+/**
+ * 沿路计算路径（A* + 平滑）
+ * 返回 THREE.Vector3 数组
+ */
+function computeRoadRoute(from, to) {
+  const fromNodeInfo = nearestRoadNode(from);
+  const toNodeInfo = nearestRoadNode(to);
+
+  const nodePath = aStar(fromNodeInfo.id, toNodeInfo.id);
+  if (!nodePath) return computeBezierRoute(from, to);
+
+  const points = [];
+
+  // 起点门口 → 第一个道路节点
+  const fromNode = ROAD_NODES[fromNodeInfo.id];
+  const fromDoor = buildingDoorPoint(from, fromNode);
+  points.push(new THREE.Vector3(fromDoor.x, 2, -fromDoor.y));
+
+  // 沿道路节点
+  nodePath.forEach((nodeId) => {
+    const node = ROAD_NODES[nodeId];
+    points.push(new THREE.Vector3(node.x, 2, -node.y)); // three.z = -blender.y
+  });
+
+  // 最后道路节点 → 终点门口
+  const toNode = ROAD_NODES[toNodeInfo.id];
+  const toDoor = buildingDoorPoint(to, toNode);
+  points.push(new THREE.Vector3(toDoor.x, 2, -toDoor.y));
+
+  // 路径平滑（低强度，避免转角切内角穿墙）
+  return smoothPath(points, 2);
+}
+
+/**
+ * 路径平滑：转角处用小圆角过渡，避免切角穿墙
+ * 使用外扩圆角：圆角在转角外侧，不会侵入道路内侧
+ */
+function smoothPath(points, cornerSegs = 4) {
+  if (points.length < 3) return points.slice();
+
+  const result = [];
+
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i];
+
+    // 起点直接加入
+    if (i === 0) {
+      result.push(p.clone());
+      continue;
+    }
+
+    // 终点直接加入
+    if (i === points.length - 1) {
+      result.push(p.clone());
+      break;
+    }
+
+    const prev = points[i - 1];
+    const next = points[i + 1];
+
+    // 计算两条边的向量
+    const vInX = p.x - prev.x, vInZ = p.z - prev.z;
+    const vOutX = next.x - p.x, vOutZ = next.z - p.z;
+    const lenIn = Math.hypot(vInX, vInZ);
+    const lenOut = Math.hypot(vOutX, vOutZ);
+
+    // 太短的边不做圆角
+    const minLen = Math.min(lenIn, lenOut);
+    const radius = Math.min(minLen * 0.2, 15); // 圆角半径最大 15m
+
+    if (radius < 2 || minLen < 6) {
+      result.push(p.clone());
+      continue;
+    }
+
+    // 计算圆角起点和终点（从转角点沿两边后退 radius 距离）
+    const startX = p.x - vInX / lenIn * radius;
+    const startZ = p.z - vInZ / lenIn * radius;
+    const endX = p.x + vOutX / lenOut * radius;
+    const endZ = p.z + vOutZ / lenOut * radius;
+
+    // 用二次贝塞尔曲线做圆角，控制点就是转角点 p
+    // 这样圆角是"外凸"的，不会向内切角
+    for (let s = 1; s <= cornerSegs; s++) {
+      const t = s / cornerSegs;
+      const x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * p.x + t * t * endX;
+      const z = (1 - t) * (1 - t) * startZ + 2 * (1 - t) * t * p.z + t * t * endZ;
+      result.push(new THREE.Vector3(x, 2, z));
+    }
+  }
+
+  return result;
+}
+
+/** 备用：贝塞尔曲线路径 */
+function computeBezierRoute(from, to) {
+  const points = [];
+  const start = new THREE.Vector3(from.x, 2, from.z);
+  const end = new THREE.Vector3(to.x, 2, to.z);
+  const midX = (from.x + to.x) / 2;
+  const midZ = (from.z + to.z) / 2;
+  const dx = to.x - from.x, dz = to.z - from.z;
+  const len = Math.hypot(dx, dz);
+  const perpX = -dz / len * len * 0.15;
+  const perpZ = dx / len * len * 0.15;
+  const ctrl = new THREE.Vector3(midX + perpX, 4, midZ + perpZ);
+
+  for (let i = 0; i <= 30; i++) {
+    const t = i / 30;
+    const x = (1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * ctrl.x + t * t * end.x;
+    const y = (1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * ctrl.y + t * t * end.y;
+    const z = (1 - t) * (1 - t) * start.z + 2 * (1 - t) * t * ctrl.z + t * t * end.z;
+    points.push(new THREE.Vector3(x, y, z));
+  }
+  return points;
+}
+
+/**
+ * 计算从起点到终点的路径
+ */
+export async function computeRoute(fromName, toName) {
+  const from = findBuilding(fromName);
+  const to = findBuilding(toName);
+
+  if (!from) throw new Error(`找不到起点：${fromName}`);
+  if (!to) throw new Error(`找不到终点：${toName}`);
+  if (from.name === to.name) throw new Error('起点和终点不能相同');
+
+  if (AI_CONFIG.enabled) {
+    try {
+      return await computeRouteWithAI(from.name, to.name);
+    } catch (e) {
+      console.warn('AI 路径规划失败，使用本地计算：', e);
+    }
+  }
+
+  const points = computeRoadRoute(from, to);
+  const distance = calculatePathDistance(points);
+  return { from, to, points, distance, mode: 'road' };
+}
+
+function calculatePathDistance(points) {
+  let dist = 0;
+  for (let i = 1; i < points.length; i++) {
+    dist += points[i].distanceTo(points[i - 1]);
+  }
+  return dist;
+}
+
+/* ================================================================
+   4. AI 路径规划（DeepSeek Anthropic 兼容接口）
+================================================================ */
+
+/**
+ * 调用 AI 进行自然语言解析 + 路径规划
+ * 支持：直接输入"从图书馆去食堂"、"帮我导航到体育馆"等自然语言
+ */
+async function computeRouteWithAI(fromName, toName) {
+  // AI 的价值在于：自然语言理解 + 路径说明 + 推荐中间点
+  // 路径本身走道路网络
+  const from = findBuilding(fromName);
+  const to = findBuilding(toName);
+  const points = computeRoadRoute(from, to);
+  return {
+    from, to, points,
+    distance: calculatePathDistance(points),
+    mode: 'ai',
+    description: '',
+  };
+}
+
+/**
+ * 解析自然语言输入，提取起点和终点
+ * 例如："从图书馆去体育馆" → { from: "亭兰图书馆", to: "体育馆" }
+ *       "帮我导航到食堂" → { from: null, to: "食堂" }
+ */
+export async function parseNaturalLanguage(text) {
+  if (!AI_CONFIG.enabled || !text || !text.trim()) {
+    return { from: null, to: null, raw: text };
+  }
+
+  const buildingList = BUILDINGS.map((b) => b.name).join('、');
+
+  const systemPrompt = `你是山河大学的校园导航助手。
+用户会用自然语言描述想去的地方，你需要从中提取起点和终点。
+
+校园内的所有大楼/地标列表：
+${buildingList}
+
+请严格按照以下 JSON 格式回复（只输出 JSON，不要其他内容）：
+{
+  "from": "起点大楼名称，如果用户没说起点则为 null",
+  "to": "终点大楼名称，必填",
+  "confidence": 0.95
+}
+
+规则：
+1. 如果用户只说了一个地点，那就是终点，from 为 null
+2. 模糊匹配：用户说"图书馆"匹配"亭兰图书馆"，说"食堂"匹配"食堂"，说"宿舍"匹配最近的宿舍
+3. 只从上面的列表中选择，不要编造不存在的建筑
+4. 必须输出合法的 JSON`;
+
+  try {
+    const response = await callAI([
+      { role: 'user', content: systemPrompt },
+      { role: 'user', content: `用户输入："${text}"` },
+    ]);
+
+    // 尝试解析 JSON
+    const jsonStr = extractJSON(response);
+    if (jsonStr) {
+      const result = JSON.parse(jsonStr);
+      // 验证并匹配大楼
+      return {
+        from: result.from ? matchBuildingFuzzy(result.from)?.name || null : null,
+        to: result.to ? matchBuildingFuzzy(result.to)?.name || null : null,
+        raw: text,
+        aiParsed: true,
+      };
+    }
+  } catch (e) {
+    console.warn('AI 自然语言解析失败：', e);
+  }
+
+  return { from: null, to: null, raw: text, aiParsed: false };
+}
+
+/**
+ * 生成路径说明（AI 生成的步行指引）
+ */
+export async function generateRouteDescription(route) {
+  if (!AI_CONFIG.enabled) return null;
+
+  const { from, to, distance } = route;
+  const minutes = Math.ceil(distance / 1.2 / 60);
+
+  const prompt = `你是山河大学的校园向导。
+请为以下路线生成一段简短友好的步行指引（50-80字）：
+从【${from.name}】到【${to.name}】，距离约 ${distance.toFixed(0)} 米，步行约 ${minutes} 分钟。
+
+要求：
+- 用中文，口语化，亲切自然
+- 可以提一下沿途的地标
+- 不要太长，控制在两句话以内
+- 直接输出指引文字，不要其他格式`;
+
+  try {
+    const response = await callAI([
+      { role: 'user', content: prompt },
+    ]);
+    return response.trim();
+  } catch (e) {
+    console.warn('AI 路径说明生成失败：', e);
+    return null;
+  }
+}
+
+/**
+ * 调用 DeepSeek Anthropic 兼容 API
+ */
+async function callAI(messages) {
+  if (!AI_CONFIG.apiKey || !AI_CONFIG.endpoint) {
+    throw new Error('AI 未配置');
+  }
+
+  // 把 messages 转换成 Anthropic 格式
+  // Anthropic 格式：system 单独传，messages 是 user/assistant 交替
+  let systemPrompt = '';
+  const userMessages = [];
+
+  messages.forEach((m) => {
+    if (m.role === 'system') {
+      systemPrompt = m.content;
+    } else if (m.role === 'user') {
+      userMessages.push({ role: 'user', content: m.content });
+    } else if (m.role === 'assistant') {
+      userMessages.push({ role: 'assistant', content: m.content });
+    }
+  });
+
+  const model = AI_CONFIG.model || 'deepseek-chat';
+
+  const body = {
+    model,
+    max_tokens: 1024,
+    messages: userMessages,
+  };
+  if (systemPrompt) {
+    body.system = systemPrompt;
+  }
+
+  const res = await fetch(AI_CONFIG.endpoint + '/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': AI_CONFIG.apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`API 调用失败 (${res.status}): ${errText}`);
+  }
+
+  const data = await res.json();
+
+  // Anthropic 格式：content[0].text
+  if (data.content && data.content.length > 0) {
+    return data.content.map((c) => c.text).join('');
+  }
+  if (data.output) return data.output;
+  if (data.choices && data.choices[0]) {
+    return data.choices[0].message?.content || data.choices[0].text || '';
+  }
+  return JSON.stringify(data);
+}
+
+/** 从 AI 返回文本中提取 JSON */
+function extractJSON(text) {
+  if (!text) return null;
+  // 尝试直接解析
+  try {
+    JSON.parse(text);
+    return text;
+  } catch (e) { /* 不是纯 JSON，继续找 */ }
+
+  // 找 ```json ... ``` 块
+  const match = text.match(/```json\s*([\s\S]*?)\s*```/);
+  if (match) {
+    try { JSON.parse(match[1]); return match[1]; } catch (e) { /* 继续 */ }
+  }
+
+  // 找第一个 { 到最后一个 }
+  const first = text.indexOf('{');
+  const last = text.lastIndexOf('}');
+  if (first >= 0 && last > first) {
+    const candidate = text.slice(first, last + 1);
+    try { JSON.parse(candidate); return candidate; } catch (e) { /* 失败 */ }
+  }
+
+  return null;
+}
+
+/** 模糊匹配大楼名称（AI 可能返回近似名称） */
+function matchBuildingFuzzy(name) {
+  if (!name) return null;
+  const n = name.trim().toLowerCase();
+
+  // 精确匹配
+  let hit = BUILDINGS.find((b) => b.name.toLowerCase() === n);
+  if (hit) return hit;
+
+  // 包含匹配
+  hit = BUILDINGS.find((b) => b.name.toLowerCase().includes(n));
+  if (hit) return hit;
+
+  // 反向：大楼名包含输入
+  hit = BUILDINGS.find((b) => n.includes(b.name.toLowerCase()));
+  if (hit) return hit;
+
+  // 按字符相似度找最接近的
+  let best = null, bestScore = 0;
+  BUILDINGS.forEach((b) => {
+    const score = similarity(n, b.name.toLowerCase());
+    if (score > bestScore && score > 0.4) {
+      bestScore = score;
+      best = b;
+    }
+  });
+  return best;
+}
+
+/** 简单字符串相似度 */
+function similarity(s1, s2) {
+  const longer = s1.length > s2.length ? s1 : s2;
+  const shorter = s1.length > s2.length ? s2 : s1;
+  if (longer.length === 0) return 1.0;
+
+  let matches = 0;
+  for (let i = 0; i < shorter.length; i++) {
+    if (longer.includes(shorter[i])) matches++;
+  }
+  return matches / longer.length;
+}
+
+/* ================================================================
+   5. 路径可视化（Three.js）
+================================================================ */
+export class RouteRenderer {
+  constructor(scene) {
+    this.scene = scene;
+    this.group = new THREE.Group();
+    this.group.name = 'RouteOverlay';
+    scene.add(this.group);
+    this.currentRoute = null;
+    this.animTime = 0;
+  }
+
+  showRoute(route) {
+    this.clear();
+    this.currentRoute = route;
+
+    const { points, from, to } = route;
+
+    // —— 主路径（五层叠加营造发光特效）——
+    // 最外层扩散光晕
+    this.addLineLayer(points, 0x00bfff, 0.08, 8, true);
+    // 外层发光
+    this.addLineLayer(points, 0x00d4ff, 0.18, 5, true);
+    // 中层光晕
+    this.addLineLayer(points, 0x40eaff, 0.4, 2.5, true);
+    // 内层亮线
+    this.addLineLayer(points, 0xaaffff, 0.7, 1, true);
+    // 核心白线
+    this.addLineLayer(points, 0xffffff, 1, 0.2, false);
+
+    // 起点标记（青绿）
+    this.addEndpointMarker(from.x, from.z, 0x00ffcc, '起点');
+    // 终点标记（金橙）
+    this.addEndpointMarker(to.x, to.z, 0xffb300, '终点');
+
+    // 流动粒子（金色渐变）
+    this.addFlowParticles(points);
+
+    return this;
+  }
+
+  /** 添加一层路径线 */
+  addLineLayer(points, color, opacity, yOffset, additive) {
+    const geo = new THREE.BufferGeometry().setFromPoints(
+      points.map(p => new THREE.Vector3(p.x, 2 + yOffset * 0.4, p.z))
+    );
+    const mat = new THREE.LineBasicMaterial({
+      color,
+      transparent: true,
+      opacity,
+      blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
+      depthWrite: false,
+    });
+    const line = new THREE.Line(geo, mat);
+    this.group.add(line);
+    return line;
+  }
+
+  addEndpointMarker(x, z, color, label) {
+    const g = new THREE.Group();
+    g.position.set(x, 0, z);
+
+    // 底部脉冲圆环（三层）
+    for (let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(6 + i * 4, 8 + i * 4, 64),
+        new THREE.MeshBasicMaterial({
+          color, transparent: true, opacity: 0.5 - i * 0.12,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.y = 0.3 + i * 0.15;
+      ring.userData.phase = i * 0.8;
+      g.add(ring);
+      g.userData['ring' + (i + 1)] = ring;
+    }
+
+    // 地面光斑
+    const spot = new THREE.Mesh(
+      new THREE.CircleGeometry(12, 64),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.15,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    spot.rotation.x = -Math.PI / 2;
+    spot.position.y = 0.2;
+    g.add(spot);
+    g.userData.spot = spot;
+
+    // 垂直光柱（主光柱）
+    const beamHeight = 100;
+    const beam = new THREE.Mesh(
+      new THREE.CylinderGeometry(2, 8, beamHeight, 24, 1, true),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.22,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    beam.position.y = beamHeight / 2;
+    g.add(beam);
+    g.userData.beam = beam;
+
+    // 内光柱（更亮更细）
+    const innerBeam = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.8, 2, beamHeight * 0.9, 24, 1, true),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 0.5,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    innerBeam.position.y = beamHeight * 0.45;
+    g.add(innerBeam);
+    g.userData.innerBeam = innerBeam;
+
+    // 顶部主光球
+    const topSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(4, 24, 24),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 1,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    topSphere.position.y = beamHeight + 5;
+    g.add(topSphere);
+    g.userData.topSphere = topSphere;
+
+    // 顶部彩色光晕
+    const halo1 = new THREE.Mesh(
+      new THREE.SphereGeometry(8, 24, 24),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.35,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    halo1.position.y = beamHeight + 5;
+    g.add(halo1);
+    g.userData.halo1 = halo1;
+
+    // 顶部外光晕
+    const halo2 = new THREE.Mesh(
+      new THREE.SphereGeometry(14, 24, 24),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.15,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    halo2.position.y = beamHeight + 5;
+    g.add(halo2);
+    g.userData.halo2 = halo2;
+
+    g.userData.color = color;
+    g.userData.label = label;
+    g.userData.beamHeight = beamHeight;
+    this.group.add(g);
+    return g;
+  }
+
+  addFlowParticles(points) {
+    const COUNT = 25;
+    const positions = new Float32Array(COUNT * 3);
+    const colors = new Float32Array(COUNT * 3);
+    const sizes = new Float32Array(COUNT);
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    // 初始化颜色（金色渐变）
+    const c1 = new THREE.Color(0xffff80);
+    const c2 = new THREE.Color(0xffaa00);
+    for (let i = 0; i < COUNT; i++) {
+      const t = i / COUNT;
+      const c = c1.clone().lerp(c2, t);
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+      sizes[i] = 3 + Math.random() * 3;
+    }
+
+    const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+      size: 5,
+      vertexColors: true,
+      transparent: true,
+      opacity: 1,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true,
+    }));
+
+    pts.userData = { points, count: COUNT, offset: 0, totalLen: 0 };
+    // 计算累计长度
+    let total = 0;
+    const segLens = [];
+    for (let i = 1; i < points.length; i++) {
+      const d = points[i].distanceTo(points[i - 1]);
+      segLens.push(d);
+      total += d;
+    }
+    pts.userData.segLens = segLens;
+    pts.userData.totalLen = total;
+
+    this.group.add(pts);
+    this.flowParticles = pts;
+  }
+
+  clear() {
+    while (this.group.children.length > 0) {
+      const child = this.group.children[0];
+      this.group.remove(child);
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach((m) => m.dispose());
+        } else {
+          child.material.dispose();
+        }
+      }
+    }
+    this.currentRoute = null;
+    this.flowParticles = null;
+  }
+
+  update(t) {
+    this.animTime = t;
+
+    // 端点动画（脉冲 + 呼吸）
+    this.group.children.forEach((child) => {
+      if (child.userData && child.userData.ring1) {
+        const { ring1, ring2, ring3, spot, beam, innerBeam, topSphere, halo1, halo2, beamHeight } = child.userData;
+        const pulse = 0.5 + Math.sin(t * 2) * 0.5;
+        const pulse2 = 0.5 + Math.sin(t * 1.5 + 1) * 0.5;
+
+        // 三环脉冲扩散
+        if (ring1) {
+          ring1.material.opacity = 0.35 + pulse * 0.25;
+          ring1.scale.setScalar(1 + Math.sin(t * 1.2) * 0.15);
+        }
+        if (ring2) {
+          ring2.material.opacity = 0.2 + pulse2 * 0.18;
+          ring2.scale.setScalar(1.4 + Math.sin(t * 1.2 + 1) * 0.12);
+        }
+        if (ring3) {
+          ring3.material.opacity = 0.1 + (1 - pulse) * 0.1;
+          ring3.scale.setScalar(1.8 + Math.sin(t * 1.2 + 2) * 0.1);
+        }
+
+        // 地面光斑呼吸
+        if (spot) {
+          spot.material.opacity = 0.1 + pulse * 0.1;
+          spot.scale.setScalar(1 + Math.sin(t * 1.8) * 0.1);
+        }
+
+        // 光柱呼吸
+        if (beam) {
+          beam.material.opacity = 0.15 + pulse * 0.1;
+        }
+        if (innerBeam) {
+          innerBeam.material.opacity = 0.35 + pulse * 0.25;
+        }
+
+        // 光球跳动
+        const topY = (beamHeight || 100) + 5;
+        if (topSphere) {
+          topSphere.position.y = topY + Math.sin(t * 2.5) * 3;
+          topSphere.scale.setScalar(1 + Math.sin(t * 2.5) * 0.25);
+        }
+
+        // 光晕脉动
+        if (halo1) {
+          halo1.scale.setScalar(1 + Math.sin(t * 1.5) * 0.25);
+          halo1.material.opacity = 0.25 + pulse * 0.15;
+        }
+        if (halo2) {
+          halo2.scale.setScalar(1 + Math.sin(t * 1.2 + 0.5) * 0.3);
+          halo2.material.opacity = 0.1 + pulse2 * 0.08;
+        }
+      }
+    });
+
+    // 流动粒子
+    if (this.flowParticles) {
+      const { points, count, segLens, totalLen } = this.flowParticles.userData;
+      const arr = this.flowParticles.geometry.attributes.position.array;
+
+      for (let i = 0; i < count; i++) {
+        const progress = ((t * 0.07 + i / count) % 1 + 1) % 1;
+        const dist = progress * totalLen;
+
+        let acc = 0;
+        let segIdx = 0;
+        for (let j = 0; j < segLens.length; j++) {
+          if (acc + segLens[j] >= dist) { segIdx = j; break; }
+          acc += segLens[j];
+        }
+        const localT = (dist - acc) / (segLens[segIdx] || 1);
+
+        const p0 = points[segIdx];
+        const p1 = points[Math.min(segIdx + 1, points.length - 1)];
+        arr[i * 3]     = p0.x + (p1.x - p0.x) * localT;
+        arr[i * 3 + 1] = 3 + Math.sin(t * 3.5 + i * 0.4) * 2 + i * 0.15;
+        arr[i * 3 + 2] = p0.z + (p1.z - p0.z) * localT;
+      }
+      this.flowParticles.geometry.attributes.position.needsUpdate = true;
+    }
+  }
+
+  dispose() {
+    this.clear();
+    this.scene.remove(this.group);
+  }
+}
+
+/* ================================================================
+   4. 建筑点击高亮 + 名称显示
+================================================================ */
+
+export class BuildingHighlighter {
+  constructor(scene, camera, domElement) {
+    this.scene = scene;
+    this.camera = camera;
+    this.domElement = domElement;
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+
+    // 高亮组
+    this.group = new THREE.Group();
+    this.group.name = 'BuildingHighlight';
+    scene.add(this.group);
+
+    // 点击碰撞体（不可见）
+    this.hitTargets = [];
+    this._buildHitTargets();
+
+    // 当前选中的建筑
+    this.currentBuilding = null;
+    this.highlightMesh = null;
+    this.labelSprite = null;
+
+    // 动画时间
+    this.animTime = 0;
+
+    // 点击回调
+    this.onBuildingClick = null;
+  }
+
+  _buildHitTargets() {
+    BUILDINGS.forEach((b) => {
+      // 用大球体作为点击碰撞体，确保从任何角度都能点到
+      // 半径足够大，覆盖建筑及周围区域
+      let radius = 50;
+      let yOffset = 50; // 球心高度
+      if (b.type === 'landmark') { radius = 60; yOffset = 70; }
+      else if (b.type === 'sports') { radius = 55; yOffset = 40; }
+      else if (b.type === 'dorm') { radius = 40; yOffset = 40; }
+      else if (b.type === 'teach') { radius = 45; yOffset = 45; }
+      else if (b.type === 'lab') { radius = 45; yOffset = 45; }
+      else if (b.type === 'tech') { radius = 45; yOffset = 45; }
+      else if (b.type === 'canteen') { radius = 45; yOffset = 40; }
+      else if (b.type === 'ring') { radius = 35; yOffset = 50; }
+
+      const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(radius, 16, 12),
+        new THREE.MeshBasicMaterial({
+          visible: false, // 不可见，只用于点击检测
+        })
+      );
+      mesh.position.set(b.x, yOffset, b.z);
+      mesh.userData.building = b;
+      this.scene.add(mesh);
+      this.hitTargets.push(mesh);
+    });
+  }
+
+  /** 更新鼠标位置并检测（hover 用） */
+  setMouse(clientX, clientY) {
+    const rect = this.domElement.getBoundingClientRect();
+    this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  }
+
+  /** 检测点击，返回命中的建筑或 null */
+  checkClick() {
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const hits = this.raycaster.intersectObjects(this.hitTargets);
+    if (hits.length > 0) {
+      return hits[0].object.userData.building;
+    }
+    return null;
+  }
+
+  /** 高亮显示某栋建筑 */
+  highlight(building) {
+    this.clearHighlight();
+    this.currentBuilding = building;
+
+    const color = building.accent || 0x00e5ff;
+
+    // —— 地面光斑 ——
+    const spot = new THREE.Mesh(
+      new THREE.CircleGeometry(25, 64),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.12,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    spot.rotation.x = -Math.PI / 2;
+    spot.position.set(building.x, 0.3, building.z);
+    this.group.add(spot);
+    this.highlightSpot = spot;
+
+    // —— 地面脉冲光环（三层）——
+    const ringGroup = new THREE.Group();
+    ringGroup.position.set(building.x, 0.5, building.z);
+
+    for (let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(18 + i * 8, 22 + i * 8, 64),
+        new THREE.MeshBasicMaterial({
+          color, transparent: true, opacity: 0.5 - i * 0.12,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      ring.rotation.x = -Math.PI / 2;
+      ring.userData.phase = i * 0.6;
+      ringGroup.add(ring);
+      this['highlightRing' + (i + 1)] = ring;
+    }
+    this.group.add(ringGroup);
+    this.highlightRingGroup = ringGroup;
+
+    // —— 主光柱 ——
+    const beamHeight = 140;
+    const beam = new THREE.Mesh(
+      new THREE.CylinderGeometry(4, 20, beamHeight, 28, 1, true),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.18,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    beam.position.set(building.x, beamHeight / 2, building.z);
+    this.group.add(beam);
+    this.highlightBeam = beam;
+
+    // —— 内光柱（白色亮芯）——
+    const innerBeam = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.5, 5, beamHeight * 0.9, 28, 1, true),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 0.45,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    innerBeam.position.set(building.x, beamHeight * 0.45, building.z);
+    this.group.add(innerBeam);
+    this.highlightInnerBeam = innerBeam;
+
+    // —— 顶部主光球 ——
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(6, 28, 28),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 1,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    sphere.position.set(building.x, beamHeight + 8, building.z);
+    this.group.add(sphere);
+    this.highlightSphere = sphere;
+
+    // —— 顶部彩色光晕（两层）——
+    const halo1 = new THREE.Mesh(
+      new THREE.SphereGeometry(12, 28, 28),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.35,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    halo1.position.set(building.x, beamHeight + 8, building.z);
+    this.group.add(halo1);
+    this.highlightHalo1 = halo1;
+
+    const halo2 = new THREE.Mesh(
+      new THREE.SphereGeometry(20, 28, 28),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.15,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      })
+    );
+    halo2.position.set(building.x, beamHeight + 8, building.z);
+    this.group.add(halo2);
+    this.highlightHalo2 = halo2;
+
+    // —— 名称标签（Sprite）——
+    const label = this._createLabelSprite(building.name, color);
+    label.position.set(building.x, beamHeight + 28, building.z);
+    this.group.add(label);
+    this.labelSprite = label;
+
+    this.highlightBeamHeight = beamHeight;
+  }
+
+  _createLabelSprite(text, color) {
+    // 用 Canvas 绘制文字标签
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 512;
+    canvas.height = 128;
+
+    // 背景
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.roundRect(10, 10, 492, 108, 20);
+    ctx.fill();
+
+    // 边框
+    const colorHex = '#' + color.toString(16).padStart(6, '0');
+    ctx.strokeStyle = colorHex;
+    ctx.lineWidth = 3;
+    ctx.roundRect(10, 10, 492, 108, 20);
+    ctx.stroke();
+
+    // 文字
+    ctx.font = 'bold 48px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = colorHex;
+    ctx.shadowBlur = 10;
+    ctx.fillText(text, 256, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+
+    const sprite = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      })
+    );
+    sprite.scale.set(40, 10, 1);
+    return sprite;
+  }
+
+  clearHighlight() {
+    while (this.group.children.length > 0) {
+      const child = this.group.children[0];
+      this.group.remove(child);
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) {
+        if (child.material.map) child.material.map.dispose();
+        child.material.dispose();
+      }
+    }
+    this.currentBuilding = null;
+    this.highlightRingGroup = null;
+    this.highlightBeam = null;
+    this.highlightSphere = null;
+    this.highlightHalo = null;
+    this.labelSprite = null;
+  }
+
+  update(t) {
+    this.animTime = t;
+
+    if (!this.currentBuilding) return;
+
+    const pulse = 0.5 + Math.sin(t * 2) * 0.5;
+    const pulse2 = 0.5 + Math.sin(t * 1.5 + 1) * 0.5;
+    const beamH = this.highlightBeamHeight || 140;
+
+    // 地面光斑呼吸
+    if (this.highlightSpot) {
+      this.highlightSpot.material.opacity = 0.08 + pulse * 0.08;
+      this.highlightSpot.scale.setScalar(1 + Math.sin(t * 1.8) * 0.12);
+    }
+
+    // 三层光环脉冲扩散
+    if (this.highlightRing1) {
+      this.highlightRing1.material.opacity = 0.35 + pulse * 0.25;
+      this.highlightRing1.scale.setScalar(1 + Math.sin(t * 1.2) * 0.15);
+    }
+    if (this.highlightRing2) {
+      this.highlightRing2.material.opacity = 0.2 + pulse2 * 0.18;
+      this.highlightRing2.scale.setScalar(1.4 + Math.sin(t * 1.2 + 1) * 0.12);
+    }
+    if (this.highlightRing3) {
+      this.highlightRing3.material.opacity = 0.1 + (1 - pulse) * 0.1;
+      this.highlightRing3.scale.setScalar(1.8 + Math.sin(t * 1.2 + 2) * 0.1);
+    }
+
+    // 光柱呼吸
+    if (this.highlightBeam) {
+      this.highlightBeam.material.opacity = 0.12 + pulse * 0.08;
+    }
+    if (this.highlightInnerBeam) {
+      this.highlightInnerBeam.material.opacity = 0.3 + pulse * 0.25;
+    }
+
+    // 光球跳动
+    if (this.highlightSphere) {
+      this.highlightSphere.position.y = beamH + 8 + Math.sin(t * 2.5) * 4;
+      this.highlightSphere.scale.setScalar(1 + Math.sin(t * 2.5) * 0.3);
+    }
+
+    // 光晕脉动（两层）
+    if (this.highlightHalo1) {
+      this.highlightHalo1.scale.setScalar(1 + Math.sin(t * 1.5) * 0.25);
+      this.highlightHalo1.material.opacity = 0.25 + pulse * 0.15;
+    }
+    if (this.highlightHalo2) {
+      this.highlightHalo2.scale.setScalar(1 + Math.sin(t * 1.2 + 0.5) * 0.3);
+      this.highlightHalo2.material.opacity = 0.1 + pulse2 * 0.08;
+    }
+
+    // 标签上下浮动
+    if (this.labelSprite) {
+      this.labelSprite.position.y = beamH + 28 + Math.sin(t * 1.8) * 4;
+    }
+  }
+
+  dispose() {
+    this.clearHighlight();
+    this.scene.remove(this.group);
+    // 移除碰撞体
+    this.hitTargets.forEach((m) => {
+      this.scene.remove(m);
+      m.geometry.dispose();
+      m.material.dispose();
+    });
+    this.hitTargets = [];
+  }
+}

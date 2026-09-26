@@ -104,8 +104,12 @@ try:
     scene.view_settings.view_transform = VT
 except TypeError:
     scene.view_settings.view_transform = 'AgX'
-scene.view_settings.look = 'None'
+scene.view_settings.look = _C.get('view_look', 'None')
 scene.view_settings.exposure = _C.get('exposure', 0.0)
+# ★ `view_look` 默认 'None' —— 既有 63 张的观感一个像素都不许变。
+#   只有气氛变体（阴天漫射）才显式指定 'Medium Contrast' / 'AgX - Medium High Contrast' 之类。
+if _C.get('gamma') is not None:
+    scene.view_settings.gamma = _C['gamma']
 
 # ==================================================================
 # 2. 相机
@@ -132,6 +136,20 @@ if CAM_ROT:
 else:
     cam.rotation_euler = (tgt - pos).to_track_quat('-Z', 'Y').to_euler()
 scene.camera = cam
+
+# ---- 景深（natural depth of field）----
+# ★ 默认关。开启后**焦点自动落在 cam_tgt 上** —— 手算 focus_distance 算错就是整幅糊，
+#   属于典型的"静默失效"（图能出来，但没人发现焦点在天上）。
+if _C.get('dof'):
+    cam_data.dof.use_dof = True
+    cam_data.dof.focus_object = None
+    cam_data.dof.focus_distance = max(1.0, (tgt - pos).length * _C.get('focus_scale', 1.0))
+    cam_data.dof.aperture_fstop = _C.get('fstop', 5.6)
+    cam_data.dof.aperture_blades = _C.get('blades', 7)
+    cam_data.dof.aperture_rotation = math.radians(_C.get('blade_rot', 0.0))
+    print('景深 开：焦距 %.1f m / f%.1f / %d 叶片' % (
+        cam_data.dof.focus_distance, cam_data.dof.aperture_fstop,
+        cam_data.dof.aperture_blades))
 
 # ==================================================================
 # 3. 空气透视（均匀介质）
@@ -200,9 +218,12 @@ n_sky.sun_elevation = math.radians(SUN_ELEV)
 n_sky.sun_rotation = math.radians(SUN_AZIM)
 n_sky.sun_disc = False
 n_sky.altitude = 300.0
-n_sky.air_density = 1.0
+n_sky.air_density = _C.get('air_density', 1.0)
+# ★ `air_density` / `dust_density` 是**阴天配方的关键旋钮**：
+#   空气密度一拉高，Nishita 天空从"通透的蓝"变成"发白的灰"，
+#   环境光也随之变平 —— 这正是"无直射光、均匀照明"要的底子。
 if hasattr(n_sky, 'dust_density'):
-    n_sky.dust_density = 1.1
+    n_sky.dust_density = _C.get('dust_density', 1.1)
 
 n_tc = wnt.nodes.new('ShaderNodeTexCoord')
 n_sep = wnt.nodes.new('ShaderNodeSeparateXYZ')
@@ -215,9 +236,15 @@ n_cnoise.inputs['Roughness'].default_value = 0.62
 wnt.links.new(n_tc.outputs['Generated'], n_cnoise.inputs['Vector'])
 
 n_cramp = wnt.nodes.new('ShaderNodeValToRGB')
-n_cramp.color_ramp.elements[0].position = 0.50
+# ★★ `cloud_cover`（2026-09-24 加）—— 云量。
+#   原值 (0.50, 0.60) 只让噪声 Fac > 0.5 的那一半变成云 ⇒ 渲出来是"**少云**"，
+#   而阴天要的是"**整片云盖**"。把区间往左推（如 0.20→0.45）就几乎全被云覆盖。
+#   ★ 为什么必须做成旋钮：只调 `cloud_strength`（亮度）**改不了云量** ——
+#     云盖面积由这个 ColorRamp 的位置决定，与亮度是两回事。
+_cc0, _cc1 = _C.get('cloud_cover', (0.50, 0.60))
+n_cramp.color_ramp.elements[0].position = _cc0
 n_cramp.color_ramp.elements[0].color = (0.0, 0.0, 0.0, 1.0)
-n_cramp.color_ramp.elements[1].position = 0.60
+n_cramp.color_ramp.elements[1].position = _cc1
 n_cramp.color_ramp.elements[1].color = (1.0, 1.0, 1.0, 1.0)
 wnt.links.new(n_cnoise.outputs['Fac'], n_cramp.inputs['Fac'])
 

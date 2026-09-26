@@ -1,0 +1,203 @@
+{
+ "blend": "_tmp_overcast.blend",
+ "build_extra": [
+  "build_campus_stage1.py",
+  "build_campus_stage2.py",
+  "build_campus_stage3.py",
+  "build_campus_r0.py",
+  "build_campus_r1.py",
+  "build_campus_r2.py",
+  "build_campus_r3.py",
+  "build_campus_r4.py",
+  "build_campus_r5.py",
+  "build_campus_r6.py",
+  "_trees_hero.py",
+  "palette_retune.py"
+ ],
+ "jobs": [
+  {
+   "sun_elev": 38.0,
+   "sun_azim": 220.0,
+   "sun_strength": 0.2,
+   "sun_angle": 16.0,
+   "sky_strength": 1.1,
+   "sky_visible": 0.16,
+   "cloud_strength": 0.95,
+   "cloud_scale": 2.6,
+   "cloud_cover": [
+    0.18,
+    0.42
+   ],
+   "cloud_horizon": [
+    -0.02,
+    0.06
+   ],
+   "air_density": 1.0,
+   "dust_density": 1.2,
+   "ambient_tint": [
+    1.12,
+    1.0,
+    0.88
+   ],
+   "exposure": -0.15,
+   "view_transform": "Khronos PBR Neutral",
+   "view_look": "None",
+   "name": "阴天_前庭人视_主楼北入口",
+   "cam_pos": [
+    275,
+    392,
+    4.6
+   ],
+   "cam_tgt": [
+    295,
+    382,
+    8
+   ],
+   "lens": 32,
+   "res_x": 1280,
+   "res_y": 720,
+   "samples": 320,
+   "dof": true,
+   "fstop": 3.2,
+   "blades": 7,
+   "focus_scale": 1.0
+  },
+  {
+   "sun_elev": 38.0,
+   "sun_azim": 220.0,
+   "sun_strength": 0.2,
+   "sun_angle": 16.0,
+   "sky_strength": 1.1,
+   "sky_visible": 0.16,
+   "cloud_strength": 0.95,
+   "cloud_scale": 2.6,
+   "cloud_cover": [
+    0.18,
+    0.42
+   ],
+   "cloud_horizon": [
+    -0.02,
+    0.06
+   ],
+   "air_density": 1.0,
+   "dust_density": 1.2,
+   "ambient_tint": [
+    1.12,
+    1.0,
+    0.88
+   ],
+   "exposure": -0.15,
+   "view_transform": "Khronos PBR Neutral",
+   "view_look": "None",
+   "name": "阴天_智谷谷底",
+   "cam_pos": [
+    -14.5,
+    112,
+    -2.4
+   ],
+   "cam_tgt": [
+    21,
+    152,
+    0.8
+   ],
+   "lens": 26,
+   "res_x": 1280,
+   "res_y": 720,
+   "samples": 320
+  },
+  {
+   "sun_elev": 38.0,
+   "sun_azim": 220.0,
+   "sun_strength": 0.2,
+   "sun_angle": 16.0,
+   "sky_strength": 1.1,
+   "sky_visible": 0.16,
+   "cloud_strength": 0.95,
+   "cloud_scale": 2.6,
+   "cloud_cover": [
+    0.18,
+    0.42
+   ],
+   "cloud_horizon": [
+    -0.02,
+    0.06
+   ],
+   "air_density": 1.0,
+   "dust_density": 1.2,
+   "ambient_tint": [
+    1.12,
+    1.0,
+    0.88
+   ],
+   "exposure": -0.15,
+   "view_transform": "Khronos PBR Neutral",
+   "view_look": "None",
+   "name": "阴天_滨水近景",
+   "cam_pos": [
+    -128,
+    856,
+    4.6
+   ],
+   "cam_tgt": [
+    96,
+    849,
+    3.0
+   ],
+   "lens": 36,
+   "res_x": 1280,
+   "res_y": 720,
+   "samples": 320,
+   "dof": true,
+   "fstop": 5.6,
+   "blades": 7,
+   "focus_scale": 1.0
+  },
+  {
+   "sun_elev": 38.0,
+   "sun_azim": 220.0,
+   "sun_strength": 0.2,
+   "sun_angle": 16.0,
+   "sky_strength": 1.1,
+   "sky_visible": 0.16,
+   "cloud_strength": 0.95,
+   "cloud_scale": 2.6,
+   "cloud_cover": [
+    0.18,
+    0.42
+   ],
+   "cloud_horizon": [
+    -0.02,
+    0.06
+   ],
+   "air_density": 1.0,
+   "dust_density": 1.2,
+   "ambient_tint": [
+    1.12,
+    1.0,
+    0.88
+   ],
+   "exposure": -0.15,
+   "view_transform": "Khronos PBR Neutral",
+   "view_look": "None",
+   "name": "阴天_山门近景",
+   "cam_pos": [
+    -72,
+    -78,
+    30
+   ],
+   "cam_tgt": [
+    -50,
+    34,
+    30
+   ],
+   "lens": 40,
+   "res_x": 1280,
+   "res_y": 720,
+   "samples": 320,
+   "dof": true,
+   "fstop": 4.5,
+   "blades": 7,
+   "focus_scale": 1.0
+  }
+ ]
+}

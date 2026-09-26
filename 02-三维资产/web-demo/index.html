@@ -43,6 +43,66 @@
   <div class="feed-foot">信息由学生上报与官方渠道汇聚，经 AI 判断后发布</div>
 </aside>
 
+<!-- 右侧：AI 导航面板 -->
+<aside id="nav-panel">
+  <div class="panel-head">
+    <h2>🧭 AI 智能导航</h2>
+    <button id="nav-close" title="收起">—</button>
+  </div>
+  <div class="nav-body">
+    <div class="nav-field">
+      <label>起点</label>
+      <div class="nav-input-wrap">
+        <input type="text" id="nav-from" placeholder="输入大楼名称，如：图书馆" autocomplete="off">
+        <div id="nav-from-suggest" class="suggest-list hidden"></div>
+      </div>
+    </div>
+    <div class="nav-field">
+      <label>终点</label>
+      <div class="nav-input-wrap">
+        <input type="text" id="nav-to" placeholder="输入大楼名称，如：体育馆" autocomplete="off">
+        <div id="nav-to-suggest" class="suggest-list hidden"></div>
+      </div>
+    </div>
+    <button id="nav-go" class="primary full">开始导航</button>
+    <div id="nav-result" class="nav-result hidden">
+      <div class="nav-route-info">
+        <div class="nri-row">
+          <span class="nri-label">起点</span>
+          <span class="nri-val" id="nri-from">—</span>
+        </div>
+        <div class="nri-row">
+          <span class="nri-label">终点</span>
+          <span class="nri-val" id="nri-to">—</span>
+        </div>
+        <div class="nri-row">
+          <span class="nri-label">步行距离</span>
+          <span class="nri-val accent" id="nri-dist">—</span>
+        </div>
+        <div class="nri-row">
+          <span class="nri-label">预计时间</span>
+          <span class="nri-val" id="nri-time">—</span>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button id="nav-focus" class="ghost">聚焦路径</button>
+        <button id="nav-clear" class="ghost">清除路径</button>
+      </div>
+    </div>
+    <div class="nav-ai-section">
+      <div class="nav-ai-title">
+        <span>🔧 AI 设置</span>
+        <span class="nav-ai-status" id="nav-ai-status">未启用</span>
+      </div>
+      <div class="nav-ai-tip">
+        配置 API Key 后可启用 AI 智能路径规划，
+        支持自然语言描述目的地。
+      </div>
+      <button id="nav-ai-config" class="ghost full">配置 API Key</button>
+    </div>
+  </div>
+</aside>
+
 <!-- 右侧：详情 -->
 <aside id="detail" class="hidden">
   <div class="panel-head">
@@ -51,6 +111,30 @@
   </div>
   <div id="detail-body"></div>
 </aside>
+
+<!-- API Key 配置弹窗 -->
+<div id="ai-config-modal" class="hidden">
+  <div class="modal-card">
+    <h3>🔑 AI API 配置</h3>
+    <p class="modal-tip">配置后可启用 AI 智能导航（自然语言识别 + 最优路径规划）</p>
+    <div class="field">
+      <label>API Key</label>
+      <input type="password" id="ai-api-key" placeholder="sk-..." autocomplete="off">
+    </div>
+    <div class="field">
+      <label>API 地址</label>
+      <input type="text" id="ai-api-endpoint" placeholder="https://api.example.com/v1/chat/completions" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>模型名称</label>
+      <input type="text" id="ai-api-model" placeholder="gpt-4o-mini" autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button id="ai-config-cancel" class="ghost">取消</button>
+      <button id="ai-config-save" class="primary">保存并启用</button>
+    </div>
+  </div>
+</div>
 
 <!-- 左下：图例 -->
 <div id="legend">

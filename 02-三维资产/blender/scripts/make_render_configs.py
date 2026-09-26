@@ -59,10 +59,45 @@ PALETTE = 'palette_retune.py'
 # 挡在塔前面（`正立面` 那张塔身下半被阙楼整个遮住）。
 # ⇒ 给 r0 单独挂一个**限定范围**的清障脚本：只删建筑构件，不碰场地对象
 #   （r1 的 `_DROP` 里那 7 个"待重建"场地对象在 R0 不重建，照搬会开洞）。
-# R1~R5 无需挂 —— r1 自己的 `_DROP` 已覆盖同样的构件。
 STAGE_EXTRA = {
     'r0': ['clear_old_language_r0.py'],
 }
+
+# ------------------------------------------------------------------
+# ★★ 全园级内容脚本（S2 门廊 / S4 分区景观）—— **所有阶段**都挂
+# ------------------------------------------------------------------
+# ★ 早先只挂在 r5，结果是**成图集内部割裂**：
+#   R0~R4 的六区还是"灰铺装 + 占位体块"，R5/R6 却是"草坪树阵 + 门廊"——
+#   同一本图集里前后翻两页，像两个不同的校园。
+#   而这两个脚本改的是**全园设计语言**，不是"某一阶段的成果"，
+#   所以必须每一阶段都生效（与 `palette_retune.py` 同理）。
+#
+# ★ 顺序是硬约束，不能换：
+#     `_teach_detail.py`  →  `_entrance_all.py`  →  `build_campus_r7_landscape.py`
+#   ① `_entrance_all.py` 靠射线实测给全园楼栋补入口门廊，会**跳过**教学区 4 栋
+#      （那边 `_teach_detail.py` 已做过）⇒ 顺序反了教学区会被做两遍（门廊叠门廊）。
+#   ② `build_campus_r7_landscape.py` 的落位**完全由占用栅格决定** ——
+#      栅格越完整，草坪越不会压到别人的东西 ⇒ 必须排在最后（除配色重标外）。
+#   ③ 全部必须在 `palette_retune.py` **之前**：重标恒为末项，
+#      否则新材质（`M_路缘石` / `M_灯柱` / `M_座椅木` / `M_土丘草` …）
+#      拿不到配色重标，会跳出既定色域。
+#
+# ★★ `_entrance_all.py` 能提到"所有阶段"的前提（S5 才补上）：
+#   它原先认不出 **28 个占位体块**（`M_体块_*`，名字也是 `BLD_*`），
+#   会给白盒子做门廊 ⇒ 已加"整簇材质都是 `M_体块_*` 就跳过"的判据。
+#
+# ★ `_teach_detail.py` **不能**提到所有阶段：它按名字硬取
+#   `BLD_教学_公共教学楼 / 教学B / 教学C / 教学D`，而 r0~r4 里这四个名字
+#   指的是**占位体块**（`Z_BLK` 里就这么命名），会把家具摆到白盒子上。
+TAIL_EXTRA = ['_entrance_all.py', 'build_campus_r7_landscape.py']
+CAMPUS_TAIL = {st: TAIL_EXTRA for st in STAGES}
+CAMPUS_TAIL['r5'] = ['_teach_detail.py'] + TAIL_EXTRA
+CAMPUS_TAIL['r6'] = ['_teach_detail.py'] + TAIL_EXTRA
+
+# ★ 每个阶段都要挂的 extras（在 STAGE_EXTRA 之前、palette_retune 之前）。
+#   `_trees_hero.py` 依赖 `build_campus_site.py` 留下的全局 `trees` / `_sphere`，
+#   而 site 脚本是**每一阶段**的第一个脚本，所以在任何阶段挂都成立。
+GLOBAL_EXTRA = ['_trees_hero.py']
 
 # ------------------------------------------------------------------
 # 导出 GLB（R7）—— 只挂在**含完整园区**的那一阶段
@@ -74,7 +109,8 @@ STAGE_EXTRA = {
 #   所以抽稀规则按"面数阈值"写，不按对象名写死。
 EXPORT_STAGE = 'r6'
 EXPORT = {
-    'glb': '山河大学_全园_R6.glb',
+    # ★ V3 S5：改名 R6 → R7（R7 = 整合/分区景观/预览/GLB 的那一轮）
+    'glb': '山河大学_全园_R7.glb',
     'yup': True,                 # glTF / three.js 标准：+Y 向上
     'apply_modifiers': True,
     'draco': True,
@@ -101,7 +137,8 @@ def build(src_dir, out_dir, only=None, res=None, samples=None):
             continue
         d = json.load(open(src, encoding='utf-8'))
         be = list(d.get('build_extra') or [])
-        for x in STAGE_EXTRA.get(st, ()):
+        for x in (GLOBAL_EXTRA + list(STAGE_EXTRA.get(st, ()))
+                  + list(CAMPUS_TAIL.get(st, ()))):
             if x not in be:
                 be.append(x)
         if PALETTE not in be:

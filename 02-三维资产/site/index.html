@@ -48,27 +48,29 @@
 
 <div class="concept">藏山纳智 · 云廊书院</div>
 <p class="lead">
-  以山为院 · 以水为径 · 以云为廊 —— 七个设计阶段（R0~R6），
-  63 张实景渲染成图，全园轻量化 GLB。全部几何由脚本生成，渲染为确定性过程。
+  以山为院 · 以水为径 · 以云为廊 —— 七个设计阶段（R0~R6）+ 全园整合（R7），
+  71 张实景渲染成图，全园轻量化 GLB。全部几何由脚本生成，渲染为确定性过程。
 </p>
 
 <div class="grid">
   <a class="card" href="./preview.html">
     <span class="tag">交互</span>
     <h3>全园 3D 预览</h3>
-    <p>浏览器里直接浏览 112 万面的全园模型，含 7 个机位预设。
-       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位。</p>
+    <p>浏览器里直接浏览 153 万面的全园模型，含 7 个机位预设。
+       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位。<br>
+       <span style="color:#B07B45">★ 必须通过 http(s) 打开；本地请双击 <code>serve.cmd</code>，
+       不要直接双击 HTML 文件。</span></p>
   </a>
   <a class="card" href="./建模图集/山河大学_三维建模图集.html">
     <span class="tag">图集</span>
     <h3>三维建模图集</h3>
-    <p>五章陈列：设计概念 / 技术路线 / 分阶段成果（24 张代表图 + 几何要点）/
+    <p>五章陈列：设计概念 / 技术路线 / 分阶段成果（32 张代表图 + 几何要点）/
        成果指标 / 说明。</p>
   </a>
   <a class="card" href="./renders/总览_R0-R6.html">
     <span class="tag">对照</span>
     <h3>分阶段对照总览</h3>
-    <p>R0~R6 每一版的改动前后并排对照，附逐像素 A/B 量化与配色合规度。</p>
+    <p>R0~R7 每一版的改动前后并排对照，附逐像素 A/B 量化与配色合规度。</p>
   </a>
   <a class="card" href="./建模图集/山河大学_三维建模图集_手机版.html">
     <span class="tag">手机</span>
@@ -80,11 +82,11 @@
 <h2>成果指标</h2>
 <div class="tw"><table>
   <tr><th>指标</th><th>数值</th><th>口径</th></tr>
-  <tr><td class="k">成图总量</td><td class="v">63 张</td><td>R0~R6 七个阶段，1600 × 900（R0 正立面 1000 × 1600）</td></tr>
+  <tr><td class="k">成图总量</td><td class="v">71 张</td><td>R0~R6 七个阶段 + 8 张 R7 整合图，1600 × 900（R0 正立面 1000 × 1600）</td></tr>
   <tr><td class="k">渲染引擎</td><td class="v">Cycles · Khronos PBR Neutral</td><td>sun 38° / strength 5.8 · 天空 0.66 · 雾密度 1.2e-5</td></tr>
-  <tr><td class="k">全园模型</td><td class="v">1,660,979 面</td><td>375 mesh · 60 材质（导出前）</td></tr>
-  <tr><td class="k">GLB 交付</td><td class="v">4.62 MB</td><td>1,118,087 面 · 42 材质 · 0 贴图 · Draco 压缩</td></tr>
-  <tr><td class="k">智慧环廊</td><td class="v">1631.9 m</td><td>沿 18 顶点折线，绕案山不跨案山，沿线七个站点</td></tr>
+  <tr><td class="k">全园模型</td><td class="v">2,317,949 面</td><td>393 对象 · 72 材质（导出前，r6 定版）</td></tr>
+  <tr><td class="k">GLB 交付</td><td class="v">5.70 MB</td><td>1,535,187 面 · 54 材质 · Draco 压缩 · 剔除 Haze 与 7 个未引用材质</td></tr>
+  <tr><td class="k">智慧环廊</td><td class="v">1631.9 m</td><td>沿 18 顶点折线，绕案山不跨案山，沿线 15 处垂直交通</td></tr>
   <tr><td class="k">滨水挑台</td><td class="v">2618.7 m</td><td>连续可上人岸线，常态外挑出水 3.0 m</td></tr>
   <tr><td class="k">垂直书院</td><td class="v">93.00 m</td><td>基座 42 × 42 × 11.25 + 塔身 9 层 × 7.40（塔 / 楼 = 2.04）</td></tr>
 </table></div>

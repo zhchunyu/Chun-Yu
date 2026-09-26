@@ -133,6 +133,117 @@ aside {
   border-top: 1px solid rgba(77, 171, 255, 0.12); line-height: 1.5;
 }
 
+/* ---------------- 右侧 AI 导航面板 ---------------- */
+#nav-panel { top: 74px; right: 20px; width: 300px; max-height: calc(100vh - 100px); }
+#nav-panel.collapsed .nav-body { display: none; }
+#nav-close {
+  background: none; border: none; color: var(--text-dim);
+  font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px;
+}
+#nav-close:hover { color: var(--text); }
+
+.nav-body { padding: 14px 16px; overflow-y: auto; flex: 1; }
+.nav-body::-webkit-scrollbar { width: 5px; }
+.nav-body::-webkit-scrollbar-thumb { background: rgba(77,171,255,.3); border-radius: 3px; }
+
+.nav-field { margin-bottom: 12px; }
+.nav-field > label {
+  display: block; font-size: 11px; color: var(--text-dim);
+  margin-bottom: 6px; letter-spacing: 0.6px;
+}
+
+.nav-input-wrap { position: relative; }
+.nav-input-wrap input {
+  width: 100%; font-family: inherit; font-size: 13px;
+  padding: 10px 12px; border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text); outline: none;
+  transition: border-color 0.16s;
+}
+.nav-input-wrap input:focus { border-color: var(--accent); }
+.nav-input-wrap input::placeholder { color: var(--text-dim); opacity: 0.6; }
+
+/* 自动补全列表 */
+.suggest-list {
+  position: absolute; top: 100%; left: 0; right: 0;
+  margin-top: 4px; max-height: 180px; overflow-y: auto;
+  background: #0b1422;
+  border: 1px solid var(--panel-border);
+  border-radius: 9px;
+  z-index: 20;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.suggest-list::-webkit-scrollbar { width: 4px; }
+.suggest-list::-webkit-scrollbar-thumb { background: rgba(77,171,255,.3); border-radius: 2px; }
+
+.suggest-item {
+  padding: 8px 12px; font-size: 12.5px;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.suggest-item:hover, .suggest-item.active {
+  background: rgba(77, 171, 255, 0.15);
+  color: var(--accent);
+}
+.suggest-item .si-type {
+  font-size: 10px; color: var(--text-dim);
+  padding: 1px 6px; border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+button.full { width: 100%; margin-top: 4px; }
+
+/* 导航结果 */
+.nav-result {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(77, 171, 255, 0.06);
+  border: 1px solid rgba(77, 171, 255, 0.18);
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } }
+
+.nav-route-info { margin-bottom: 10px; }
+.nri-row {
+  display: flex; justify-content: space-between;
+  padding: 5px 0; font-size: 12px;
+  border-bottom: 1px dashed rgba(77, 171, 255, 0.1);
+}
+.nri-row:last-child { border-bottom: none; }
+.nri-label { color: var(--text-dim); }
+.nri-val { font-weight: 500; }
+.nri-val.accent { color: var(--accent-2); font-weight: 600; }
+
+.nav-actions { display: flex; gap: 8px; }
+.nav-actions button { flex: 1; padding: 7px 10px; font-size: 11.5px; }
+
+/* AI 设置区域 */
+.nav-ai-section {
+  margin-top: 16px; padding-top: 14px;
+  border-top: 1px solid rgba(77, 171, 255, 0.12);
+}
+.nav-ai-title {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 600; margin-bottom: 8px;
+}
+.nav-ai-status {
+  font-size: 10.5px; font-weight: 500;
+  padding: 2px 8px; border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-dim);
+}
+.nav-ai-status.on {
+  background: rgba(46, 230, 168, 0.15);
+  color: var(--accent-2);
+}
+.nav-ai-tip {
+  font-size: 11px; color: var(--text-dim);
+  line-height: 1.55; margin-bottom: 10px;
+}
+
 /* ---------------- 右侧详情 ---------------- */
 #detail { top: 74px; right: 20px; width: 330px; max-height: calc(100vh - 200px); }
 #detail-close {
@@ -264,6 +375,17 @@ button.ghost:hover { border-color: var(--accent); color: var(--accent); }
   background: color-mix(in srgb, var(--c) 20%, transparent);
   border-color: var(--c); color: #fff;
 }
+
+input[type="text"], input[type="password"] {
+  width: 100%; font-family: inherit; font-size: 12.5px;
+  padding: 10px 12px; border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text); outline: none;
+  transition: border-color 0.16s;
+}
+input:focus { border-color: var(--accent); }
+input::placeholder { color: var(--text-dim); opacity: 0.6; }
 
 textarea {
   width: 100%; resize: none; font-family: inherit; font-size: 12.5px;

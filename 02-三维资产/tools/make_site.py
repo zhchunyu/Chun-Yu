@@ -5,13 +5,15 @@
 
      site/
        index.html                      ← 站点入口（本脚本生成）
-       renders/                        ← 63 张网页用缩图（JPEG）+ 总览对照页
+       renders/                        ← 71 张网页用缩图（JPEG）+ 总览对照页
          总览_R0-R6.html
          R0_垂直书院_透视.jpg …
        建模图集/
          山河大学_三维建模图集.html      ← 桌面版（图片已重指到 renders/*.jpg）
          山河大学_三维建模图集_手机版.html ← 单文件，原样复制
-       preview.html + src/ + vendor/ + assets/campus.glb   ← 3D 全园预览（three.js + GLB）
+       preview.html + src/ + serve.cmd + vendor/ + assets/campus.glb
+                                       ← 3D 全园预览（three.js + GLB）
+                                          serve.cmd = 本地起静态服务的双击脚本
 
 为什么不能直接部署 `02-三维资产/`：
   该目录 **1.9 GB**，其中 `blender/projects/*.blend` 占 1.2 GB —— 都是**可由脚本重新生成**
@@ -21,7 +23,7 @@
   站点里所有页面引用的都是 **`.png`**（图集里还是百分号编码的中文名）。
   本脚本统一把 1600×900 的 PNG（约 1.8 MB/张）缩成 1400 px 的 JPEG（约 160 KB/张），
   并把引用里的 `.png"` 改成 `.jpg"` —— 这样**页面代码一个字都不用改**，
-  只是换个图源目录。63 张合计从 94 MB 降到约 10 MB。
+  只是换个图源目录。71 张合计从约 106 MB 降到约 11 MB。
 
 用法：
     python make_site.py            # 全量构建
@@ -98,27 +100,29 @@ INDEX = """<!DOCTYPE html>
 
 <div class="concept">藏山纳智 · 云廊书院</div>
 <p class="lead">
-  以山为院 · 以水为径 · 以云为廊 —— 七个设计阶段（R0~R6），
-  63 张实景渲染成图，全园轻量化 GLB。全部几何由脚本生成，渲染为确定性过程。
+  以山为院 · 以水为径 · 以云为廊 —— 七个设计阶段（R0~R6）+ 全园整合（R7），
+  71 张实景渲染成图，全园轻量化 GLB。全部几何由脚本生成，渲染为确定性过程。
 </p>
 
 <div class="grid">
   <a class="card" href="./preview.html">
     <span class="tag">交互</span>
     <h3>全园 3D 预览</h3>
-    <p>浏览器里直接浏览 112 万面的全园模型，含 7 个机位预设。
-       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位。</p>
+    <p>浏览器里直接浏览 153 万面的全园模型，含 7 个机位预设。
+       拖拽旋转、滚轮缩放、<kbd>1</kbd>–<kbd>7</kbd> 切机位。<br>
+       <span style="color:#B07B45">★ 必须通过 http(s) 打开；本地请双击 <code>serve.cmd</code>，
+       不要直接双击 HTML 文件。</span></p>
   </a>
   <a class="card" href="./建模图集/山河大学_三维建模图集.html">
     <span class="tag">图集</span>
     <h3>三维建模图集</h3>
-    <p>五章陈列：设计概念 / 技术路线 / 分阶段成果（24 张代表图 + 几何要点）/
+    <p>五章陈列：设计概念 / 技术路线 / 分阶段成果（32 张代表图 + 几何要点）/
        成果指标 / 说明。</p>
   </a>
   <a class="card" href="./renders/总览_R0-R6.html">
     <span class="tag">对照</span>
     <h3>分阶段对照总览</h3>
-    <p>R0~R6 每一版的改动前后并排对照，附逐像素 A/B 量化与配色合规度。</p>
+    <p>R0~R7 每一版的改动前后并排对照，附逐像素 A/B 量化与配色合规度。</p>
   </a>
   <a class="card" href="./建模图集/山河大学_三维建模图集_手机版.html">
     <span class="tag">手机</span>
@@ -144,11 +148,11 @@ INDEX = """<!DOCTYPE html>
 """
 
 METRICS = [
-    ('成图总量', '63 张', 'R0~R6 七个阶段，1600 × 900（R0 正立面 1000 × 1600）'),
+    ('成图总量', '71 张', 'R0~R6 七个阶段 + 8 张 R7 整合图，1600 × 900（R0 正立面 1000 × 1600）'),
     ('渲染引擎', 'Cycles · Khronos PBR Neutral', 'sun 38° / strength 5.8 · 天空 0.66 · 雾密度 1.2e-5'),
-    ('全园模型', '1,660,979 面', '375 mesh · 60 材质（导出前）'),
-    ('GLB 交付', '4.62 MB', '1,118,087 面 · 42 材质 · 0 贴图 · Draco 压缩'),
-    ('智慧环廊', '1631.9 m', '沿 18 顶点折线，绕案山不跨案山，沿线七个站点'),
+    ('全园模型', '2,317,949 面', '393 对象 · 72 材质（导出前，r6 定版）'),
+    ('GLB 交付', '5.70 MB', '1,535,187 面 · 54 材质 · Draco 压缩 · 剔除 Haze 与 7 个未引用材质'),
+    ('智慧环廊', '1631.9 m', '沿 18 顶点折线，绕案山不跨案山，沿线 15 处垂直交通'),
     ('滨水挑台', '2618.7 m', '连续可上人岸线，常态外挑出水 3.0 m'),
     ('垂直书院', '93.00 m', '基座 42 × 42 × 11.25 + 塔身 9 层 × 7.40（塔 / 楼 = 2.04）'),
 ]
@@ -218,7 +222,7 @@ def main():
     os.makedirs(os.path.join(SITE, 'renders'), exist_ok=True)
     os.makedirs(os.path.join(SITE, '建模图集'), exist_ok=True)
 
-    # ---- 1. 63 张成图 → 缩图 ----
+    # ---- 1. 71 张成图 → 缩图 ----
     names = sorted(f for f in os.listdir(RENDERS) if f.endswith('.png'))
     if no_img:
         print('[site] 跳过图片转换（--no-img），已有 %d 张'
@@ -263,13 +267,23 @@ def main():
     os.makedirs(os.path.join(SITE, 'src'), exist_ok=True)
     shutil.copy2(os.path.join(WEB, 'src', 'preview.js'),
                  os.path.join(SITE, 'src', 'preview.js'))
+    # ★ serve.cmd：本地起静态服务的双击脚本（2026-09-25 加）。
+    #   为什么站点里要带它：preview.html 的脚本是 ES module，`file://` 下会被
+    #   CORS 拒绝 ⇒ 双击 index.html 打开的人会看到 3D 预览"永远转圈"。
+    #   页面上给的出路之一就是"双击 serve.cmd 再走 http://localhost:8123"，
+    #   所以这个文件必须跟着产物一起走，否则那条指引是死的。
+    _serve = os.path.join(WEB, 'serve.cmd')
+    if os.path.exists(_serve):
+        shutil.copy2(_serve, os.path.join(SITE, 'serve.cmd'))
+    else:
+        print('[site] ⚠ 未找到 web-demo/serve.cmd —— 本地打开指引会失效，请检查')
     for d in ('vendor', 'assets'):
         s = os.path.join(WEB, d)
         t = os.path.join(SITE, d)
         if os.path.isdir(t):
             shutil.rmtree(t)
         shutil.copytree(s, t)
-    print('[site] 3D 预览：preview.html + src/preview.js + vendor/ + assets/campus.glb')
+    print('[site] 3D 预览：preview.html + src/preview.js + serve.cmd + vendor/ + assets/campus.glb')
 
     # ---- 5. 入口页 ----
     rows = '\n  '.join('<tr><td class="k">%s</td><td class="v">%s</td><td>%s</td></tr>' % m

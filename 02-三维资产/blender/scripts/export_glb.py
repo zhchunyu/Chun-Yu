@@ -65,6 +65,39 @@ def principled(m):
     return None
 
 
+def _strip_leaf_trans():
+    """导出前剔除树叶材质的**透光**（`Transmission Weight` → 0）。
+
+    ★ 为什么必须剔除（渲染要，网页端不要）：
+      V2.5 给树叶加了 `Transmission Weight 0.32` + `IOR 1.0` 做**漫透射**，
+      Cycles 里是"逆光叶片发亮"的效果，**这是渲染端的语言**。
+      但 glTF 会把它导成 `KHR_materials_transmission` ⇒ three.js 侧变成
+      `MeshPhysicalMaterial` 的 transmission，**走透明通道 + 单独的
+      transmission render target**：605 株树冠全部进透明队列，深度排序极易出错
+      （树画在楼前面），且网页端帧率会明显掉。
+      ⇒ 网页端用**不透明树叶**（本来就是低模 LOD，近看不成立），
+        透光只在离线的 Cycles 成图里出现。
+
+    ★ 想保留可置 `BR_GLB_LEAF_TRANS=1`（默认剔除）。
+    """
+    if os.environ.get('BR_GLB_LEAF_TRANS', '0') == '1':
+        return
+    n = 0
+    for m in bpy.data.materials:
+        if '树叶' not in m.name:
+            continue
+        b = principled(m)
+        if b is None:
+            continue
+        s = b.inputs.get('Transmission Weight')
+        if s is None or s.default_value == 0.0:
+            continue
+        s.default_value = 0.0
+        n += 1
+    if n:
+        print('[GLB] 树叶透光已剔除 %d 个材质（渲染端效果，网页端走不透明）' % n)
+
+
 def flatten_materials():
     """把程序化材质压成 glTF 能表达的**常量** PBR。
 
@@ -79,7 +112,10 @@ def flatten_materials():
     一并断开即可 —— 网页端不需要它。
 
     ★ 破坏性 ⇒ 由 `run_campus.py` 排在"存盘 + 渲染"**之后**调用。
+
+    ★ V2.5 追加：**剔除树叶的 `Transmission Weight`**（见下方 `_strip_leaf_trans`）。
     """
+    _strip_leaf_trans()
     flat, kept, odd = 0, 0, []
     for m in bpy.data.materials:
         b = principled(m)

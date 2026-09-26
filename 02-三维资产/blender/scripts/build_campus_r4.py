@@ -25,10 +25,10 @@ V2 锚点 2 原文（§三）
 ────────────────────────────────────────────────────────────────
 实施中的四处修正（汇报时逐条说明）
 ────────────────────────────────────────────────────────────────
-■ 修正 1：长度 1.2 km → **1.63 km**
-  1.2 km 是"内环次路"（`INNER = scale_poly(RING, 0.52, 0, 430)`）的周长。
+■ 修正 1：长度 1.2 km → **1.56 km**（V3 重排后 1556 m）
+  1.2 km 是"内环次路"（`INNER = scale_poly(RING_ROAD, 0.52, 0, 430)`）的周长。
   内环的南缘在 Y 196~236，**够不到生活区**（生活区在 Y 24~134），
-  "串联七区"只做到五区。南延段净增约 330 m → 全长 1632 m。
+  "串联七区"只做到五区。南延段净增约 350 m → 全长 1556 m。
 
 ■ 修正 2：**环廊不跨越案山土丘，而是绕过去**
   内环南边是一条直线 Y=256.32，距案山土丘（圆心 (0,244.8)、R 48、顶 Z 12）
@@ -37,10 +37,11 @@ V2 锚点 2 原文（§三）
   而且"绕山"比"跨山"更符合风水上的"环抱"（环廊把案山抱在怀里）。
   绕行后土丘处净距 **82 m**。
 
-■ 修正 3：**北端下移 22 m，让开垂直书院的台基**
+■ 修正 3：**北端下移，让开垂直书院的台基**
   内环北点 (0, 628.64) 而 R0 垂直书院台基 42×42 @ (0, 648)（Y 627~669）
-  —— 环廊会直接穿进台基。北端改到 **(0, 606)**，落在图书馆（Y 490~546）
-  与垂直书院（Y 627~669）之间的空档里，**中轴上的第二个节点**（第一个是南端 (0,112)）。
+  —— 环廊会直接穿进台基。北端改到 **(0, 596)**，落在图书馆（Y 473~559）
+  与垂直书院（Y 622~708）之间的空档里，**中轴上的第二个节点**
+  （第一个是南端 **(0, 146)**，跨在下沉智谷上）。
 
 ■ 修正 4：**桥面标高取 +6.0 m（Z 9.00）不变，但净空按"最矮处"校核**
   最紧张的两处：案山南坡（已绕开，无净空问题）、下沉智谷谷底 Z −5.0（净空 14 m）。
@@ -82,11 +83,26 @@ V2 锚点 2 原文（§三）
 ■ 传感节点：每 60 m 一个（挂在桥面板底），共 27 个
   小盒 + 细杆，重复、密集、可数 —— 这就是"AI 系统的物理载体"的可视化。
 
-■ 七个站点：**S1~S7 对应七区**，位置 = 环廊上离各分区形心最近的点
-  每个站点 = 桥面加宽到 18 m 的站台 + **格栅断开成门洞（±3.2 m）** +
-  **门洞两侧一对铜柱（直上到檐口）** + 铜顶传感立柱 + 下到地面的楼梯塔。
-  —— 站点在 1.63 km 的环廊上要能被"数出来"，靠的是**竖向的铜柱**和**格栅的缺口**，
+■ **15 处站点**（V3 §2.1 目标"7 → 13、最大间距 ≤ 150 m"；实测**最少 15 处**才满足）：
+  **S1~S7 对应七区**（位置 = 环廊上离各分区形心最近的点，脚本自己反查弧长），
+  再按"最大间距 ≤ 150 m"补纯楼梯节点，补到**处处 ≤ 150 m**（实际最大 121 m）。
+  ★ 站点表**不在本文件算** —— 唯一真源是 `build_campus_site.py` 的 `RING_STATIONS`
+  （树在场地阶段就合并了，R4 删不动，所以站点位置必须提前到场地阶段定）。
+  每个站点 = 桥面加宽到 18 m 的站台 + **栏板与格栅一起断开成门洞（±6.0 m）** +
+  **门洞两侧一对铜柱（直上到檐口）** + 铜顶传感立柱。
+  —— 站点在 1.56 km 的环廊上要能被"数出来"，靠的是**竖向的铜柱**和**格栅的缺口**，
   不是靠一块加宽的板（v2 首版只加宽 3.6 m，图上完全读不出来）。
+
+■ **垂直交通**（V3 §2.2~2.4，改掉 V3 §0.4 诊断出的老毛病）：
+  旧版每站一根 **4.6 × 4.6 m 实心方柱**（无踏步、无平台），而且挑在**内侧**
+  被桥面遮住 ⇒ 任何视角都读不成"楼梯"；且只有 7 处、最大间距 424 m、无坡道无电梯。
+  现在 **11 处开敞双跑楼梯（外侧）+ 2 处 1:12 无障碍坡道 + 2 处电梯塔 = 15 处**：
+  · 楼梯：**顺桥向**布置（两跑沿路径前后排），v 向只占 3.0 m 进深
+    —— 横桥向要占 6.32 m，**南弧那 8 m 宽的缝里放不下**（实测会插进研究生公寓）。
+    梯段宽 3.0 m、踏步 300×184 mm、2 跑 × 16 级、中间休息平台、
+    清水梯段板 + 竹木压顶 + 梯段外缘铜收边，高差 5.90 m
+  · 坡道：1:12 ⇒ 坡长 70.8 m，两段折返、净宽 2.4 m、坡下每 6 m 一对支柱
+  · 电梯：井道 3.0 × 3.0 m，玻璃幕 + 铜顶，地面/桥面两层站
 
 ■ 自动清障：把与环廊冲突的**五个分区占位体块**删掉（只匹配 `_ZONE_PREFIX`，
   **绝不碰 R0~R3 成果**），并打印"R5 需按环廊重新排布这几栋"。
@@ -144,62 +160,45 @@ _GRL_PITCH = 1.00       # ★ v2 由 1.40 收紧到 1.00：1.40 在 60 m 外读�
 # ---- 路径 ----
 _STEP = 3.00            # 路径重采样步长
 _PIER_STEP = 48.00      # 桥墩间距
-_VALLEY = (-21.0, 21.0, 95.0, 188.0)   # R1 下沉智谷：X ±21、Y 95~188
+_VALLEY = (-36.0, 36.0, 92.0, 190.0)   # R1 下沉智谷 + 智谷台地：X ±36、Y 92~190
+# ★ 范围要按**智谷台地**（BLD_智谷_台地与坐凳 X ±33.2 / Y 94.5~188.5 / Z −5~4.2）取，
+#   不能只按谷口 X ±21 —— 否则落在 21~33 之间的桥墩会从台地的踏步里长出来。
 
 # ==================================================================
 # 1. 环廊路径
 # ==================================================================
-# 前 13 个顶点 = 场地阶段的「内环次路」原样（那是已设计好的路网，不要另起炉灶）；
-# 后 5 个是南延段（修正 1）与北端下移（修正 3）。
-RING = [
-    (-183.04, 256.32), (-220.48, 327.04), (-235.04, 412.32), (-210.08, 500.72),
-    (-148.72, 573.52), (-86.00, 596.00), (0.00, 606.00), (86.00, 596.00),
-    (148.72, 573.52), (210.08, 500.72), (235.04, 412.32), (220.48, 327.04),
-    (183.04, 256.32), (206.00, 162.00), (86.00, 130.00), (0.00, 112.00),
-    (-86.00, 130.00), (-206.00, 162.00),
-]
-
-
-def _seg_table(pts):
-    """闭合折线的分段表：[(x0, y0, dx, dy, len, s0), ...] + 总长"""
-    segs, s = [], 0.0
-    n = len(pts)
-    for i in range(n):
-        x0, y0 = pts[i]
-        x1, y1 = pts[(i + 1) % n]
-        dx, dy = x1 - x0, y1 - y0
-        d = math.hypot(dx, dy)
-        if d < 1e-9:
-            continue
-        segs.append((x0, y0, dx, dy, d, s))
-        s += d
-    return segs, s
-
-
-_SEGS, RING_LEN = _seg_table(RING)
-RING_CX = sum(p[0] for p in RING) / float(len(RING))
-RING_CY = sum(p[1] for p in RING) / float(len(RING))
-
-
-def ring_at(s):
-    """按弧长 s 取环廊中心线的点 + 切向 + **向外的法向**。
-
-    向外的法向用"背离形心"判定，不靠绕向正负号 ——
-    `signed_area` 能算，但绕向一旦被谁改一下，整个环廊的内外侧会静默对调。
-    """
-    s = s % RING_LEN
-    for x0, y0, dx, dy, d, s0 in _SEGS:
-        if s <= s0 + d:
-            t = (s - s0) / d
-            x, y = x0 + dx * t, y0 + dy * t
-            tx, ty = dx / d, dy / d
-            nx, ny = -ty, tx
-            if (x + nx - RING_CX) ** 2 + (y + ny - RING_CY) ** 2 < \
-               (x - nx - RING_CX) ** 2 + (y - ny - RING_CY) ** 2:
-                nx, ny = -nx, -ny
-            return x, y, tx, ty, nx, ny
-    x0, y0, dx, dy, d, s0 = _SEGS[-1]
-    return x0, y0, dx / d, dy / d, -dy / d, dx / d
+# ★★ V3：折线**不再在本文件里重复一遍** —— 直接引用场地阶段的 `INNER`
+#   （"内环次路"，唯一真源在 `build_campus_site.py`）。理由：环廊的净距必须逐栋
+#   校核（`_check_road.py`），而内环次路修在廊下，两条线**必须一模一样**；
+#   各写一份的下场就是改了一处、另一处悄悄走散（本文件历史上正是这样）。
+#
+#   旧折线**穿楼 4 栋**（实测 1.5 m 网格相交面积）：
+#     Academy#3 1510 / 实验楼A 711 / 研究生公寓 556 / 宿舍E 196 m²；
+#     另有 6 栋净距 < 12 m（公共教学楼只有 0.2 m）。
+#   根因：旧折线的东西弧在 X ±235，而教学 C/D 西缘 237.8、实验楼 A 西缘 225.6、
+#   创客工坊东缘 −248.1 —— **弧线正好压在建筑带上**。
+#   新折线（在 `build_campus_site.py` 的 `RING_LOOP` 处）按四条量出来的约束排：
+#     ① 东弧 X ≤ 206（实验楼 A 西缘 225.6 ⇒ 净距 12.3 m）
+#     ② 西弧 X ≥ −206（创客工坊东缘 −248.1 ⇒ 净距 34.8 m）
+#     ③ 北弧 Y 568~596（图书馆北 558.8 / Academy#3 南 599.3 / 垂直书院南 622.3）
+#     ④ 南弧 Y ≈ 147.5（**生活区↔人文区那道缝只有 30 m**：
+#        宿舍/研究生公寓北缘 132.5、人文书院南缘 162.5
+#        ⇒ 14.6 m 断面的理论最大净距 = (30 − 14.6)/2 = **7.7 m**，
+#        所以这一段按 7.5 m 校核，其余段按 12 m。
+#        这一段是**几何上做不出 12 m** 的，不是没算 —— 汇报时必须说明。）
+# ★★ 弧长工具（`_seg_table` / `RING_LEN` / `RING_CX` / `RING_CY` / `ring_at`）
+#   和站点表（`RING_STATIONS`）**都不在本文件定义** —— 唯一真源在
+#   `build_campus_site.py`（多阶段共享同一个 globals，直接复用同名定义）。
+#
+#   为什么必须提升到**场地阶段**：树在场地阶段一次性合并成 `SITE_树干` /
+#   `SITE_树冠` 两个对象，到 R4 已经**删不动**了。垂直交通（楼梯 / 坡道 / 电梯）
+#   要清掉占位的树，就必须在"种树之前"就知道站点落在哪 ⇒ 站点表只能在
+#   场地阶段算。本文件里曾经的本地副本（`_seg_table` / `ring_at` /
+#   `_nearest_s` / `_fill_stations` / `_STATION_TGT` / `_ST_BASE`）已全部删除。
+#
+#   ★ 踩过的坑：两处各算一份 ⇒ `[site] 站点 15 处` 与 `[R4] 站点 15 处`
+#     看起来一致，但**树的排除区是按 site 那份算的**；只要哪天两边口径漂开，
+#     就会重新出现"树长在楼梯里"这种**不报错**的失效（2026-09-25 实拍发现）。
 
 
 def _even(step):
@@ -212,19 +211,18 @@ _LOOP = [ring_at(i * _STEP)[:2] for i in range(int(RING_LEN / _STEP))]
 print(f'[R4] 环廊中心线：{len(_LOOP)} 个采样点，全长 **{RING_LEN:.0f} m**'
       f'（V2 原估 1200 m → 修正 1）')
 
-# ---- 七个站点：位置 = 环廊上离各分区形心最近的点（弧长已算好） ----
-# 必须**放在格栅循环之前** —— 格栅要在每个站点断开成"门洞"，
-# 否则七个站点在图上完全读不出来（v2 首版站台只比桥面宽 3.6 m，看不见）。
-_STATIONS = (
-    ('S1_运动医疗区', 0.0,     (-284.0, 274.0)),
-    ('S2_科技区',     258.4,   (-284.0, 530.0)),
-    ('S3_中轴人文区', 506.8,   (0.0, 427.0)),
-    ('S4_实验区',     755.2,   (281.0, 530.0)),
-    ('S5_教学区',     933.6,   (281.0, 274.0)),
-    ('S6_生活区东',   1110.7,  (238.0, 79.0)),
-    ('S7_生活区西',   1534.9,  (-238.0, 79.0)),
-)
-_ST_HALF = 3.20          # 门洞半宽（沿路径）
+# ---- 站点表：**引用场地阶段唯一真源**（`build_campus_site.py` 的 `RING_STATIONS`）----
+#   必须**放在格栅循环之前** —— 格栅要在每个站点断开成"门洞"，
+#   否则站点在图上完全读不出来（v2 首版站台只比桥面宽 3.6 m，看不见）。
+#   ★ 站点位置**不能写死弧长**。踩过的坑：折线一改（V3 环廊整体重排），写死的
+#     弧长全部失效，站台会静默跑到别的区去，而且**不报任何错**。场地阶段那份
+#     是"给一个分区形心目标点，脚本自己反查环廊上最近的弧长"，再按
+#     ≤150 m 补纯楼梯节点 —— 详见 `build_campus_site.py` 的 `ring_fill_stations()`。
+_ST_HALF = 6.00          # 门洞半宽（沿路径）→ 门洞 12 m，与站台同长
+#   ★ 由 3.60 加到 6.00（2026-09-25）：楼梯改成**顺桥向**布置后，沿 u 要占
+#     4.80（下跑）+ 1.50（休息平台）+ 4.80（上跑）= **11.10 m**，
+#     7.2 m 的门洞 / 站台兜不住它。
+_STATIONS = tuple((_n, _s, _t) for _n, _s, _t in RING_STATIONS)
 
 
 def near_station(s):
@@ -550,18 +548,24 @@ _V_OUT = _DECK_W * 0.5 - 0.30        # 5.70
 _V_IN = -(_DECK_W * 0.5 - 0.30)
 
 # ---- 外侧：栏板 1.05（清水混凝土）+ 格栅 1.60（竹木，@1.00）+ 上部开敞 ----
-# ★ 格栅在**每个站点断开成门洞**（v2 首版站台只比桥面宽 3.6 m，七个站点在图上完全读不出来）
-_rail_o.append(slab_band(offset_loop(_LOOP, _V_OUT), 0.36, _DECK_Z, _GRL_Z0))
-for _s in _even(_GRL_PITCH)[0]:
+# ★★ **栏板与格栅都要在每个站点断开成门洞**（v2 首版站台只比桥面宽 3.6 m，
+#   七个站点在图上完全读不出来）。★ 栏板**必须一起断** —— 它原来是一整圈
+#   `slab_band`，而 S3 把开敞楼梯做在**外侧**、站台向外加宽到 18 m：
+#   栏板若不断，人在桥面上根本走不到 v>5.7 的站台外缘，更下不了楼梯。
+#   格栅的上下压条同理（不断就成了横在门洞上的两根梁）。
+_GRL_S = _even(_GRL_PITCH)[0]
+for _s in _GRL_S:
     if near_station(_s):
         continue
     _px, _py, _tx, _ty, _nx, _ny = ring_at(_s)
-    _grl.append(box(_px + _nx * _V_OUT, _py + _ny * _V_OUT, 0.10, 0.36,
-                    _GRL_H, _GRL_Z0, math.atan2(_ty, _tx)))
-# 格栅上下通长压条（收口，否则格栅顶端悬空 = R0 的"断头筷子"）
-_grl.append(slab_band(offset_loop(_LOOP, _V_OUT), 0.62, _GRL_Z0, _GRL_Z0 + 0.22))
-_grl.append(slab_band(offset_loop(_LOOP, _V_OUT), 0.62, _GRL_Z0 + _GRL_H - 0.22,
-                      _GRL_Z0 + _GRL_H))
+    _rot = math.atan2(_ty, _tx)
+    _ox, _oy = _px + _nx * _V_OUT, _py + _ny * _V_OUT
+    _rail_o.append(box(_ox, _oy, _GRL_PITCH + 0.02, 0.36, _RAIL_H, _DECK_Z, _rot))
+    _grl.append(box(_ox, _oy, 0.10, 0.36, _GRL_H, _GRL_Z0, _rot))
+    # 上下压条（收口，否则格栅顶端悬空 = R0 的"断头筷子"）
+    _grl.append(box(_ox, _oy, _GRL_PITCH + 0.02, 0.62, 0.22, _GRL_Z0, _rot))
+    _grl.append(box(_ox, _oy, _GRL_PITCH + 0.02, 0.62, 0.22,
+                    _GRL_Z0 + _GRL_H - 0.22, _rot))
 
 # ---- 内侧：栏板 1.05 + 竹木扶手 ----
 _rail_i.append(slab_band(offset_loop(_LOOP, _V_IN), 0.36, _DECK_Z, _GRL_Z0))
@@ -578,9 +582,257 @@ print(f'[R4] 内侧：栏板 {_RAIL_H:.2f} m + 竹木扶手，全开敞')
 
 
 # ==================================================================
-# 7. 传感节点（每 60 m）+ 七个站点
+# 7. 传感节点 + 15 处站点 + 垂直交通（V3 §2：11 楼梯 / 2 坡道 / 2 电梯）
 # ==================================================================
-_sensor, _stair, _mast, _plat = [], [], [], []
+_sensor, _mast, _plat = [], [], []
+# 垂直交通按**材质**分桶（与全项目一致：同材质合并成一个对象）
+_VT = {'conc': [], 'bamb': [], 'cop': [], 'glas': []}
+
+# ---- 常量（V3 §2.2~2.4）----
+_GND = Z_TOP + 0.10                     # 3.10 落地标高
+_TOP = _DECK_Z                          # 9.00 桥面顶
+#   ★ V3 §2.2 写「高差 5.74 m（Z 3.10 → 8.84）」。8.84 = `_DECK_Z − 0.16`，
+#     也就是**旧实心方柱的顶**；可桥面顶在 9.00 —— 楼梯停在 8.84 就**差 0.16 m 上不去**。
+#     这里取 `_TOP = _DECK_Z`、高差 5.90 m，32 级 ⇒ 踢面 0.1844（仍在 <0.19 的舒适区），
+#     末级正好与桥面平接。**这是对 V3 数字的修正**，汇报时说明。
+_DH = _TOP - _GND                       # 5.90
+_VT_N = 16                              # 每跑级数（2 跑 × 16 = 32 级）
+_VT_RISE = _DH / (_VT_N * 2)            # 0.1844
+_VT_RUN = 0.30                          # 踏面
+_VT_W = 3.00                            # 梯段宽（顺桥向布置时 = **v 向进深**）
+_VT_LAND = 1.50                         # 休息平台进深（顺桥向 = 沿 u 的长度）
+_VT_T = 0.62                            # 梯段板厚（阶梯状板底）
+_VT_RAIL = 1.05                         # 栏杆高
+_VT_RT = 0.14                           # 栏杆厚
+_VT_V0 = _DECK_W * 0.5 + 3.00           # 9.00 = 楼梯内缘（贴站台外缘）
+_VT_V1 = _VT_V0 + _VT_W                 # 12.00 = 楼梯外缘（校园一侧）
+_VT_FR = _VT_RUN * _VT_N                # 4.80 一跑的平面长度
+_VT_UA = -(0.5 * _VT_LAND + _VT_FR)     # −5.55 下跑外端（**地面起步**）
+_VT_UB = 0.5 * _VT_LAND + _VT_FR        # +5.55 上跑外端（**桥面到达**）
+_Z_LAND = _GND + _VT_RISE * _VT_N       # 6.05 休息平台标高
+
+# 无障碍坡道（V3 §2.3）：1:12，高差 5.90 ⇒ 坡长 70.8 m，两段折返
+_RP_W = 2.40                            # 净宽
+_RP_RUN = _DH * 12.0 * 0.5              # 35.40 每段坡长
+_RP_LD = 1.50                           # 休息平台
+_RP_T = 0.22                            # 坡板厚
+_RP_V1 = _VT_V0 + 0.30                  # 9.30 上段内缘（站台外缘 9.00 外 0.30）
+_RP_V2 = _RP_V1 + _RP_W                 # 11.70
+_RP_V3 = _RP_V2 + _RP_W                 # 14.10
+
+# 电梯（V3 §2.4）
+_LF_W = 3.00
+_LF_V0 = _DECK_W * 0.5                  # 6.00
+_LF_TOP = _DECK_Z + 2.60                # 11.60 井道顶
+
+# 类型分配：其余全部是开敞双跑楼梯
+_VT_RAMP_AT = ('S3_中轴人文区', 'S5_教学区')
+_VT_LIFT_AT = ('S4_实验区', 'S6_生活区东')
+
+
+def _uv(px, py, tx, ty, nx, ny, u, v):
+    return (px + tx * u + nx * v, py + ty * u + ny * v)
+
+
+def _pb(px, py, tx, ty, nx, ny, rot, u0, u1, v0, v1, h, z0):
+    """局部矩形（u 沿路径 / v 沿外法向）→ 世界 box。"""
+    cx, cy = _uv(px, py, tx, ty, nx, ny, (u0 + u1) * 0.5, (v0 + v1) * 0.5)
+    return box(cx, cy, abs(u1 - u0), abs(v1 - v0), h, z0, rot)
+
+
+def _prism(px, py, tx, ty, nx, ny, u0, z0, u1, z1, v0, v1, th):
+    """**斜板**（坡道板 / 坡道栏板）：`box()` 只能绕 Z 转，做不出坡度，
+    直接给 8 个顶点建平行六面体。`th` = 沿 Z 的板厚。
+
+    ★ (u,v) → 世界 (x,y) 的映射行列式 = `tx*ny − ty*nx`，向外的法向取"背离形心"
+      那一支，行列式可能是 **−1**（镜像）—— 镜像会让所有面的绕向反过来、法线朝内。
+      所以按行列式符号决定要不要反转绕向，而不是赌它恒为 +1。
+    """
+    loc = [(u0, v0, z0), (u0, v1, z0), (u1, v1, z1), (u1, v0, z1)]
+    loc += [(u, v, z - th) for u, v, z in loc]
+    vs = [((px + tx * u + nx * v), (py + ty * u + ny * v), z) for u, v, z in loc]
+    fs = [[0, 1, 2, 3], [7, 6, 5, 4],
+          [0, 4, 5, 1], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 4, 0]]
+    if tx * ny - ty * nx < 0.0:
+        fs = [list(reversed(f)) for f in fs]
+    return vs, fs
+
+
+def _railE(B, px, py, tx, ty, nx, ny, rot, u0, u1, va, vb, zt):
+    """一段梯段**沿 u 方向**的侧栏杆（清水混凝土）+ 竹木压顶。
+
+    ★ 栏杆必须**沿梯段的长边**摆。横桥向布置时梯段长边在 u 两端，顺桥向布置时
+      长边在 v 两侧 —— 布置一改、栏杆跟着改，否则栏杆会横着架在踏步上。
+      （旧的横桥向版 `_rail2()` 已随布置一起删除。）
+    """
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, u0, u1, va, vb,
+                         _VT_RAIL, zt))
+    B['bamb'].append(_pb(px, py, tx, ty, nx, ny, rot, u0, u1,
+                         va - 0.04, vb + 0.04, 0.09, zt + _VT_RAIL))
+
+
+def _railSlope(B, px, py, tx, ty, nx, ny, u0, z0, u1, z1, v0, v1):
+    """一段**随坡度斜上去**的栏杆（清水混凝土）+ 竹木压顶。
+
+    ★ 不能做成"每级一截水平栏杆" —— 那样在近景里读成**城垛 / 锯齿**，
+      不像楼梯栏杆（2026-09-25 渲染实拍确认）。真栏杆是**连续斜板**：
+      底边沿踏步包络线，顶边平行抬 `_VT_RAIL`。`_prism()` 正好做这个。
+    """
+    for va, vb in ((v0, v0 + _VT_RT), (v1 - _VT_RT, v1)):
+        B['conc'].append(_prism(px, py, tx, ty, nx, ny,
+                                u0, z0 + _VT_RAIL, u1, z1 + _VT_RAIL,
+                                va, vb, _VT_RAIL))
+        B['bamb'].append(_prism(px, py, tx, ty, nx, ny,
+                                u0, z0 + _VT_RAIL + 0.09,
+                                u1, z1 + _VT_RAIL + 0.09,
+                                va - 0.04, vb + 0.04, 0.09))
+
+
+def _mk_stair(B, px, py, tx, ty, nx, ny):
+    """**开敞双跑楼梯**（V3 §2.2）—— 做在**外侧**，从校园里一眼看得见。
+
+    ★★ 布置是**顺桥向**（两跑沿 u 前后排），不是横桥向（沿 v 左右并排）。
+      为什么改（2026-09-25）：横桥向要占 **6.32 m** 的 v 向进深（两跑并列 +
+      休息平台），而**南弧**（生活区）那段环廊中心线 Y≈147.5 夹在两排楼之间 ——
+      桥面外缘（v = 6.0）到研究生公寓北墙（v = 14.0）只剩 **8.0 m**，
+      站台还要往外挑 3 m ⇒ 横桥向**放不下**：实测 S7 的休息平台 + 栏杆
+      插进楼里 1.3 m 深（`_diag_vt_clear.py` 精确量到 333 m² 侵入面积）。
+      顺桥向只占 **3.0 m** 进深（v ∈ [9.0, 12.0]）⇒ 净距 **2.0 m** ✓，
+      而且**站台仍保留 18 m 宽**（横桥向就得把站台削到 12 m 才勉强够）。
+      顺带与坡道统一 —— 坡道本来就是顺桥向铺 70.8 m。
+    ★ 代价：沿 u 占 11.10 m，所以门洞 / 站台长度从 7.2 加到 12 m（`_ST_HALF`）。
+
+    动线：u = −5.55（地面）→ 下跑 16 级升到 Z 6.05 → 休息平台 1.5 m →
+          上跑 16 级升到 Z 9.00 → 到 u = +5.55，**向内侧横移一步即上站台**
+          （站台外缘 v = 9.00 与梯段内缘共线）。
+    """
+    rot = math.atan2(ty, tx)
+    v0, v1 = _VT_V0, _VT_V1
+    _vside = ((v0, v0 + _VT_RT), (v1 - _VT_RT, v1))
+    la, lb = -0.5 * _VT_LAND, 0.5 * _VT_LAND
+    # 下跑：u 自 `_VT_UA`（外端，地面）向 0 升到休息平台
+    for k in range(_VT_N):
+        zt = _GND + _VT_RISE * (k + 1)
+        ua, ub = _VT_UA + _VT_RUN * k, _VT_UA + _VT_RUN * (k + 1)
+        B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, ua, ub, v0, v1,
+                             _VT_T, zt - _VT_T))
+        B['cop'].append(_pb(px, py, tx, ty, nx, ny, rot, ua, ub,
+                            v1, v1 + 0.05, 0.06, zt - 0.06))
+    _railSlope(B, px, py, tx, ty, nx, ny,
+               _VT_UA, _GND + _VT_RISE, la, _Z_LAND, v0, v1)
+    # 休息平台（两跑之间，居中）+ 两侧**水平**栏杆
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, la, lb, v0, v1,
+                         _VT_T, _Z_LAND - _VT_T))
+    for va, vb in _vside:
+        _railE(B, px, py, tx, ty, nx, ny, rot, la, lb, va, vb, _Z_LAND)
+    # 上跑：u 自休息平台向 `_VT_UB`（外端，桥面）升
+    for k in range(_VT_N):
+        zt = _Z_LAND + _VT_RISE * (k + 1)
+        ua, ub = 0.5 * _VT_LAND + _VT_RUN * k, 0.5 * _VT_LAND + _VT_RUN * (k + 1)
+        B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, ua, ub, v0, v1,
+                             _VT_T, zt - _VT_T))
+        B['cop'].append(_pb(px, py, tx, ty, nx, ny, rot, ua, ub,
+                            v1, v1 + 0.05, 0.06, zt - 0.06))
+    _railSlope(B, px, py, tx, ty, nx, ny,
+               0.5 * _VT_LAND, _Z_LAND + _VT_RISE, _VT_UB, _TOP, v0, v1)
+    # 支柱：休息平台 + 上跑中点各一对。
+    # ★ 不给柱子会读成"悬在空中的一块斜板"（铁律：悬空件必须能读出支承）。
+    #   坡道每 6 m 一对柱，楼梯同样处理；下跑中段的板底只离地 0.95 m，不必再给。
+    for uu, zt in ((0.0, _Z_LAND),
+                   (0.5 * _VT_LAND + 0.5 * _VT_FR, _Z_LAND + 0.25 * _DH)):
+        for vv in (v0 + 0.30, v1 - 0.30):
+            B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot,
+                                 uu - 0.20, uu + 0.20, vv - 0.20, vv + 0.20,
+                                 zt - _VT_T - Z_TOP, Z_TOP))
+
+
+def _mk_ramp(B, px, py, tx, ty, nx, ny):
+    """**1:12 无障碍坡道**（V3 §2.3）—— 沿环廊外侧两段折返。
+
+    ★ 5.90 m 高差 @1:12 ⇒ 坡长 **70.8 m**，两段各 35.4 m。这个长度是坡比定的，
+      躲不掉（V3 也写了 68.9 m，那是对 5.74 m 算的）。所以坡道只能**平行于环廊**
+      铺开，而不是像楼梯那样垂直往外伸。上段与站台外缘平接，下段回落到地面。
+    """
+    rot = math.atan2(ty, tx)
+    v1, v2, v3 = _RP_V1, _RP_V2, _RP_V3
+    u_a = _ST_HALF                          # 上段起点（让开站台 7.2 m 长度）
+    u_b = u_a + _RP_RUN                     # 上段终点 = 休息平台起点
+    u_c = u_b + _RP_LD                      # 休息平台终点
+    u_d = u_c - _RP_RUN                     # 下段终点（长度必须 = 坡长）
+    # 与站台外缘之间的 0.30 m 过渡板（否则坡道头悬在站台外）
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, -1.60, 1.60,
+                         _VT_V0, v1, 0.18, _TOP - 0.18))
+    # 上段坡 + 休息平台 + 下段坡 + 落地平台
+    B['conc'].append(_prism(px, py, tx, ty, nx, ny, u_a, _TOP, u_b, _Z_LAND,
+                            v1, v2, _RP_T))
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, u_b, u_c, v1, v3,
+                         _RP_T, _Z_LAND - _RP_T))
+    B['conc'].append(_prism(px, py, tx, ty, nx, ny, u_c, _Z_LAND, u_d, _GND,
+                            v2, v3, _RP_T))
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, 0.0, u_d, v2, v3,
+                         _RP_T, _GND - _RP_T))
+    # 栏板（斜的用 `_prism`，平的用 `_pb`）：两侧通长 + 休息平台外缘
+    for va, vb in ((v1, v1 + 0.12), (v2 - 0.12, v2), (v3 - 0.12, v3)):
+        if vb <= v2 + 0.01:                 # 上段的两侧
+            B['conc'].append(_prism(px, py, tx, ty, nx, ny, u_a, _TOP + 0.95,
+                                    u_b, _Z_LAND + 0.95, va, vb, 0.55))
+        if va >= v2 - 0.01:                 # 下段的两侧
+            B['conc'].append(_prism(px, py, tx, ty, nx, ny, u_c, _Z_LAND + 0.95,
+                                    u_d, _GND + 0.95, va, vb, 0.55))
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, u_b, u_c, v3 - 0.12, v3,
+                         1.05, _Z_LAND))
+    B['bamb'].append(_pb(px, py, tx, ty, nx, ny, rot, u_b, u_c, v3 - 0.16, v3,
+                         0.09, _Z_LAND + 1.05))
+    # 坡道下的支柱（每 6 m 一对）—— 坡道是架空的，不给柱子会读成"悬浮"
+    for uu, zz in ((u_a + 6, None), (u_a + 12, None), (u_a + 18, None),
+                   (u_a + 24, None), (u_a + 30, None)):
+        zt = _TOP - (uu - u_a) / 12.0
+        for vv in (v1 + 0.30, v2 - 0.30):
+            B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, uu - 0.22, uu + 0.22,
+                                 vv - 0.22, vv + 0.22, zt - _RP_T - Z_TOP,
+                                 Z_TOP))
+    for uu in (u_c - 6, u_c - 12, u_c - 18, u_c - 24, u_c - 30):
+        zt = _Z_LAND - (u_c - uu) / 12.0
+        for vv in (v2 + 0.30, v3 - 0.30):
+            B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, uu - 0.22, uu + 0.22,
+                                 vv - 0.22, vv + 0.22, zt - _RP_T - Z_TOP,
+                                 Z_TOP))
+
+
+def _mk_lift(B, px, py, tx, ty, nx, ny):
+    """**电梯塔**（V3 §2.4）—— 井道 3.0 × 3.0，玻璃幕 + 铜顶，两层站。"""
+    rot = math.atan2(ty, tx)
+    v0, v1 = _LF_V0, _LF_V0 + _LF_W
+    u0, u1 = -_LF_W * 0.5, _LF_W * 0.5
+    # 基座
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, u0 - 0.22, u1 + 0.22,
+                         v0 - 0.22, v1 + 0.22, 0.35, Z_TOP))
+    # 四角铜柱
+    for uu in (u0 - 0.06, u1 - 0.14):
+        for vv in (v0 - 0.06, v1 - 0.14):
+            B['cop'].append(_pb(px, py, tx, ty, nx, ny, rot, uu, uu + 0.20,
+                                vv, vv + 0.20, _LF_TOP - Z_TOP - 0.35,
+                                Z_TOP + 0.35))
+    # 玻璃幕：四面，**内面留 1.20 m 门洞**（否则读成一根实心玻璃柱）
+    _zb, _zh = Z_TOP + 0.35, _LF_TOP - 0.35 - Z_TOP
+    for vv in (v0, v1 - 0.10):
+        B['glas'].append(_pb(px, py, tx, ty, nx, ny, rot, u0, u1, vv, vv + 0.10,
+                             _zh, _zb))
+    B['glas'].append(_pb(px, py, tx, ty, nx, ny, rot, u1 - 0.10, u1, v0, v1,
+                         _zh, _zb))
+    for uu, uw in ((u0, (_LF_W - 1.20) * 0.5), (u1 - (_LF_W - 1.20) * 0.5,
+                                                (_LF_W - 1.20) * 0.5)):
+        B['glas'].append(_pb(px, py, tx, ty, nx, ny, rot, uu, uu + uw,
+                             v0, v0 + 0.10, _zh, _zb))
+    # 铜顶 + 压顶
+    B['cop'].append(_pb(px, py, tx, ty, nx, ny, rot, u0 - 0.30, u1 + 0.30,
+                        v0 - 0.30, v1 + 0.30, 0.26, _LF_TOP - 0.26))
+    B['cop'].append(_pb(px, py, tx, ty, nx, ny, rot, u0 - 0.02, u1 + 0.02,
+                        v0 - 0.02, v1 + 0.02, 0.55, _LF_TOP))
+    # 桥面标高处的门厅挑板（与桥面接）
+    B['conc'].append(_pb(px, py, tx, ty, nx, ny, rot, u0 - 0.40, u1 + 0.40,
+                         v0 - 1.10, v0 + 0.10, 0.18, _DECK_Z - 0.18))
+
 
 _NS = 60.0
 for _s in _even(_NS)[0]:
@@ -590,11 +842,15 @@ for _s in _even(_NS)[0]:
     _sensor.append(box(_px, _py, 0.10, 0.10, 1.40, _DECK_Z - _DECK_T - 2.18, _rot))
 
 # _STATIONS 已在第 1 节（路径之后）定义 —— 格栅要在站点处断开，必须先有站点表
+_VT_LOG = []
 for _nm, _s, _tgt in _STATIONS:
     _px, _py, _tx, _ty, _nx, _ny = ring_at(_s)
     _rot = math.atan2(_ty, _tx)
-    # 站台：桥面加宽到 18 m（每侧挑出 3 m），读作"这里是个节点"
-    _plat.append(box(_px, _py, 3.20, _DECK_W + 6.00, 0.16, _DECK_Z + 0.06, _rot))
+    # 站台：桥面加宽到 18 m（每侧挑出 3 m），读作"这里是个节点"。
+    # ★ 长度由 3.20 改到 `2 × _ST_HALF` —— 原来比门洞还短一半，
+    #   楼梯（总宽 6.32 m）根本落不到站台上。
+    _plat.append(box(_px, _py, 2.0 * _ST_HALF, _DECK_W + 6.00, 0.16,
+                     _DECK_Z + 0.06, _rot))
     # 门洞两侧的**铜柱**：从桥面直上到檐口，把站点框出来（这是站点唯一的竖向标识）
     for _ds in (-_ST_HALF, _ST_HALF):
         _qx, _qy, _qtx, _qty, _qnx, _qny = ring_at(_s + _ds)
@@ -607,22 +863,49 @@ for _nm, _s, _tgt in _STATIONS:
                      _DECK_Z, _rot))
     _mast.append(box(_px + _nx * 4.30, _py + _ny * 4.30, 1.35, 1.35, 0.55,
                      _DECK_Z + 3.20, _rot))
-    # 下到地面的楼梯塔：从内侧挑出，落在环廊内圈的地面上
-    _sx = _px - _nx * (_DECK_W * 0.5 + 3.60)
-    _sy = _py - _ny * (_DECK_W * 0.5 + 3.60)
-    _stair.append(box(_sx, _sy, 4.60, 4.60, _DECK_Z - 0.16 - (Z_TOP + 0.10),
-                      Z_TOP + 0.10, _rot))
-    _stair.append(box(_sx - _nx * 2.30, _sy - _ny * 2.30, 1.40, 3.00,
-                      _DECK_Z - 0.16 - (Z_TOP + 0.10), Z_TOP + 0.10, _rot))
-    _plat.append(box((_px + _sx) * 0.5 - _nx * 1.40, (_py + _sy) * 0.5 - _ny * 1.40,
-                     2.40, 4.20, 0.18, _DECK_Z - 0.02, _rot))
+    # ---- 垂直交通 ----
+    if _nm in _VT_RAMP_AT:
+        _mk_ramp(_VT, _px, _py, _tx, _ty, _nx, _ny)
+        _VT_LOG.append((_nm, _s, '坡道'))
+    elif _nm in _VT_LIFT_AT:
+        _mk_lift(_VT, _px, _py, _tx, _ty, _nx, _ny)
+        _VT_LOG.append((_nm, _s, '电梯'))
+    else:
+        _mk_stair(_VT, _px, _py, _tx, _ty, _nx, _ny)
+        _VT_LOG.append((_nm, _s, '楼梯'))
 
 emit_to('R4_环廊_传感节点', M_STEEL, C_ANCHOR, _sensor)
 emit_to('R4_环廊_站台', M_SLAB, C_ANCHOR, _plat)
 emit_to('R4_环廊_传感立柱', M_COPPER, C_ANCHOR, _mast)
-emit_to('R4_环廊_楼梯塔', M_CONC, C_ANCHOR, _stair)
-print(f'[R4] 传感节点 {len(_even(_NS)[0])} 个 @ {_NS:.0f} m（桥面板底，盒 0.58 + 细杆）；'
-      f'七个站点（门洞 ±{_ST_HALF:.1f} m + 一对铜柱 + 18 m 站台 + 楼梯塔）：'
-      + ' / '.join(f'{n.split("_")[1]}@{s:.0f}m' for n, s, _ in _STATIONS))
+emit_to('R4_环廊_垂直交通_清水', M_CONC, C_ANCHOR, _VT['conc'])
+emit_to('R4_环廊_垂直交通_竹木', M_BAMBOO, C_ANCHOR, _VT['bamb'])
+emit_to('R4_环廊_垂直交通_铜', M_COPPER, C_ANCHOR, _VT['cop'])
+emit_to('R4_环廊_电梯玻璃', M_GLASSC, C_ANCHOR, _VT['glas'])
+
+_VT_KIND = {}
+for _nm, _s, _k in _VT_LOG:
+    _VT_KIND[_k] = _VT_KIND.get(_k, 0) + 1
+print(f'[R4] 垂直交通 {len(_VT_LOG)} 处：'
+      + ' / '.join(f'{k} {v} 处' for k, v in sorted(_VT_KIND.items()))
+      + f'（开敞双跑楼梯（**顺桥向**）：梯段宽 {_VT_W:.1f} m、踏步 '
+        f'{_VT_RUN * 1000:.0f}×{_VT_RISE * 1000:.0f} mm、2 跑 × {_VT_N} 级、'
+        f'休息平台 {_VT_W:.2f}×{_VT_LAND:.1f} m、平面 {_VT_UB - _VT_UA:.2f} m 长、'
+        f'高差 {_DH:.2f} m）')
+print(f'[R4] 无障碍坡道：1:12，坡长 {_RP_RUN * 2:.1f} m（两段折返）、净宽 {_RP_W:.1f} m、'
+      f'休息平台 {_RP_LD:.1f} m —— 坡比定的长度，躲不掉')
+print(f'[R4] 电梯塔：井道 {_LF_W:.1f}×{_LF_W:.1f} m，玻璃幕 + 铜顶，'
+      f'两层站（地面 {Z_TOP:.2f} / 桥面 {_DECK_Z:.2f}）')
+# ★ 站点 / 垂直交通清单留给后续脚本（`_vt_render.py` 摆机位、图集脚本点名用）。
+#   与 `_entrance_all.py` 的 `ENT_LIST` 同一套做法：走 globals，不必二次构建。
+STATION_LIST = tuple((_nm, _s, _k, ring_at(_s)) for _nm, _s, _k in _VT_LOG)
+
+_KIND = dict((_nm, _k) for _nm, _s, _k in _VT_LOG)
+print(f'[R4] 传感节点 {len(_even(_NS)[0])} 个 @ {_NS:.0f} m（桥面板底，盒 0.58 + 细杆）')
+print(f'[R4] 站点 {len(_STATIONS)} 处（门洞 ±{_ST_HALF:.1f} m + 一对铜柱 + 18 m 站台）：'
+      + ' / '.join(f'{n.split("_")[0]}@{s:.0f}m·{_KIND.get(n, "?")}'
+                   for n, s, _ in _STATIONS))
+_gaps = [( _STATIONS[(i + 1) % len(_STATIONS)][1] - _STATIONS[i][1]) % RING_LEN
+         for i in range(len(_STATIONS))]
+print(f'[R4] 站点最大间距 {max(_gaps):.0f} m（V3 §2.1 目标 ≤ 150 m）')
 
 print(f'[R4] 智慧环廊 完成 —— 全长 {RING_LEN:.0f} m，串联七区')

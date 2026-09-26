@@ -1,4 +1,4 @@
-"""生成 R0~R6 成图验收总览页（含统一前后对比）。
+"""生成 R0~R7 成图验收总览页（含统一前后对比）。
 
 用法：
     python make_overview_html.py
@@ -51,19 +51,40 @@ STAGES = [
     ('R4', '智慧环廊', '1.2 km 空中廊道 · AI 物理载体'),
     ('R5', '五区总体', '教学 / 生活 / 科技 / 实验 / 运动医疗'),
     ('R6', '滨水基座', '2.62 km 连续可上人挑台 · 以水为径'),
+    # ★ R7（2026-09-26 S5 追加）：**不是第 8 个设计阶段**，而是"规划调整 V3"的整合轮 ——
+    #   把"能走进去、能上下楼、有园子"三件事一次补齐后的**全园定版**。
+    #   它没有旧光照存档、也不在 CLEAR 里 ⇒ 自动走**单栏**分支（与 R6 同一条路径）。
+    ('R7', '全园整合', '规划调整 V3 · 分区景观 + 环廊垂直交通 + 入口门廊'),
 ]
 REP = {'R0': 'R0_垂直书院_透视.png', 'R1': 'R1_山门_透视.png', 'R2': 'R2_图书馆_中轴.png',
        'R3': 'R3_人文区_中轴.png', 'R4': 'R4_环廊_鸟瞰.png', 'R5': 'R5_五区_鸟瞰.png',
-       'R6': 'R6_滨水_鸟瞰.png'}
+       'R6': 'R6_滨水_鸟瞰.png', 'R7': 'R7_全园_顶视.png'}
 
 L = json.load(open(os.path.join(CFG, 'lighting.json'), encoding='utf-8'))
-PAL = [('清水混凝土', '#5E574C'), ('混凝土楼板', '#32302C'), ('墨灰钢构', '#15161A'),
-       ('超白玻璃', '#1F262A'), ('竹木格栅', '#744722'), ('胶合木', '#5F3819'),
-       ('铜饰', '#854C1F'), ('钛锌屋面板', '#20201D'), ('中轴铺装', '#473B2E'),
-       ('草地', '#1D2C11'), ('水面', '#131F24')]
+# ★★ 材质色板的**真源**是 `_dump_palette.py` 从 .blend 里导出的 `renders/材质色板.json`。
+#   下面这份硬编码只是**兜底**（JSON 不存在时用），而且会打印警告。
+#   起因（2026-09-26 S4-d）：这份表是手写的，配色真源却是 `palette_retune.py` ——
+#   改一次旧一次、**不报错**：总览页上的"草地色 / 屋面色"和成图里根本不是一回事。
+#   ⇒ 色板一律从材质插槽的实际取值算出来（连线取 ColorRamp 端点均值）。
+PAL_FALLBACK = [('清水混凝土', '#5E574C'), ('混凝土楼板', '#32302C'), ('墨灰钢构', '#15161A'),
+                ('超白玻璃', '#1F262A'), ('竹木格栅', '#744722'), ('胶合木', '#5F3819'),
+                ('铜饰', '#854C1F'), ('钛锌屋面板', '#20201D'), ('中轴铺装', '#473B2E'),
+                ('草地', '#1D2C11'), ('水面', '#131F24')]
+
+PAL_JSON = os.path.join(NEW, '材质色板.json')
+PAL = PAL_FALLBACK
+if os.path.exists(PAL_JSON):
+    try:
+        PAL = [tuple(x) for x in json.load(open(PAL_JSON, encoding='utf-8'))['pal']]
+        print('[总览] 材质色板取自 %s（%d 块）' % (os.path.basename(PAL_JSON), len(PAL)))
+    except Exception as _e:
+        print('!! 材质色板.json 读取失败（退回硬编码）：%s' % _e)
+else:
+    print('!! 未找到 %s —— 色板退回硬编码，**可能与成图不一致**；'
+          '请先跑 _dump_palette.py' % PAL_JSON)
 
 files = sorted(f for f in os.listdir(NEW) if f.endswith('.png') and f[:2] in
-               ('R0', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6'))
+               ('R0', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7'))
 data = {}
 for f in files:
     s = cp.stats(os.path.join(NEW, f), y0=0.45, y1=1.0)
@@ -155,7 +176,7 @@ lrow = ''.join('<div class="lr"><span>%s</span><b>%s</b></div>' % (k, v) for k, 
 
 html = """<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
-<title>山河大学 · R0~R6 成图总览</title>
+<title>山河大学 · R0~R7 成图总览</title>
 <style>
 :root{--ink:#2B2E33;--paper:#E8E6E0;--wood:#C9A87C;--cu:#B07B45;
       --line:rgba(43,46,51,.14);--mut:#6C7076;}
@@ -211,7 +232,7 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
   background:rgba(176,123,69,.07);border-left:3px solid var(--cu);border-radius:2px;line-height:1.85}
 </style></head><body><div class="wrap">
 <header>
-  <h1>山河大学 · <em>R0~R6</em> 成图总览</h1>
+  <h1>山河大学 · <em>R0~R7</em> 成图总览</h1>
   <div class="lead">全园统一光照与配色验收 ｜ __N__ 张 / Cycles 110 spp ｜
     指标统计区间为画面下 55%（建筑与地面主体）</div>
 </header>
@@ -219,11 +240,11 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
 <h2>统一基线</h2>
 <div class="panel">
   <div class="box"><h4>LIGHTING.JSON</h4>__LROW__</div>
-  <div class="box"><h4>PALETTE_RETUNE V2.4 · 基色（sRGB 近似）</h4>__SW__</div>
+  <div class="box"><h4>PALETTE_RETUNE V2.6 · 基色（sRGB 近似）</h4>__SW__</div>
 </div>
 
 <h2>统一前后对照</h2>
-<p class="note"><b>R0 / R1 / R2 / R4 / R5 五行是三栏，R6 是单栏</b> —— 这些阶段在"统一光照"之后又各改过一轮。
+<p class="note"><b>R0 / R1 / R2 / R4 / R5 五行是三栏，R6 / R7 是单栏</b> —— 这些阶段在"统一光照"之后又各改过一轮。
   三栏统一读作：<b>① 旧光照 → ② 统一后·上一版 → ③ 统一后·现版</b>。<br>
   <b>一、旧语言清障（R0 / R1 / R2）</b><br>
   · <b>R0</b>（`clear_old_language_r0.py`，20 个构件）：牌坊群 / 东西阙 / 石狮 /
@@ -274,6 +295,40 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
   A/B 实测（5 个代表机位）：平均差 0.98~4.01 / <b>受影响像素仅 1.6%~7.0%</b> /
   最大差 65~67 / Δ亮度 −1.0~−4.0 ⇒ 是<b>局部变化</b>，不是全图偏移，与"只有盒子变暗"完全吻合。</p>
 __CMP__
+
+<h2>规划调整 V3（S1~S5）</h2>
+<p class="lead">
+  这一轮不是"再改配色"，而是按用户评审意见把<b>规划层面的三件事</b>补齐：
+  建筑之间要有路、环廊要能上下楼、整体要能对外展示。施工记录（含与方案的每一处偏差）
+  见 <code>02-三维资产/规划调整方案V3.md §7</code>。
+</p>
+<p class="lead">
+  <b>S1 间距 / 扩地</b> —— 生活区半岛岸线太窄、扩不出地，改为<b>缩楼体平面</b>（高度一律不动，
+  全园五级标高是上一轮成果）。<br>
+  <b>S2 路网重构</b> —— 36 轮迭代：补断头路、主路南段改走两排宿舍之间的<b>林荫街</b>、
+  滨水步道颈部改<b>开敞弧</b>；判据是 <code>_diag_plan.py</code> 的<b>路网穿楼相交面积 = 0</b>。<br>
+  <b>S3 环廊垂直交通</b> —— <b>15 处</b>：开敞双跑楼梯 11（<b>顺桥向</b>）+ 1:12 坡道 2 + 电梯塔 2；
+  最大间距 121 m；侵入建筑 <b>0.00 m²</b>、树木侵入 0/15。<br>
+  <b>S4 立面 / 景观 / 屋面</b> —— ① 横条纹 → <b>实墙 + 竖向格构 + 竖长窗</b>
+  （一阶差分 gy/gx：教学 2.77→0.56、生活 2.64→0.82、科技 1.62→0.61，<b>方向翻转可证</b>）；
+  ② 分区景观用 <b>占用栅格 + 最大矩形抠图</b>落草坪 / 树阵 / 水景 / 缓丘，
+  硬质占分区地面 <b>100% → 43.3%</b>、绿地占陆地 <b>31.9% → 41.8%</b>；
+  ③ 屋面按分区着色 <b>暖灰 / 铜绿</b> —— 顺带修掉一个藏了很久的静默失效：
+  真正的第五立面是 <code>M_钛锌板</code>（<b>32 个对象</b>），而旧的 <code>_RETUNE</code> 表
+  只写了 <code>M_钛锌屋面板</code>（<b>1 个对象</b>）⇒ <b>整批屋面从未被重标过</b>。<br>
+  <b>S5 全量重渲 + 重导 GLB</b> —— 全园 <b>71 张</b>成图重渲（含 8 张 R7 整合图），
+  GLB 重导为 <code>山河大学_全园_R7.glb</code>。
+</p>
+<p class="lead">
+  <b>入口门廊（全阶段生效）</b> —— 全园 30 栋楼原先<b>一处入口都没有</b>，
+  光秃体量 + 一圈通高玻璃带读起来是"未完工的盒子"。现在 <b>23 栋</b>补上门廊
+  （柱 + 雨篷 + 玻璃门 + 铜门框 + 入口平台 + 踏步），<b>全部由射线实测定位</b>：
+  哪一面有路（外探 5/8/11/14 m 向下打射线）、墙到底在哪（面外 40 m 处门半高向内打水平射线）、
+  门廊落在多高的地面上（墙面处向下打射线）—— 一个数都不写死。
+  ★ 本项原先只挂在 R5，导致 <b>R0~R4 的楼没有门廊、R5/R6 有</b>（同一栋楼在两个阶段长得不一样）
+  ⇒ 已提到<b>所有阶段</b>；代价是暴露了两处<b>跨脚本隐式依赖</b>（<code>put</code> /
+  同名不同义的 <code>flush</code> 只在 <code>build_campus_r5.py</code> 里定义），已就地补齐。
+</p>
 
 <h2>分阶段成图</h2>
 __GRID__

@@ -5,7 +5,10 @@
   "build_campus_stage2.py",
   "build_campus_stage3.py",
   "build_campus_r0.py",
+  "_trees_hero.py",
   "clear_old_language_r0.py",
+  "_entrance_all.py",
+  "build_campus_r7_landscape.py",
   "palette_retune.py"
  ],
  "jobs": [

@@ -85,7 +85,7 @@
   <div class="concept">藏山纳智 · 云廊书院</div>
   <div class="meta">
     以山为院 &nbsp;·&nbsp; 以水为径 &nbsp;·&nbsp; 以云为廊<br>
-    七个设计阶段（R0~R6）&nbsp;|&nbsp; 63 张实景渲染成图 &nbsp;|&nbsp; 全园轻量化 GLB 交付<br>
+    七个设计阶段（R0~R6）+ 全园整合（R7）&nbsp;|&nbsp; 71 张实景渲染成图 &nbsp;|&nbsp; 全园轻量化 GLB 交付<br>
     Cycles 物理渲染 · 统一光照配方 · 全流程脚本化可复现
   </div>
   <div class="rule"></div>
@@ -151,6 +151,7 @@
     <tr><td class="k">R4</td><td>智慧环廊</td><td>环廊沿 18 顶点折线布置，弧长参数化 <code>ring_at(s)</code>；外法向按"背离形心"判定。<br>桥面 12 × 0.55 m @ Z 9.00，桥墩每 48 m 一道；屋面为 BIPV（光伏建筑一体化）。</td></tr>
     <tr><td class="k">R5</td><td>五区重建（22 栋）</td><td>22 栋按到环廊中心线 ≥ 12.30 m 落位，确保环廊始终是"可读的连续体"。<br>体量分层由 <code>layered()</code> 生成；起拱统一 ×1.35，与既有阶段保持同一比例感。</td></tr>
     <tr><td class="k">R6</td><td>滨水基座</td><td>岸线 2618.7 m 连续挑台：内缘落在地面上（与地面齐、不留缝），常态外挑出水 3.0 m。<br>台面 Z 2.40 / 板厚 1.00 / 矮墙顶 2.85；短柱 65 道 @ 40 m。</td></tr>
+    <tr><td class="k">R7</td><td>全园整合（规划调整 V3）</td><td>分区景观：以 占用栅格 + 最大矩形抠图 在既有铺装上落草坪 / 树阵 / 水景 / 缓丘，硬质占分区地面由 100% 降到 43%（六区 32~57%，全 ≤ 60%）；绿地占陆地 31.9% → 41.8%。<br>环廊垂直交通 15 处：开敞双跑楼梯 11（顺桥向）+ 1:12 坡道 2 + 电梯塔 2；最长间距 121 m，侵入建筑 0.00 m²。</td></tr>
   </table></div>
 
   <h3 style="margin-top:26px">管线</h3>
@@ -304,18 +305,40 @@
   </div>
 </section>
 
+<section class="page">
+  <h2><span class="n">03.8</span>R7 · 全园整合（规划调整 V3）</h2>
+  <p class="sub2">分区景观 + 环廊垂直交通 + 入口门廊 —— 从"体量集合"变成"可使用的校园"</p>
+  <ul class="notes">
+      <li>分区景观：以 <b>占用栅格 + 最大矩形抠图</b> 在既有铺装上落草坪 / 树阵 / 水景 / 缓丘，硬质占分区地面由 <b>100% 降到 43%</b>（六区 32~57%，全 ≤ 60%）；绿地占陆地 31.9% → <b>41.8%</b>。</li>
+      <li>环廊垂直交通 <b>15 处</b>：开敞双跑楼梯 11（<b>顺桥向</b>）+ 1:12 坡道 2 + 电梯塔 2；最长间距 121 m，侵入建筑 <b>0.00 m²</b>。</li>
+      <li>入口门廊补强 <b>23 栋</b>：柱 + 雨篷 + 玻璃门 + 铜门框 + 入口平台 + 踏步 ——全部由射线实测定位（选面 / 找墙 / 量地面），不写死一个数。</li>
+      <li>立面语言：横条纹 → <b>实墙 + 竖向格构 + 竖长窗</b>（一阶差分 gy/gx 由 2.77 降到 0.56，方向翻转可证）；屋面按分区着色，<b>暖灰 / 铜绿</b>。</li>
+  </ul>
+  <div class="grid ">
+      <figure><img src="../renders/R7_%E5%85%A8%E5%9B%AD_%E9%A1%B6%E8%A7%86.png" alt="R7_全园_顶视" loading="lazy"><figcaption>R7_全园_顶视</figcaption></figure>
+      <figure><img src="../renders/R7_%E7%A7%91%E6%8A%80%E5%8C%BA_%E5%BA%AD%E9%99%A2.png" alt="R7_科技区_庭院" loading="lazy"><figcaption>R7_科技区_庭院</figcaption></figure>
+      <figure><img src="../renders/R7_%E6%95%99%E5%AD%A6%E5%8C%BA_%E5%BA%AD%E9%99%A2.png" alt="R7_教学区_庭院" loading="lazy"><figcaption>R7_教学区_庭院</figcaption></figure>
+      <figure><img src="../renders/R7_%E7%94%9F%E6%B4%BB%E5%8C%BA_%E6%9E%97%E8%8D%AB%E8%A1%97.png" alt="R7_生活区_林荫街" loading="lazy"><figcaption>R7_生活区_林荫街</figcaption></figure>
+      <figure><img src="../renders/R7_%E7%8E%AF%E5%BB%8A_%E5%8C%97%E7%AB%AF%E8%8A%82%E7%82%B9_%E5%9E%82%E7%9B%B4%E4%BA%A4%E9%80%9A.png" alt="R7_环廊_北端节点_垂直交通" loading="lazy"><figcaption>R7_环廊_北端节点_垂直交通</figcaption></figure>
+      <figure><img src="../renders/R7_%E7%8E%AF%E5%BB%8A_%E5%9E%82%E7%9B%B4%E4%BA%A4%E9%80%9A_%E6%A5%BC%E6%A2%AF.png" alt="R7_环廊_垂直交通_楼梯" loading="lazy"><figcaption>R7_环廊_垂直交通_楼梯</figcaption></figure>
+      <figure><img src="../renders/R7_%E7%8E%AF%E5%BB%8A_%E5%9E%82%E7%9B%B4%E4%BA%A4%E9%80%9A_%E5%9D%A1%E9%81%93.png" alt="R7_环廊_垂直交通_坡道" loading="lazy"><figcaption>R7_环廊_垂直交通_坡道</figcaption></figure>
+      <figure><img src="../renders/R7_%E7%8E%AF%E5%BB%8A_%E5%9E%82%E7%9B%B4%E4%BA%A4%E9%80%9A_%E7%94%B5%E6%A2%AF.png" alt="R7_环廊_垂直交通_电梯" loading="lazy"><figcaption>R7_环廊_垂直交通_电梯</figcaption></figure>
+  </div>
+</section>
+
 <!-- ============================ 四、指标 ============================ -->
 <section class="page">
   <h2><span class="n">04</span>成果指标</h2>
   <p class="lead">下列数字均由脚本从实际产出物中统计得出，可随时重跑复核。</p>
   <div class="tw"><table>
     <tr><th>指标</th><th>数值</th><th>口径</th></tr>
-    <tr><td class="k">成图总量</td><td class="v">63 张</td><td>R0~R6 七个阶段，1600 × 900（R0 正立面 1000 × 1600）</td></tr>
+    <tr><td class="k">成图总量</td><td class="v">71 张</td><td>R0~R6 七个阶段 + 8 张 R7 整合图，1600 × 900（R0 正立面 1000 × 1600）</td></tr>
     <tr><td class="k">渲染引擎</td><td class="v">Cycles · Khronos PBR Neutral</td><td>sun 38° / strength 5.8 · 天空 0.66 · 雾密度 1.2e-5</td></tr>
-    <tr><td class="k">全园模型</td><td class="v">1,660,979 面</td><td>375 mesh · 60 材质（导出前）</td></tr>
-    <tr><td class="k">GLB 交付</td><td class="v">4.62 MB</td><td>1,118,087 面 · 42 材质 · 0 贴图 · Draco 压缩</td></tr>
-    <tr><td class="k">配色合规度</td><td class="v">冷−暖 +27.81</td><td>下半图 55% 区域；63 张均值（初版 +35.08 → 重标后 +27.65 → 体块压暗后 +27.81）</td></tr>
-    <tr><td class="k">过曝像素</td><td class="v">8.60% → 7.53%</td><td>亮度 L > 210 的占比，压暗占位体块后下降 12.4%</td></tr>
+    <tr><td class="k">全园模型</td><td class="v">2,317,949 面</td><td>393 对象 · 72 材质（导出前，r6 定版）</td></tr>
+    <tr><td class="k">GLB 交付</td><td class="v">5.70 MB</td><td>1,535,187 面 · 54 材质 · Draco 压缩 · 剔除 Haze 与 7 个未引用材质</td></tr>
+    <tr><td class="k">配色合规度</td><td class="v">冷−暖 +11.61</td><td>下半图均值；同一口径下 V3 前后 +16.01 → +11.61（全园更暖）</td></tr>
+    <tr><td class="k">过曝像素</td><td class="v">7.01%</td><td>亮度 L &gt; 210 的占比（下半图均值）；V3 前 7.30%</td></tr>
+    <tr><td class="k">环廊垂直交通</td><td class="v">15 处</td><td>开敞双跑楼梯 11（顺桥向）+ 1:12 坡道 2 + 电梯塔 2；最大间距 121 m</td></tr>
     <tr><td class="k">可复现性</td><td class="v">逐像素级</td><td>同配置跨进程连跑 3 次统计完全一致；渲染为确定性过程</td></tr>
   </table></div>
 
@@ -340,7 +363,7 @@
   <h3 style="margin-top:26px">交付物</h3>
   <div class="tw"><table>
     <tr><th>类别</th><th>内容</th><th>位置</th></tr>
-    <tr><td class="k">成图</td><td>63 张 1600 × 900 实景渲染</td><td>02-三维资产/renders/</td></tr>
+    <tr><td class="k">成图</td><td>71 张 1600 × 900 实景渲染</td><td>02-三维资产/renders/</td></tr>
     <tr><td class="k">对照总览</td><td>分阶段改动前后对照与量化</td><td>renders/总览_R0-R6.html</td></tr>
     <tr><td class="k">轻量化模型</td><td>GLB，含 Draco 压缩</td><td>exports/山河大学_全园_R6.glb</td></tr>
     <tr><td class="k">模型说明</td><td>坐标尺度 / 导入方式 / 已知限制</td><td>exports/山河大学_全园GLB_交付说明.md</td></tr>
@@ -376,7 +399,7 @@
     <tr><th>章节</th><th>内容</th></tr>
     <tr><td class="k">01 设计概念与空间结构</td><td>四个转译动作 / 五个空间锚点 / 中轴节点与坐标约定</td></tr>
     <tr><td class="k">02 建模技术路线</td><td>七阶段脚本结构 / 管线分工 / 可复现性 / 配色体系</td></tr>
-    <tr><td class="k">03 分阶段成果</td><td>R0~R6 七个阶段，共 24 张代表图与几何要点</td></tr>
+    <tr><td class="k">03 分阶段成果</td><td>R0~R6 七个阶段 + R7 全园整合，共 32 张代表图与几何要点</td></tr>
     <tr><td class="k">04 成果指标</td><td>模型与成图统计 / 质量保障手段 / 交付物清单</td></tr>
     <tr><td class="k">05 说明</td><td>合规说明与图集构成</td></tr>
   </table></div>

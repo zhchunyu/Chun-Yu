@@ -1,0 +1,244 @@
+{
+ "blend": "_tmp_green_ab.blend",
+ "build_extra": [
+  "build_campus_stage1.py",
+  "build_campus_stage2.py",
+  "build_campus_stage3.py",
+  "build_campus_r0.py",
+  "build_campus_r1.py",
+  "build_campus_r2.py",
+  "build_campus_r3.py",
+  "build_campus_r4.py",
+  "build_campus_r5.py",
+  "build_campus_r6.py",
+  "_trees_hero.py",
+  "_teach_detail.py",
+  "palette_retune.py"
+ ],
+ "jobs": [
+  {
+   "name": "AB1_全园东南鸟瞰_晴",
+   "cam_pos": [
+    700,
+    -420,
+    520
+   ],
+   "cam_tgt": [
+    0,
+    420,
+    25
+   ],
+   "lens": 40,
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "AB2_教学区近景_晴",
+   "cam_pos": [
+    170,
+    200,
+    34
+   ],
+   "cam_tgt": [
+    300,
+    340,
+    36
+   ],
+   "lens": 50,
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "AB3_图书馆中轴_晴",
+   "cam_pos": [
+    0,
+    300,
+    40
+   ],
+   "cam_tgt": [
+    0,
+    518.4,
+    24
+   ],
+   "lens": 40,
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "sky_visible": 0.72,
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "AB4_图书馆退台_阴",
+   "cam_pos": [
+    -140,
+    452,
+    30
+   ],
+   "cam_tgt": [
+    -20,
+    508,
+    26
+   ],
+   "lens": 45,
+   "res_x": 1280,
+   "res_y": 720,
+   "samples": 192,
+   "sun_elev": 38.0,
+   "sun_azim": 220.0,
+   "sun_strength": 0.2,
+   "sun_angle": 16.0,
+   "sky_strength": 0.85,
+   "sky_visible": 0.16,
+   "cloud_strength": 1.7,
+   "cloud_scale": 3.2,
+   "air_density": 3.4,
+   "dust_density": 2.6,
+   "ambient_tint": [
+    1.02,
+    1.0,
+    1.04
+   ],
+   "exposure": -0.55,
+   "view_transform": "Khronos PBR Neutral",
+   "view_look": "None"
+  },
+  {
+   "name": "AB5_前庭人视_阴",
+   "cam_pos": [
+    275,
+    392,
+    4.6
+   ],
+   "cam_tgt": [
+    295,
+    382,
+    8
+   ],
+   "lens": 32,
+   "res_x": 1280,
+   "res_y": 720,
+   "samples": 192,
+   "sun_elev": 38.0,
+   "sun_azim": 220.0,
+   "sun_strength": 0.2,
+   "sun_angle": 16.0,
+   "sky_strength": 0.85,
+   "sky_visible": 0.16,
+   "cloud_strength": 1.7,
+   "cloud_scale": 3.2,
+   "air_density": 3.4,
+   "dust_density": 2.6,
+   "ambient_tint": [
+    1.02,
+    1.0,
+    1.04
+   ],
+   "exposure": -0.55,
+   "view_transform": "Khronos PBR Neutral",
+   "view_look": "None",
+   "dof": true,
+   "fstop": 3.2,
+   "blades": 7,
+   "focus_scale": 1.0
+  },
+  {
+   "name": "AB6_滨水近景_阴",
+   "cam_pos": [
+    -128,
+    856,
+    4.6
+   ],
+   "cam_tgt": [
+    96,
+    849,
+    3.0
+   ],
+   "lens": 36,
+   "res_x": 1280,
+   "res_y": 720,
+   "samples": 192,
+   "sun_elev": 38.0,
+   "sun_azim": 220.0,
+   "sun_strength": 0.2,
+   "sun_angle": 16.0,
+   "sky_strength": 0.85,
+   "sky_visible": 0.16,
+   "cloud_strength": 1.7,
+   "cloud_scale": 3.2,
+   "air_density": 3.4,
+   "dust_density": 2.6,
+   "ambient_tint": [
+    1.02,
+    1.0,
+    1.04
+   ],
+   "exposure": -0.55,
+   "view_transform": "Khronos PBR Neutral",
+   "view_look": "None",
+   "dof": true,
+   "fstop": 5.6,
+   "blades": 7,
+   "focus_scale": 1.0
+  }
+ ]
+}

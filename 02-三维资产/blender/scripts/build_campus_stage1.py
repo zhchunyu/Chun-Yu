@@ -193,12 +193,23 @@ def disc(cx, cy, r, z, th=0.14, n=16):
 
 
 def emit_to(name, mat, coll, parts, smooth=False, up=False, recalc=True):
-    """把若干 (verts, faces) 合并成一个对象 —— 少建对象，省同步开销。"""
+    """把若干 (verts, faces) 合并成一个对象 —— 少建对象，省同步开销。
+
+    ★ 空 `parts` 直接返回 None，**不建空网格**。
+      踩过：R3 的 `emit_to('BLD_人文_Auditorium_铜压顶', M_COPPER, C_BLD, _acop)`
+      里 `_acop` 从头到尾都是 `[]`（只声明、没 append），于是在**世界原点**
+      留下一个零尺寸对象。体检脚本把它当成一栋"楼"，报出
+      "距最近道路 73.5 m 无路"的假缺陷 —— 白查一轮。
+      （`_diag_plan.py` 现在也有退化 bbox 检查，两道防线。）
+    """
     V, F = [], []
     for v, f in parts:
         off = len(V)
         V.extend(v)
         F.extend([[i + off for i in fc] for fc in f])
+    if not V or not F:
+        print(f'[warn] emit_to({name}) 没有任何几何 —— 跳过，不建空网格')
+        return None
     return new_obj(name, V, F, mat, coll, smooth=smooth, up=up, recalc=recalc)
 
 
@@ -488,8 +499,8 @@ emit_to('SITE_塔院分格', M_STONE_D, C_SITE, _band)
 
 _aband = []
 for _sx in (-1.0, 1.0):
-    _aband.append(box(TX + _sx * 23.0, (LY + 36.0 + TY - 62.0) * 0.5,
-                      1.2, (TY - 62.0) - (LY + 36.0), 0.05, Z_TOP + 0.07))
+    _aband.append(box(TX + _sx * 23.0, (LY + 41.0 + TY - 62.0) * 0.5,
+                      1.2, (TY - 62.0) - (LY + 41.0), 0.05, Z_TOP + 0.07))
     _aband.append(box(LX + _sx * 23.0, LY - 62.0, 1.2, 56.0, 0.05, Z_TOP + 0.07))
 emit_to('SITE_中轴分格', M_STONE_D, C_SITE, _aband)
 
@@ -509,8 +520,12 @@ for _k in range(8):
 emit_to('SITE_塔院石灯', M_STONE_D, C_SITE, _lt)
 
 # ---- 中轴：图书馆北侧 → 塔院（阶段 0 的中轴大道只到图书馆南侧） ----
+# ★ 南端由 `LY + 36.0`（= 554.4）退到 `LY + 41.0`（= 559.4）。
+#   图书馆台基一层是 112×80 ⇒ 北面在 `LY + 40.0` = 558.4，压边再出 0.35 m。
+#   原来从 554.4 起，等于**南端 4 m 埋在台基里**（体检报 231.8 m²）。
+#   退到 559.4 之后正好从台基北面起铺，一厘米不重叠。
 emit_to('SITE_中轴_塔前段', M_PAVE_W, C_PAVE,
-        [round_rect(TX - 26.0, LY + 36.0, TX + 26.0, TY - 62.0, 6.0, Z_TOP + 0.055)],
+        [round_rect(TX - 26.0, LY + 41.0, TX + 26.0, TY - 62.0, 6.0, Z_TOP + 0.055)],
         up=True)
 
 # ---- 前庭镜面水池（丹陛两侧对称，倒影把图书馆"抬"起来） ----

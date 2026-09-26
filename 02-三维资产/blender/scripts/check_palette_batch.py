@@ -50,7 +50,23 @@ def collect(d):
 
 
 def main(argv):
-    dirs = [a for a in argv if not a.startswith('--')]
+    # ★★ 参数解析修过一个 bug（2026-09-26 S5）：
+    #   原来写的是 `dirs = [a for a in argv if not a.startswith('--')]` ——
+    #   于是 `--step 4` 里的 **`4` 被当成目录**，
+    #   跑完第一张就 `FileNotFoundError: 系统找不到指定的路径。: '4'`。
+    #   症状很坑：**统计结果已经打出来了**，报错在最后，看起来像"结果有但脚本挂了"。
+    #   现在把 `--flag value` 的 value 也一并跳过。
+    dirs, _skip = [], False
+    for _a in argv:
+        if _skip:
+            _skip = False
+            continue
+        if _a in ('--lower', '--step'):
+            _skip = True
+            continue
+        if _a.startswith('--'):
+            continue
+        dirs.append(_a)
     if not dirs:
         print(__doc__)
         return 2

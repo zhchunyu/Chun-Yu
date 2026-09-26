@@ -75,7 +75,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0e1216;
 
 <div class="panel" id="head">
   <h1>山河大学 · <em>全园模型预览</em></h1>
-  <div class="sub">R6 滨水基座 · 路线末版 · 从 Blender 导出的 GLB</div>
+  <div class="sub">R7 全园整合 · 规划调整 V3 定版 · 从 Blender 导出的 GLB</div>
   <dl>
     <dt>文件</dt><dd id="m-file">—</dd>
     <dt>大小</dt><dd id="m-size">—</dd>
@@ -105,6 +105,57 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0e1216;
   <div class="b" id="load-txt">连接中…</div>
 </div>
 
-<script type="module" src="./src/preview.js"></script>
+<script>
+/* ==========================================================================
+ * 加载守卫（2026-09-25 加）
+ * --------------------------------------------------------------------------
+ * ★ 为什么需要它（真实故障，不是假想）：
+ *   `preview.js` 是 **ES module**，而 module 脚本受**严格 CORS 检查**。
+ *   `file://` 的 origin 是 `null` ⇒ 浏览器直接拒绝加载，控制台报：
+ *
+ *     Access to script at 'file:///…/src/preview.js' from origin 'null'
+ *     has been blocked by CORS policy: Cross origin requests are only
+ *     supported for protocol schemes: chrome-extension, …, http, https, …
+ *
+ *   后果是 `preview.js` **一行都不执行** ⇒ 加载遮罩永远停在「连接中…」，
+ *   而且因为脚本本身没跑起来，它内部那段友好的错误提示也永远不会显示。
+ *   用户看到的就是"3D 预览一直转圈"，完全看不出是协议问题。
+ *
+ * ★ 为什么用**经典脚本**做守卫：
+ *   经典 `<script>`（无 type=module）不受 CORS 约束，`file://` 下照常执行。
+ *   于是我们可以在注入 module **之前**先判断协议，命中 `file:` 时**根本不注入**
+ *   ⇒ 连那条 CORS 红错都不会产生，控制台是干净的。
+ *
+ * ★ 为什么不用「保留静态 module + 另外加提示」：
+ *   那样遮罩上会出现提示，但控制台仍有一条 CORS 报错，
+ *   而且 module 请求仍然发出去（网络面板多一条红）。不值得。
+ * ========================================================================== */
+(function () {
+  var box = document.getElementById('load');
+  var txt = document.getElementById('load-txt');
+
+  if (location.protocol === 'file:') {
+    var t = box && box.querySelector('.t');
+    if (t) t.textContent = '需要通过网络地址打开';
+    if (txt) {
+      txt.outerHTML =
+        '<div class="err">检测到用 <b>file://</b> 直接打开了本地文件。' +
+        '浏览器会以 CORS 为由拒绝加载预览脚本，因此 3D 模型无法显示。<br><br>' +
+        '① <b>在线看</b>：' +
+        '<a style="color:#C9A87C" href="https://2cb735b0c4814c359bab62cc039d9c7a.sg2.agentos-app.run/preview.html">' +
+        '公网地址</a><br>' +
+        '② <b>本地看</b>：双击本目录下的 <code>serve.cmd</code>，' +
+        '再打开 <a style="color:#C9A87C" href="http://localhost:8123/preview.html">' +
+        'http://localhost:8123/preview.html</a></div>';
+    }
+    return;                       // ★ 关键：命中就到此为止，不注入 module
+  }
+
+  var s = document.createElement('script');
+  s.type = 'module';
+  s.src = './src/preview.js';
+  document.body.appendChild(s);
+})();
+</script>
 </body>
 </html>

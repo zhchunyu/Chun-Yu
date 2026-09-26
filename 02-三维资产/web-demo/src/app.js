@@ -12,6 +12,11 @@ import {
   EVENT_TYPES, typeOf, createMarker, makeEvent, randomEvent,
   runAIPipeline, AI_STEPS, TEMPLATES,
 } from './events.js';
+import {
+  BUILDINGS, findBuilding, getBuildingNames,
+  computeRoute, RouteRenderer,
+  setAIConfig, AI_CONFIG,
+} from './navigation.js';
 
 /* CanvasRenderingContext2D.roundRect 兜底（旧内核） */
 if (!CanvasRenderingContext2D.prototype.roundRect) {
@@ -101,6 +106,30 @@ const el = {
   aiToast: $('ai-toast'),
   aiStep: $('ai-step'),
   loading: $('loading'),
+  // 导航面板
+  navPanel: $('nav-panel'),
+  navClose: $('nav-close'),
+  navFrom: $('nav-from'),
+  navTo: $('nav-to'),
+  navFromSuggest: $('nav-from-suggest'),
+  navToSuggest: $('nav-to-suggest'),
+  navGo: $('nav-go'),
+  navResult: $('nav-result'),
+  nriFrom: $('nri-from'),
+  nriTo: $('nri-to'),
+  nriDist: $('nri-dist'),
+  nriTime: $('nri-time'),
+  navFocus: $('nav-focus'),
+  navClear: $('nav-clear'),
+  navAiStatus: $('nav-ai-status'),
+  navAiConfig: $('nav-ai-config'),
+  // API 配置弹窗
+  aiConfigModal: $('ai-config-modal'),
+  aiApiKey: $('ai-api-key'),
+  aiApiEndpoint: $('ai-api-endpoint'),
+  aiApiModel: $('ai-api-model'),
+  aiConfigSave: $('ai-config-save'),
+  aiConfigCancel: $('ai-config-cancel'),
 };
 
 /* ================================================================
@@ -525,7 +554,274 @@ let bootEventCount = 1;                // 首屏自动播报条数（调试参�
 })();
 
 /* ================================================================
-   12. 主循环
+   12. AI 导航功能
+================================================================ */
+let routeRenderer = null;
+let currentRoute = null;
+
+/** 初始化导航 */
+function initNavigation() {
+  routeRenderer = new RouteRenderer(scene);
+
+  // —— 收起/展开面板 ——
+  el.navClose.addEventListener('click', () => {
+    el.navPanel.classList.toggle('collapsed');
+    el.navClose.textContent = el.navPanel.classList.contains('collapsed') ? '□' : '—';
+  });
+
+  // —— 输入框自动补全 ——
+  setupAutocomplete(el.navFrom, el.navFromSuggest);
+  setupAutocomplete(el.navTo, el.navToSuggest);
+
+  // —— 开始导航 ——
+  el.navGo.addEventListener('click', handleNavigate);
+
+  // —— 回车触发导航 ——
+  el.navTo.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleNavigate();
+  });
+  el.navFrom.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') el.navTo.focus();
+  });
+
+  // —— 聚焦路径 ——
+  el.navFocus.addEventListener('click', () => {
+    if (!currentRoute) return;
+    focusOnRoute(currentRoute);
+  });
+
+  // —— 清除路径 ——
+  el.navClear.addEventListener('click', clearRoute);
+
+  // —— AI 配置 ——
+  el.navAiConfig.addEventListener('click', openAIConfig);
+  el.aiConfigCancel.addEventListener('click', closeAIConfig);
+  el.aiConfigSave.addEventListener('click', saveAIConfig);
+
+  // 从 localStorage 读取已保存的配置
+  loadAIConfig();
+  updateAIStatus();
+}
+
+/** 自动补全 */
+function setupAutocomplete(input, suggestBox) {
+  let activeIndex = -1;
+  const allNames = getBuildingNames();
+
+  input.addEventListener('input', () => {
+    const val = input.value.trim().toLowerCase();
+    if (!val) {
+      suggestBox.classList.add('hidden');
+      return;
+    }
+    const matches = BUILDINGS.filter((b) =>
+      b.name.toLowerCase().includes(val)
+    ).slice(0, 8);
+
+    if (matches.length === 0) {
+      suggestBox.classList.add('hidden');
+      return;
+    }
+
+    activeIndex = -1;
+    suggestBox.innerHTML = matches.map((b, i) => `
+      <div class="suggest-item" data-name="${b.name}" data-idx="${i}">
+        <span>${b.name}</span>
+        <span class="si-type">${typeLabel(b.type)}</span>
+      </div>
+    `).join('');
+    suggestBox.classList.remove('hidden');
+
+    // 绑定点击事件
+    suggestBox.querySelectorAll('.suggest-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        input.value = item.dataset.name;
+        suggestBox.classList.add('hidden');
+      });
+    });
+  });
+
+  // 键盘导航
+  input.addEventListener('keydown', (e) => {
+    const items = suggestBox.querySelectorAll('.suggest-item');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      updateActive(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+      updateActive(items);
+    } else if (e.key === 'Escape') {
+      suggestBox.classList.add('hidden');
+    }
+  });
+
+  function updateActive(items) {
+    items.forEach((it, i) => it.classList.toggle('active', i === activeIndex));
+    if (activeIndex >= 0 && items[activeIndex]) {
+      input.value = items[activeIndex].dataset.name;
+    }
+  }
+
+  // 点击外部关闭
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !suggestBox.contains(e.target)) {
+      suggestBox.classList.add('hidden');
+    }
+  });
+}
+
+/** 建筑类型中文标签 */
+function typeLabel(type) {
+  const map = {
+    landmark: '地标', teach: '教学楼', admin: '行政',
+    canteen: '食堂', dorm: '宿舍',
+  };
+  return map[type] || type;
+}
+
+/** 执行导航 */
+async function handleNavigate() {
+  const fromName = el.navFrom.value.trim();
+  const toName = el.navTo.value.trim();
+
+  if (!fromName) { showTip('请输入起点'); el.navFrom.focus(); return; }
+  if (!toName)   { showTip('请输入终点'); el.navTo.focus(); return; }
+
+  const fromB = findBuilding(fromName);
+  const toB = findBuilding(toName);
+
+  if (!fromB) { showTip(`找不到大楼：${fromName}`); return; }
+  if (!toB)   { showTip(`找不到大楼：${toName}`); return; }
+  if (fromB.name === toB.name) { showTip('起点和终点不能相同'); return; }
+
+  // 自动补全修正后的名称
+  el.navFrom.value = fromB.name;
+  el.navTo.value = toB.name;
+
+  // 显示 AI 处理状态
+  showAIToast('路径规划中…', '正在计算最优路线');
+
+  try {
+    const route = await computeRoute(fromB.name, toB.name);
+    currentRoute = route;
+    routeRenderer.showRoute(route);
+
+    // 更新结果面板
+    el.nriFrom.textContent = route.from.name;
+    el.nriTo.textContent = route.to.name;
+    el.nriDist.textContent = route.distance.toFixed(0) + ' 米';
+    // 按 1.2 m/s 的步行速度估算时间
+    const minutes = Math.ceil(route.distance / 1.2 / 60);
+    el.nriTime.textContent = `约 ${minutes} 分钟`;
+    el.navResult.classList.remove('hidden');
+
+    // 自动聚焦路径
+    focusOnRoute(route);
+
+    hideAIToast();
+    showTip(`已规划路线：${route.from.name} → ${route.to.name}`);
+  } catch (e) {
+    hideAIToast();
+    showTip('导航失败：' + e.message);
+  }
+}
+
+/** 相机聚焦到路径 */
+function focusOnRoute(route) {
+  const { from, to, points } = route;
+
+  // 计算路径中心点
+  let cx = 0, cz = 0;
+  points.forEach((p) => { cx += p.x; cz += p.z; });
+  cx /= points.length;
+  cz /= points.length;
+
+  // 计算合适的视距
+  const dist = Math.hypot(from.x - to.x, from.z - to.z);
+  const height = Math.max(80, dist * 0.9);
+  const camDist = Math.max(120, dist * 1.2);
+
+  const target = new THREE.Vector3(cx, 6, cz);
+  const camPos = new THREE.Vector3(cx + camDist * 0.4, height, cz + camDist * 0.6);
+
+  animateCamera(camPos, target, 1000);
+}
+
+/** 清除路径 */
+function clearRoute() {
+  if (routeRenderer) routeRenderer.clear();
+  currentRoute = null;
+  el.navResult.classList.add('hidden');
+}
+
+/** 显示 AI 处理浮层 */
+function showAIToast(title, step) {
+  el.aiToast.classList.remove('hidden');
+  el.aiToast.querySelector('b').textContent = title;
+  el.aiStep.textContent = step;
+}
+
+function hideAIToast() {
+  el.aiToast.classList.add('hidden');
+}
+
+/* ---- AI 配置相关 ---- */
+function openAIConfig() {
+  el.aiApiKey.value = AI_CONFIG.apiKey || '';
+  el.aiApiEndpoint.value = AI_CONFIG.endpoint || '';
+  el.aiApiModel.value = AI_CONFIG.model || '';
+  el.aiConfigModal.classList.remove('hidden');
+}
+
+function closeAIConfig() {
+  el.aiConfigModal.classList.add('hidden');
+}
+
+function saveAIConfig() {
+  const apiKey = el.aiApiKey.value.trim();
+  const endpoint = el.aiApiEndpoint.value.trim();
+  const model = el.aiApiModel.value.trim();
+
+  if (!apiKey) { showTip('请输入 API Key'); return; }
+
+  setAIConfig({ apiKey, endpoint, model });
+
+  // 保存到 localStorage
+  try {
+    localStorage.setItem('shanhe_ai_config', JSON.stringify({
+      apiKey, endpoint, model,
+    }));
+  } catch (e) { /* 忽略存储错误 */ }
+
+  updateAIStatus();
+  closeAIConfig();
+  showTip(AI_CONFIG.enabled ? 'AI 已启用' : '配置已保存');
+}
+
+function loadAIConfig() {
+  try {
+    const saved = localStorage.getItem('shanhe_ai_config');
+    if (saved) {
+      const cfg = JSON.parse(saved);
+      setAIConfig(cfg);
+    }
+  } catch (e) { /* 忽略 */ }
+}
+
+function updateAIStatus() {
+  if (AI_CONFIG.enabled) {
+    el.navAiStatus.textContent = '已启用';
+    el.navAiStatus.classList.add('on');
+  } else {
+    el.navAiStatus.textContent = '未启用';
+    el.navAiStatus.classList.remove('on');
+  }
+}
+
+/* ================================================================
+   13. 主循环
 ================================================================ */
 const T0 = performance.now();
 let onlineTimer = 0;
@@ -557,6 +853,9 @@ function tick() {
   controls.update();
   campus.update(t);
 
+  // —— 导航路径动画 ——
+  if (routeRenderer) routeRenderer.update(t);
+
   // —— 标记动画
   markers.forEach((m, id) => m.userData.update(t, id === selectedId));
 
@@ -572,10 +871,11 @@ function tick() {
 }
 
 /* ================================================================
-   13. 启动
+   14. 启动
 ================================================================ */
 buildTypeGrid();
 refreshStats();
+initNavigation();
 tick();
 
 setTimeout(() => {

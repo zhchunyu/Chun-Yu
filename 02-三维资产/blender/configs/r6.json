@@ -11,6 +11,10 @@
   "build_campus_r4.py",
   "build_campus_r5.py",
   "build_campus_r6.py",
+  "_trees_hero.py",
+  "_teach_detail.py",
+  "_entrance_all.py",
+  "build_campus_r7_landscape.py",
   "palette_retune.py"
  ],
  "jobs": [
@@ -309,10 +313,306 @@
     0.775
    ],
    "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_全园_顶视",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    0,
+    430,
+    880
+   ],
+   "cam_tgt": [
+    0,
+    470,
+    0
+   ],
+   "lens": 45,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_科技区_庭院",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -330,
+    450,
+    105
+   ],
+   "cam_tgt": [
+    -200,
+    610,
+    4
+   ],
+   "lens": 40,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_教学区_庭院",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    300,
+    90,
+    95
+   ],
+   "cam_tgt": [
+    170,
+    310,
+    4
+   ],
+   "lens": 40,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_生活区_林荫街",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -520,
+    20,
+    62
+   ],
+   "cam_tgt": [
+    -270,
+    77,
+    4
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_环廊_北端节点_垂直交通",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    150,
+    700,
+    52
+   ],
+   "cam_tgt": [
+    0,
+    604,
+    15
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_环廊_垂直交通_楼梯",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    -231.31,
+    494.88,
+    16.0
+   ],
+   "cam_tgt": [
+    -209.05,
+    504.08,
+    6.5
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_环廊_垂直交通_坡道",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    221.04,
+    218.24,
+    14.0
+   ],
+   "cam_tgt": [
+    209.48,
+    254.12,
+    8.0
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
+  },
+  {
+   "name": "R7_环廊_垂直交通_电梯",
+   "res_x": 1600,
+   "res_y": 900,
+   "samples": 110,
+   "cam_pos": [
+    226.3,
+    491.02,
+    4.5
+   ],
+   "cam_tgt": [
+    210.0,
+    504.41,
+    7.5
+   ],
+   "lens": 42,
+   "sun_elev": 38,
+   "sun_azim": 220,
+   "sun_strength": 5.8,
+   "sky_strength": 0.66,
+   "exposure": 0.2,
+   "haze_density": 1.2e-05,
+   "cloud_strength": 4.5,
+   "cloud_scale": 2.2,
+   "sky_visible": 0.72,
+   "ambient_tint": [
+    1.08,
+    0.92,
+    0.7
+   ],
+   "sun_color": [
+    1.0,
+    0.905,
+    0.775
+   ],
+   "view_transform": "Khronos PBR Neutral"
   }
  ],
  "export": {
-  "glb": "山河大学_全园_R6.glb",
+  "glb": "山河大学_全园_R7.glb",
   "yup": true,
   "apply_modifiers": true,
   "draco": true,
