@@ -64,11 +64,19 @@
   ★★ 用户没在**最新一条消息**里要求发布时**必须先问**；`userAskedToPublish` 不许为绕检查设 true
 - MCP `~/.workbuddy-ai/mcp.json` → `blender`（桥接 `blender_bridge.py`:9876）
 - ★ **远程仓库** `https://github.com/zhchunyu/Chun-Yu`（**private**），交付分支 **`main`**（旧分支 `feat/2d-map-initial`）；
-  `.blend` 走 Release（tag **`blend-projects`**）。最近推送 2026-09-26 → 远端 `main` = `82debc27`
+  `.blend` 走 Release（tag **`blend-projects`**）。最近推送 2026-09-26 → 远端 `main` = **`853884a5`**
+- ★★ **推送方式（2026-09-26 定）**：日常用 **`tools/push_delta.py`**（**只推差异**）——
+  以远端 head 的 tree 作 `base_tree`，只列新增/修改/删除项；`--dry-run` 可先看差异。
+  全量建仓才用 `push_via_api.py --stage light`。
+  ★ **`github.com` 根路径 200 ≠ `git push` 能通**（实测 180 s 无输出被 SIGTERM）；判据只能是真跑一次。
+  ★★ **blob 内容必须用 `git cat-file blob <sha>` 取，不能读工作区文件** ——
+  `.gitattributes` 做了行尾归一化（工作区 CRLF / 库里 LF），读磁盘算出的 SHA 与
+  `git ls-tree` 给的**对不上**，校验必然失败。日志里的字节数是 LF 后的（比磁盘小）
 - ★★ **入库策略（2026-09-26 用户定）**：**单张成图不入库** —— `renders/` 与 `08-交付与归档/renders_*` 只留
   图集 HTML 与站点。`.gitignore` 已登记 `/08-交付与归档/renders_*/`、`/02-三维资产/blender/projects/_tmp_*.blend`、
   `/02-三维资产/99-临时工作区/`、`/.trae-html-share-packages/`、`/picture/`
   ★ `renders/` 里 64 个历史文件**仍在库中**（gitignore 不追溯已跟踪文件）⇒ 会长期显示为 modified
+  ★ **远端 tree 里没有 `.blend`**（走 Release）⇒ 比对时 `only-local` 出现 24 个 `.blend` 是**正常**的
 
 ## 4 管线
 `BR_CFG_FILE=<json> blender.exe --background --factory-startup --python scripts/run_campus.py`
