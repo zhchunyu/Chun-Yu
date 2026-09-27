@@ -1,4 +1,4 @@
-import { REPO_BUILDINGS, buildingDoorPosition, findNearestRoadNode } from './sharedRepoBuildings.js'
+import { REPO_BUILDINGS, REPO_BUILDING_BY_ID, buildingDoorPosition, findNearestRoadNode } from './sharedRepoBuildings.js'
 import {
   ROAD_EDGES,
   ROAD_GROUND_Y,
@@ -97,4 +97,43 @@ export function getRepositoryRoadStats() {
     locationEntryCount: REPO_BUILDINGS.length,
     groundY: ROAD_GROUND_Y,
   }
+}
+
+function roadAreaLabel(nodeId) {
+  if (nodeId.startsWith('outer_')) return '外环'
+  if (nodeId.startsWith('inner_')) return '内环'
+  if (nodeId.startsWith('axis_')) return '中轴'
+  if (nodeId.startsWith('ring_')) return '环廊'
+  if (nodeId.startsWith('rad_')) return '连接支路'
+  if (nodeId.startsWith('dorm_access_')) return '宿舍接驳路'
+  if (nodeId.startsWith('sport_access_')) return '运动区接驳路'
+  return '校园道路'
+}
+
+export function getRoadEdgeOptions(locationId) {
+  const building = REPO_BUILDING_BY_ID[locationId]
+  if (!building) return []
+
+  return campusRouteGraph.edges.map((edge) => {
+    const from = campusRouteGraph.nodes[edge.from].position
+    const to = campusRouteGraph.nodes[edge.to].position
+    const midpoint = [(from[0] + to[0]) / 2, ROAD_GROUND_Y, (from[2] + to[2]) / 2]
+    const distanceToBuilding = Math.round(distanceBetween(midpoint, building.worldPosition))
+    const nearbyBuilding = REPO_BUILDINGS.reduce((closest, candidate) => (
+      distanceBetween(midpoint, candidate.worldPosition) < distanceBetween(midpoint, closest.worldPosition)
+        ? candidate
+        : closest
+    ), REPO_BUILDINGS[0])
+    const isAccessEdge = edge.id.startsWith('access:')
+    const area = roadAreaLabel(edge.from)
+
+    return {
+      id: edge.id,
+      distanceToBuilding,
+      label: isAccessEdge
+        ? `${nearbyBuilding.name}入口接驳路`
+        : `${nearbyBuilding.name}附近 · ${area}路段`,
+      detail: `${edge.from} ↔ ${edge.to} · 距${building.name}约 ${distanceToBuilding} 米`,
+    }
+  }).sort((a, b) => a.distanceToBuilding - b.distanceToBuilding)
 }

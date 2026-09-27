@@ -19,7 +19,27 @@ const PERSISTED_LOCATION_FIELDS = Object.freeze([
   'crowdStatus',
   'activity',
   'updatedAt',
+  'updatedBy',
 ])
+
+const MAX_ADMIN_HISTORY = 20
+
+function appendAdminHistory(history, entry) {
+  return [...history, entry].slice(-MAX_ADMIN_HISTORY)
+}
+
+function makeAdminAction({ type, targetId, label, before, after }) {
+  return {
+    id: `admin-action-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    type,
+    targetId,
+    label,
+    before,
+    after,
+    operator: '管理员（演示）',
+    createdAt: new Date().toISOString(),
+  }
+}
 
 function mergePersistedLocations(locations, persistedLocations) {
   if (!Array.isArray(persistedLocations)) return locations
@@ -50,6 +70,7 @@ export function createInitialState(locations, events = [], persistedState = null
   return {
     locations: nextLocations,
     events: nextEvents,
+    adminHistory: Array.isArray(persisted.adminHistory) ? persisted.adminHistory.slice(-MAX_ADMIN_HISTORY) : [],
     eventTime: Date.now(),
     query: '',
     category: 'all',
@@ -181,6 +202,7 @@ export function campusReducer(state, action) {
         ...state,
         locations: Array.isArray(action.locations) ? action.locations : state.locations,
         events: Array.isArray(action.events) ? action.events : state.events,
+        adminHistory: [],
         selectedId: null,
         currentLocationId: null,
         routePlan: null,
@@ -189,29 +211,52 @@ export function campusReducer(state, action) {
     case 'UPDATE_LOCATION_STATUS': {
       if (!canManage(state.role)) return state
 
-      const exists = state.locations.some((location) => location.id === action.locationId)
-      if (!exists) return state
+      const before = state.locations.find((location) => location.id === action.locationId)
+      if (!before) return state
+      const unchanged = Object.entries(action.changes ?? {}).every(([key, value]) => before[key] === value)
+      if (unchanged) return state
 
+      const after = {
+        ...before,
+        ...action.changes,
+        updatedAt: new Date().toISOString(),
+        updatedBy: '管理员（演示）',
+      }
       return {
         ...state,
-        locations: state.locations.map((location) =>
-          location.id === action.locationId
-            ? { ...location, ...action.changes, updatedAt: '刚刚更新' }
-            : location,
-        ),
+        locations: state.locations.map((location) => location.id === action.locationId ? after : location),
+        adminHistory: appendAdminHistory(state.adminHistory, makeAdminAction({
+          type: 'location-update',
+          targetId: before.id,
+          label: `修改地点：${before.name}`,
+          before,
+          after,
+        })),
         lastSyncedAt: '刚刚更新',
       }
-      }
+    }
     case 'PUBLISH_EVENT': {
       if (!canPublishEvents(state.role)) return state
 
       const exists = state.events.some((event) => event.id === action.event.id)
       if (exists) return state
 
-      const nextEvents = [...state.events, { ...action.event, updatedAt: '刚刚更新' }]
+      const after = {
+        ...action.event,
+        updatedAt: new Date().toISOString(),
+        updatedBy: '管理员（演示）',
+      }
+      const nextEvents = [...state.events, after]
       return {
         ...state,
         events: nextEvents,
+        adminHistory: appendAdminHistory(state.adminHistory, makeAdminAction({
+          type: 'event-create',
+          targetId: after.id,
+          label: `发布热点：${after.title}`,
+          before: null,
+          after,
+        })),
         routePlan: state.routePlan ? createRouteForState(state, {}, nextEvents) : null,
         lastSyncedAt: '刚刚更新',
       }
@@ -219,17 +264,89 @@ export function campusReducer(state, action) {
     case 'CLOSE_EVENT': {
       if (!canPublishEvents(state.role)) return state
 
-      const exists = state.events.some((event) => event.id === action.eventId)
-      if (!exists) return state
+      const before = state.events.find((event) => event.id === action.eventId)
+      if (!before || before.status === 'closed') return state
 
+      const updatedAt = new Date().toISOString()
       const nextEvents = state.events.map((event) => (
-        event.id === action.eventId ? { ...event, status: 'closed', updatedAt: '刚刚更新' } : event
+        event.id === action.eventId
+          ? { ...event, status: 'closed', updatedAt, updatedBy: '管理员（演示）' }
+          : event
       ))
+      const after = nextEvents.find((event) => event.id === action.eventId)
 
       return {
         ...state,
         events: nextEvents,
+        adminHistory: appendAdminHistory(state.adminHistory, makeAdminAction({
+          type: 'event-close',
+          targetId: before.id,
+          label: `结束热点：${before.title}`,
+          before,
+          after,
+        })),
         routePlan: state.routePlan ? createRouteForState(state, {}, nextEvents) : null,
+        lastSyncedAt: '刚刚更新',
+      }
+    }
+    case 'UPDATE_EVENT': {
+      if (!canPublishEvents(state.role)) return state
+
+      const before = state.events.find((event) => event.id === action.eventId)
+      if (!before) return state
+
+      const updatedAt = new Date().toISOString()
+      const after = {
+        ...before,
+        ...action.changes,
+        id: before.id,
+        updatedAt,
+        updatedBy: '管理员（演示）',
+      }
+      const nextEvents = state.events.map((event) => event.id === before.id ? after : event)
+
+      return {
+        ...state,
+        events: nextEvents,
+        adminHistory: appendAdminHistory(state.adminHistory, makeAdminAction({
+          type: 'event-update',
+          targetId: before.id,
+          label: `修改热点：${after.title}`,
+          before,
+          after,
+        })),
+        routePlan: state.routePlan ? createRouteForState(state, {}, nextEvents) : null,
+        lastSyncedAt: '刚刚更新',
+      }
+    }
+    case 'UNDO_ADMIN_ACTION': {
+      if (!canManage(state.role) || state.adminHistory.length === 0) return state
+
+      const action = state.adminHistory.at(-1)
+      const adminHistory = state.adminHistory.slice(0, -1)
+      let locations = state.locations
+      let events = state.events
+
+      if (action.type === 'location-update') {
+        locations = state.locations.map((location) => (
+          location.id === action.targetId ? action.before : location
+        ))
+      } else if (action.type === 'event-create') {
+        events = state.events.filter((event) => event.id !== action.targetId)
+      } else if (action.type === 'event-close' || action.type === 'event-update') {
+        events = state.events.map((event) => (
+          event.id === action.targetId ? action.before : event
+        ))
+      } else {
+        return state
+      }
+
+      return {
+        ...state,
+        locations,
+        events,
+        adminHistory,
+        routePlan: state.routePlan ? createRouteForState(state, {}, events) : null,
         lastSyncedAt: '刚刚更新',
       }
     }

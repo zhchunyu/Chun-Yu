@@ -120,7 +120,11 @@ function App() {
           cameraMode={state.cameraMode}
           routePlan={state.routePlan}
           onPublishEvent={(event) => dispatch({ type: 'PUBLISH_EVENT', event })}
+          onUpdateEvent={(eventId, changes) => dispatch({ type: 'UPDATE_EVENT', eventId, changes })}
           onCloseEvent={(eventId) => dispatch({ type: 'CLOSE_EVENT', eventId })}
+          canUndoAdminAction={state.role === 'manager' && state.adminHistory.length > 0}
+          lastAdminAction={state.adminHistory.at(-1) ?? null}
+          onUndoAdminAction={() => dispatch({ type: 'UNDO_ADMIN_ACTION' })}
           onToggleToolbar={(open) => dispatch({ type: 'TOGGLE_TOOLBAR', open })}
           onToolChange={(tool) => dispatch({ type: 'SET_ACTIVE_TOOL', tool })}
           onRoleChange={(role) => dispatch({ type: 'SET_ROLE', role })}

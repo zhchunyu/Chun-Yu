@@ -28,6 +28,7 @@ export function savePersistedState(state) {
     mapProfile: 'shared-3d-main',
     locations: state.locations,
     events: state.events,
+    adminHistory: state.adminHistory,
     settings: state.settings,
     role: state.role,
     mapScene: state.mapScene,

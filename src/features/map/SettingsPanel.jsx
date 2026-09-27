@@ -1,6 +1,6 @@
 import { FileCog, Maximize2, RotateCcw, Route, Trash2 } from 'lucide-react'
 
-export function SettingsPanel({ settings, onChange, onResetSettings, onResetView, onFullscreen, onClearRoute, onClearCurrentLocation, onResetDemoData }) {
+export function SettingsPanel({ settings, onChange, onResetSettings, onResetView, onFullscreen, onClearRoute, onClearCurrentLocation, onResetDemoData, canUndoAdminAction, lastAdminAction, onUndoAdminAction }) {
   return (
     <section className="settings-panel" aria-label="地图设置">
       <div className="map-panel-heading"><FileCog size={14} /><span>地图设置</span></div>
@@ -18,6 +18,12 @@ export function SettingsPanel({ settings, onChange, onResetSettings, onResetView
         <button type="button" onClick={onResetSettings}>恢复默认设置</button>
         <button type="button" onClick={onResetDemoData}>恢复演示数据</button>
       </div>
+      {canUndoAdminAction && lastAdminAction && (
+        <div className="settings-undo">
+          <span><small>最近管理操作</small><strong>{lastAdminAction.label}</strong></span>
+          <button type="button" onClick={onUndoAdminAction}>撤销</button>
+        </div>
+      )}
       <p className="settings-meta">v0.1.0 · 本地演示数据 · 已预留真实接口层</p>
     </section>
   )

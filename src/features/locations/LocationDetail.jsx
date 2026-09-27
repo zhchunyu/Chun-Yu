@@ -1,4 +1,5 @@
-import { Activity, CalendarClock, LockKeyhole, MapPinned, Navigation, UsersRound, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Activity, CalendarClock, Check, LockKeyhole, MapPinned, Navigation, RotateCcw, UsersRound, X } from 'lucide-react'
 import { canManage, CROWD_STATUS_LABELS, OPEN_STATUS_LABELS, ROLE_LABELS } from '../../domain/campus.js'
 import { StatusBadge } from '../../components/StatusBadge.jsx'
 
@@ -10,7 +11,33 @@ function crowdTone(status) {
   return status === 'busy' ? 'busy' : status === 'normal' ? 'normal' : 'low'
 }
 
+function editableValues(location) {
+  return {
+    openStatus: location?.openStatus ?? 'open',
+    crowdStatus: location?.crowdStatus ?? 'normal',
+    activity: location?.activity ?? '',
+  }
+}
+
+function formatUpdatedAt(value) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value || '暂无记录'
+
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
 export function LocationDetail({ location, events = [], role, onUpdate, onClose, onPlanRoute }) {
+  const [draft, setDraft] = useState(() => editableValues(location))
+
+  useEffect(() => {
+    setDraft(editableValues(location))
+  }, [location?.id, location?.openStatus, location?.crowdStatus, location?.activity])
+
   if (!location) {
     return (
       <aside className="detail-panel detail-panel--empty">
@@ -22,6 +49,9 @@ export function LocationDetail({ location, events = [], role, onUpdate, onClose,
   }
 
   const managerMode = canManage(role)
+  const hasChanges = draft.openStatus !== location.openStatus
+    || draft.crowdStatus !== location.crowdStatus
+    || draft.activity !== (location.activity ?? '')
 
   return (
     <aside className="detail-panel">
@@ -43,8 +73,8 @@ export function LocationDetail({ location, events = [], role, onUpdate, onClose,
           <span className="detail-status-card__label">开放状态</span>
           {managerMode ? (
             <select
-              value={location.openStatus}
-              onChange={(event) => onUpdate({ openStatus: event.target.value })}
+              value={draft.openStatus}
+              onChange={(event) => setDraft((current) => ({ ...current, openStatus: event.target.value }))}
             >
               {Object.entries(OPEN_STATUS_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
@@ -54,8 +84,8 @@ export function LocationDetail({ location, events = [], role, onUpdate, onClose,
           <span className="detail-status-card__label">当前人流</span>
           {managerMode ? (
             <select
-              value={location.crowdStatus}
-              onChange={(event) => onUpdate({ crowdStatus: event.target.value })}
+              value={draft.crowdStatus}
+              onChange={(event) => setDraft((current) => ({ ...current, crowdStatus: event.target.value }))}
             >
               {Object.entries(CROWD_STATUS_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
@@ -68,8 +98,8 @@ export function LocationDetail({ location, events = [], role, onUpdate, onClose,
         {managerMode ? (
           <input
             className="detail-input"
-            value={location.activity}
-            onChange={(event) => onUpdate({ activity: event.target.value })}
+            value={draft.activity}
+            onChange={(event) => setDraft((current) => ({ ...current, activity: event.target.value }))}
             aria-label="当前动态"
           />
         ) : <p className="activity-copy">{location.activity || '暂无活动信息'}</p>}
@@ -83,11 +113,18 @@ export function LocationDetail({ location, events = [], role, onUpdate, onClose,
       )}
 
       <div className="detail-meta-list">
-        <div><CalendarClock size={15} /><span>数据更新时间</span><strong>{location.updatedAt}</strong></div>
+        <div><CalendarClock size={15} /><span>数据更新时间</span><strong>{formatUpdatedAt(location.updatedAt)}</strong></div>
+        {location.updatedBy && <div><UsersRound size={15} /><span>最近修改人</span><strong>{location.updatedBy}</strong></div>}
         <div><UsersRound size={15} /><span>当前视角</span><strong>{ROLE_LABELS[role]}</strong></div>
         <div><LockKeyhole size={15} /><span>数据范围</span><strong>本地演示</strong></div>
       </div>
 
+      {managerMode && hasChanges && (
+        <div className="detail-edit-actions">
+          <button type="button" onClick={() => setDraft(editableValues(location))}><RotateCcw size={13} />取消修改</button>
+          <button type="button" onClick={() => onUpdate(draft)}><Check size={13} />保存修改</button>
+        </div>
+      )}
       <button className="detail-action" type="button" onClick={onPlanRoute}><Navigation size={14} /> 规划到这里</button>
     </aside>
   )

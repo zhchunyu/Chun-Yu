@@ -25,8 +25,12 @@ export function MapWorkspace({
   currentLocationId,
   cameraMode,
   routePlan,
+  canUndoAdminAction,
+  lastAdminAction,
   onPublishEvent,
+  onUpdateEvent,
   onCloseEvent,
+  onUndoAdminAction,
   onToggleToolbar,
   onToolChange,
   onRoleChange,
@@ -65,6 +69,8 @@ export function MapWorkspace({
         events={activeEvents}
         currentLocationId={currentLocationId}
         cameraMode={cameraMode}
+        canUndoAdminAction={canUndoAdminAction}
+        lastAdminAction={lastAdminAction}
         onToggle={onToggleToolbar}
         onToolChange={onToolChange}
         onRoleChange={onRoleChange}
@@ -78,7 +84,9 @@ export function MapWorkspace({
         onClearCurrentLocation={onClearCurrentLocation}
         onResetDemoData={onResetDemoData}
         onPublishEvent={onPublishEvent}
+        onUpdateEvent={onUpdateEvent}
         onCloseEvent={onCloseEvent}
+        onUndoAdminAction={onUndoAdminAction}
       />
 
       <div className={`map-surface ${mapScene === '3d' ? 'map-surface--3d' : 'map-surface--2d'} ${displayedRoutePlan ? 'has-route' : ''}`} aria-label={mapScene === '3d' ? `${teamCampusMap.campusName}三维校园地图` : `${teamCampusMap.campusName}二维校园平面图`}>

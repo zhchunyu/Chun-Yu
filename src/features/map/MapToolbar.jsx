@@ -15,7 +15,7 @@ const tools = [
   { id: 'camera', label: '第一人称', icon: PersonStanding },
 ]
 
-export function MapToolbar({ open, activeTool, role, settings, locations, events, currentLocationId, cameraMode, onToggle, onToolChange, onRoleChange, onCurrentLocationChange, onCameraModeChange, onSettingsChange, onResetSettings, onResetView, onFullscreen, onClearRoute, onClearCurrentLocation, onResetDemoData, onPublishEvent, onCloseEvent }) {
+export function MapToolbar({ open, activeTool, role, settings, locations, events, currentLocationId, cameraMode, canUndoAdminAction, lastAdminAction, onToggle, onToolChange, onRoleChange, onCurrentLocationChange, onCameraModeChange, onSettingsChange, onResetSettings, onResetView, onFullscreen, onClearRoute, onClearCurrentLocation, onResetDemoData, onPublishEvent, onUpdateEvent, onCloseEvent, onUndoAdminAction }) {
   const visibleTools = role === 'manager' ? [...tools, { id: 'events', label: '发布热点', icon: Megaphone }] : tools
 
   const handleToolClick = (toolId) => {
@@ -70,12 +70,15 @@ export function MapToolbar({ open, activeTool, role, settings, locations, events
           onClearRoute={onClearRoute}
           onClearCurrentLocation={onClearCurrentLocation}
           onResetDemoData={onResetDemoData}
+          canUndoAdminAction={canUndoAdminAction}
+          lastAdminAction={lastAdminAction}
+          onUndoAdminAction={onUndoAdminAction}
         />
       )}
       {open && activeTool === 'location' && (
         <SimulatedLocationPicker locations={locations} currentLocationId={currentLocationId} onChange={onCurrentLocationChange} />
       )}
-      {open && activeTool === 'events' && role === 'manager' && <EventComposer locations={locations} events={events} onPublish={onPublishEvent} onClose={onCloseEvent} />}
+      {open && activeTool === 'events' && role === 'manager' && <EventComposer locations={locations} events={events} onPublish={onPublishEvent} onUpdate={onUpdateEvent} onClose={onCloseEvent} />}
     </aside>
   )
 }
