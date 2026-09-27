@@ -73,6 +73,12 @@ export function getRouteInstructions(routePlan, locations = [], graph = campusRo
 }
 
 export function getRouteModeDescription(routePlan) {
+  if (routePlan?.status === 'unavailable') {
+    if (routePlan.unavailableReason === 'origin-closed') return '出发地点暂时关闭，请选择其他起点。'
+    if (routePlan.unavailableReason === 'destination-closed') return '目的地点暂时关闭，请选择其他目的地。'
+    return '当前路线模式下没有可用路线，请更换路线模式或起终点。'
+  }
+
   const description = ROUTE_MODE_DESCRIPTIONS[routePlan?.mode] ?? ROUTE_MODE_DESCRIPTIONS.shortest
   const blockedCount = routePlan?.blockedEdgeIds?.length ?? 0
   return blockedCount ? `${description}本次计算已排除 ${blockedCount} 段有效封闭道路。` : description
@@ -128,7 +134,7 @@ function findEdge(graph, from, to) {
   ))
 }
 
-function unavailableRoute(originId, destinationId, mode) {
+export function createUnavailableRoute(originId, destinationId, mode, unavailableReason = 'no-available-path') {
   return {
     originId,
     destinationId,
@@ -136,6 +142,7 @@ function unavailableRoute(originId, destinationId, mode) {
     distance: 0,
     durationMinutes: 0,
     status: 'unavailable',
+    unavailableReason,
     segments: [],
     nodeIds: [],
     points: [],
@@ -205,7 +212,7 @@ export function createCampusRoute({
   const start = originNodeId ?? getEntryNodeId(originId)
   const goal = destinationNodeId ?? getEntryNodeId(destinationId)
   if (!start || !goal || !graph.nodes[start] || !graph.nodes[goal]) {
-    return unavailableRoute(originId, destinationId, mode)
+    return createUnavailableRoute(originId, destinationId, mode)
   }
 
   const dynamicBlockedEdges = new Set(blockedEdgeIds)
@@ -243,7 +250,7 @@ export function createCampusRoute({
     }
   }
 
-  return unavailableRoute(originId, destinationId, mode)
+  return createUnavailableRoute(originId, destinationId, mode)
 }
 
 export function createDemoRoute(args) {

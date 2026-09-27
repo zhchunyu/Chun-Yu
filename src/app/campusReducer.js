@@ -1,15 +1,30 @@
-import { canManage, canPublishEvents } from '../domain/campus.js'
+import { canManage, canPublishEvents, isHotspotActiveAt } from '../domain/campus.js'
 import { CAMERA_MODES } from '../domain/camera.js'
-import { createDemoRoute, ROUTE_MODES } from '../domain/route.js'
+import { createDemoRoute, createUnavailableRoute, ROUTE_MODES } from '../domain/route.js'
 import { DEFAULT_SETTINGS, mergeSettings } from '../data/appSettings.js'
 import { teamCampusMap } from '../data/campusMap.js'
 import { getActiveBlockedEdgeIds } from '../data/events.js'
 
 function createRouteForState(state, overrides = {}, events = state.events) {
+  const originId = overrides.originId ?? state.routePlan?.originId
+  const destinationId = overrides.destinationId ?? state.routePlan?.destinationId
+  const mode = overrides.mode ?? state.routePlan?.mode ?? state.settings.defaultRouteMode ?? ROUTE_MODES.SHORTEST
+  if (!originId || !destinationId) return null
+
+  const origin = state.locations.find((location) => location.id === originId)
+  const destination = state.locations.find((location) => location.id === destinationId)
+
+  if (origin?.openStatus === 'closed') {
+    return createUnavailableRoute(originId, destinationId, mode, 'origin-closed')
+  }
+  if (destination?.openStatus === 'closed') {
+    return createUnavailableRoute(originId, destinationId, mode, 'destination-closed')
+  }
+
   return createDemoRoute({
-    originId: overrides.originId ?? state.routePlan?.originId,
-    destinationId: overrides.destinationId ?? state.routePlan?.destinationId,
-    mode: overrides.mode ?? state.routePlan?.mode ?? state.settings.defaultRouteMode ?? ROUTE_MODES.SHORTEST,
+    originId,
+    destinationId,
+    mode,
     blockedEdgeIds: getActiveBlockedEdgeIds(events),
   })
 }
@@ -58,10 +73,26 @@ function mergePersistedLocations(locations, persistedLocations) {
   })
 }
 
+function refreshExpiredDemoEventWindows(persistedEvents, demoEvents, now) {
+  const demoEventsById = new Map(demoEvents.map((event) => [event.id, event]))
+
+  return persistedEvents.map((event) => {
+    if (event?.status !== 'active' || isHotspotActiveAt(event, now)) return event
+
+    const demoEvent = demoEventsById.get(event.id)
+    if (!demoEvent || !isHotspotActiveAt(demoEvent, now)) return event
+
+    return { ...event, startAt: demoEvent.startAt, endAt: demoEvent.endAt }
+  })
+}
+
 export function createInitialState(locations, events = [], persistedState = null) {
   const persisted = persistedState && typeof persistedState === 'object' ? persistedState : {}
+  const now = Date.now()
   const nextLocations = mergePersistedLocations(locations, persisted.locations)
-  const nextEvents = Array.isArray(persisted.events) ? persisted.events : events
+  const nextEvents = Array.isArray(persisted.events)
+    ? refreshExpiredDemoEventWindows(persisted.events, events, now)
+    : events
   const persistedCurrentLocation = persisted.currentLocationId
     && nextLocations.some((location) => location.id === persisted.currentLocationId)
     ? persisted.currentLocationId
@@ -71,7 +102,7 @@ export function createInitialState(locations, events = [], persistedState = null
     locations: nextLocations,
     events: nextEvents,
     adminHistory: Array.isArray(persisted.adminHistory) ? persisted.adminHistory.slice(-MAX_ADMIN_HISTORY) : [],
-    eventTime: Date.now(),
+    eventTime: now,
     query: '',
     category: 'all',
     selectedId: null,
@@ -85,7 +116,7 @@ export function createInitialState(locations, events = [], persistedState = null
     toolbarOpen: false,
     activeTool: null,
     routePlan: null,
-    lastSyncedAt: '刚刚更新',
+    lastSyncedAt: new Date(now).toISOString(),
     resetViewToken: 0,
   }
 }
@@ -206,7 +237,7 @@ export function campusReducer(state, action) {
         selectedId: null,
         currentLocationId: null,
         routePlan: null,
-        lastSyncedAt: '刚刚更新',
+        lastSyncedAt: new Date().toISOString(),
       }
     case 'UPDATE_LOCATION_STATUS': {
       if (!canManage(state.role)) return state
@@ -222,9 +253,11 @@ export function campusReducer(state, action) {
         updatedAt: new Date().toISOString(),
         updatedBy: '管理员（演示）',
       }
+      const nextLocations = state.locations.map((location) => location.id === action.locationId ? after : location)
       return {
         ...state,
-        locations: state.locations.map((location) => location.id === action.locationId ? after : location),
+        locations: nextLocations,
+        routePlan: state.routePlan ? createRouteForState({ ...state, locations: nextLocations }) : null,
         adminHistory: appendAdminHistory(state.adminHistory, makeAdminAction({
           type: 'location-update',
           targetId: before.id,
@@ -232,7 +265,7 @@ export function campusReducer(state, action) {
           before,
           after,
         })),
-        lastSyncedAt: '刚刚更新',
+        lastSyncedAt: new Date().toISOString(),
       }
     }
     case 'PUBLISH_EVENT': {
@@ -258,7 +291,7 @@ export function campusReducer(state, action) {
           after,
         })),
         routePlan: state.routePlan ? createRouteForState(state, {}, nextEvents) : null,
-        lastSyncedAt: '刚刚更新',
+        lastSyncedAt: new Date().toISOString(),
       }
     }
     case 'CLOSE_EVENT': {
@@ -286,7 +319,7 @@ export function campusReducer(state, action) {
           after,
         })),
         routePlan: state.routePlan ? createRouteForState(state, {}, nextEvents) : null,
-        lastSyncedAt: '刚刚更新',
+        lastSyncedAt: new Date().toISOString(),
       }
     }
     case 'UPDATE_EVENT': {
@@ -316,7 +349,7 @@ export function campusReducer(state, action) {
           after,
         })),
         routePlan: state.routePlan ? createRouteForState(state, {}, nextEvents) : null,
-        lastSyncedAt: '刚刚更新',
+        lastSyncedAt: new Date().toISOString(),
       }
     }
     case 'UNDO_ADMIN_ACTION': {
@@ -347,7 +380,7 @@ export function campusReducer(state, action) {
         events,
         adminHistory,
         routePlan: state.routePlan ? createRouteForState(state, {}, events) : null,
-        lastSyncedAt: '刚刚更新',
+        lastSyncedAt: new Date().toISOString(),
       }
     }
     default:

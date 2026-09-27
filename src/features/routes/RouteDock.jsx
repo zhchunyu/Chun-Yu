@@ -9,6 +9,8 @@ import {
 
 export function getRouteStatusLabel(routePlan) {
   if (routePlan?.status === 'arrived') return '已到达目的地'
+  if (routePlan?.unavailableReason === 'origin-closed') return '出发地点暂时关闭'
+  if (routePlan?.unavailableReason === 'destination-closed') return '目的地点暂时关闭'
   return routePlan?.status === 'unavailable'
     ? '当前模式下没有可用路线'
     : `约 ${routePlan.durationMinutes} 分钟`

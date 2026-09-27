@@ -17,6 +17,8 @@ const INITIAL_CAMERA = Object.freeze({
 const CAMERA_EYE_HEIGHT = 8
 const WALK_SPEED = 110
 const WORLD_BOUNDS = Object.freeze({ minX: -780, maxX: 780, minZ: -900, maxZ: 120 })
+const ROUTE_SEGMENT_RADIUS = 4.2
+const ROUTE_CORE_RADIUS = 2.4
 
 function fovFromLens(lens, aspect) {
   return 2 * Math.atan((18 / lens) / aspect) * 180 / Math.PI
@@ -41,22 +43,67 @@ function disposeObject(root) {
 
 function clearRouteGroup(routeGroup) {
   if (!routeGroup) return
+  const geometries = new Set()
+  const materials = new Set()
+
   while (routeGroup.children.length) {
-    const object = routeGroup.children.pop()
+    const object = routeGroup.children.at(-1)
+    routeGroup.remove(object)
     object.traverse?.((child) => {
-      child.geometry?.dispose()
-      const materials = Array.isArray(child.material) ? child.material : [child.material]
-      materials.forEach(disposeMaterial)
+      if (child.geometry) geometries.add(child.geometry)
+      const childMaterials = Array.isArray(child.material) ? child.material : [child.material]
+      childMaterials.filter(Boolean).forEach((material) => materials.add(material))
     })
   }
+
+  geometries.forEach((geometry) => geometry.dispose())
+  materials.forEach(disposeMaterial)
 }
 
-function addRouteMarker(routeGroup, position, color) {
+function addRouteSegment(routeGroup, from, to, radius, material, renderOrder) {
+  const direction = to.clone().sub(from)
+  const length = direction.length()
+  if (length < 0.01) return
+
+  const segment = new THREE.Mesh(
+    new THREE.CylinderGeometry(radius, radius, length, 10),
+    material,
+  )
+  segment.position.copy(from).add(to).multiplyScalar(0.5)
+  segment.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize())
+  segment.renderOrder = renderOrder
+  routeGroup.add(segment)
+}
+
+function addRouteMarker(routeGroup, position, color, isWaypoint = false) {
+  const outerRadius = isWaypoint ? ROUTE_SEGMENT_RADIUS : 12
+  const innerRadius = isWaypoint ? ROUTE_CORE_RADIUS : 8
+  const outer = new THREE.Mesh(
+    new THREE.SphereGeometry(outerRadius, 16, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0x07343a,
+      transparent: true,
+      opacity: 0.96,
+      depthTest: false,
+      depthWrite: false,
+    }),
+  )
+  outer.position.copy(position)
+  outer.renderOrder = isWaypoint ? 1000 : 1002
+  routeGroup.add(outer)
+
   const marker = new THREE.Mesh(
-    new THREE.SphereGeometry(7, 16, 12),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.96 }),
+    new THREE.SphereGeometry(innerRadius, 16, 12),
+    new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 1,
+      depthTest: false,
+      depthWrite: false,
+    }),
   )
   marker.position.copy(position)
+  marker.renderOrder = isWaypoint ? 1001 : 1003
   routeGroup.add(marker)
 }
 
@@ -65,9 +112,29 @@ function updateRouteGroup(routeGroup, routePlan) {
   if (!routePlan || routePlan.status !== 'preview' || routePlan.points.length < 2) return
 
   const points = createRoutePoints(routePlan.points)
-  const geometry = new THREE.BufferGeometry().setFromPoints(points)
-  const material = new THREE.LineBasicMaterial({ color: 0x64e8d5, transparent: true, opacity: 0.95 })
-  routeGroup.add(new THREE.Line(geometry, material))
+  const outlineMaterial = new THREE.MeshBasicMaterial({
+    color: 0x07343a,
+    transparent: true,
+    opacity: 0.96,
+    depthTest: false,
+    depthWrite: false,
+  })
+  const routeMaterial = new THREE.MeshBasicMaterial({
+    color: 0x64e8d5,
+    transparent: true,
+    opacity: 1,
+    depthTest: false,
+    depthWrite: false,
+  })
+
+  for (let index = 1; index < points.length; index += 1) {
+    const from = points[index - 1]
+    const to = points[index]
+    addRouteSegment(routeGroup, from, to, ROUTE_SEGMENT_RADIUS, outlineMaterial, 1000)
+    addRouteSegment(routeGroup, from, to, ROUTE_CORE_RADIUS, routeMaterial, 1001)
+    if (index < points.length - 1) addRouteMarker(routeGroup, to, 0x64e8d5, true)
+  }
+
   addRouteMarker(routeGroup, points[0], 0xffc266)
   addRouteMarker(routeGroup, points.at(-1), 0x64e8d5)
 }
@@ -81,10 +148,13 @@ export function Campus3DViewer({
   currentLocationId = null,
   cameraMode = CAMERA_MODES.ORBIT,
   routePlan = null,
+  showLabels = true,
+  showStatusColors = true,
   showTips = true,
   resetViewToken = 0,
   onSelectLocation,
   onCameraModeChange,
+  onSwitchTo2D,
 }) {
   const containerRef = useRef(null)
   const labelsRef = useRef(new Map())
@@ -102,6 +172,9 @@ export function Campus3DViewer({
   const exitFirstPersonRef = useRef(null)
   const resetViewRef = useRef(null)
   const [status, setStatus] = useState('loading')
+  const [loadProgress, setLoadProgress] = useState(null)
+  const [loadError, setLoadError] = useState('')
+  const [retryToken, setRetryToken] = useState(0)
   const [missingAnchors, setMissingAnchors] = useState([])
 
   propsRef.current = { locations, visibleLocationIds, selectedId, currentLocationId, routePlan }
@@ -117,6 +190,9 @@ export function Campus3DViewer({
   useEffect(() => {
     const container = containerRef.current
     if (!container) return undefined
+    setStatus('loading')
+    setLoadProgress(null)
+    setLoadError('')
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0xb9cbdb)
@@ -133,13 +209,28 @@ export function Campus3DViewer({
     camera.position.set(...INITIAL_CAMERA.position)
     cameraRef.current = camera
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
+    let renderer
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
+    } catch {
+      setLoadError('当前浏览器无法创建 WebGL 渲染器。')
+      setStatus('error')
+      return undefined
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.setSize(width, height, false)
     renderer.toneMapping = THREE.NeutralToneMapping
     renderer.toneMappingExposure = 1
     renderer.outputColorSpace = THREE.SRGBColorSpace
     container.prepend(renderer.domElement)
+    const onWebGLContextLost = (event) => {
+      event.preventDefault()
+      if (!disposed) {
+        setLoadError('地图渲染上下文已丢失。')
+        setStatus('error')
+      }
+    }
+    renderer.domElement.addEventListener('webglcontextlost', onWebGLContextLost)
 
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
@@ -356,14 +447,25 @@ export function Campus3DViewer({
     }
 
     const syncAnnotationPositions = () => {
-      const { locations: currentLocations, visibleLocationIds: currentVisibleIds, selectedId: currentSelectedId, currentLocationId: currentId } = propsRef.current
+      const {
+        locations: currentLocations,
+        visibleLocationIds: currentVisibleIds,
+        selectedId: currentSelectedId,
+        currentLocationId: currentId,
+        routePlan: currentRoutePlan,
+      } = propsRef.current
       const currentWidth = Math.max(container.clientWidth, 1)
       const currentHeight = Math.max(container.clientHeight, 1)
 
       currentLocations.forEach((location) => {
         const label = labelsRef.current.get(location.id)
         const anchor = modelAnchorsRef.current.get(location.id)
-        if (!label || !anchor || (!currentVisibleIds.has(location.id) && currentSelectedId !== location.id)) {
+        if (
+          !label
+          || !anchor
+          || currentRoutePlan?.status === 'preview'
+          || (!currentVisibleIds.has(location.id) && currentSelectedId !== location.id)
+        ) {
           if (label) label.hidden = true
           return
         }
@@ -447,11 +549,19 @@ export function Campus3DViewer({
           .map((location) => location.name))
         updateRouteGroup(routeGroup, propsRef.current.routePlan)
         if (cameraModeRef.current === CAMERA_MODES.FIRST_PERSON) enterFirstPerson()
+        setLoadProgress(100)
         setStatus('ready')
       },
-      undefined,
-      () => {
-        if (!disposed) setStatus('error')
+      (progressEvent) => {
+        if (!disposed && progressEvent.total > 0) {
+          setLoadProgress(Math.min(99, Math.round((progressEvent.loaded / progressEvent.total) * 100)))
+        }
+      },
+      (error) => {
+        if (!disposed) {
+          setLoadError(error?.message || '模型或 Draco 解码资源加载失败。')
+          setStatus('error')
+        }
       },
     )
 
@@ -465,6 +575,7 @@ export function Campus3DViewer({
       renderer.domElement.removeEventListener('pointermove', onPointerMove)
       renderer.domElement.removeEventListener('pointerup', onPointerUp)
       renderer.domElement.removeEventListener('pointercancel', onPointerUp)
+      renderer.domElement.removeEventListener('webglcontextlost', onWebGLContextLost)
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
       controls.dispose()
@@ -485,7 +596,7 @@ export function Campus3DViewer({
       exitFirstPersonRef.current = null
       resetViewRef.current = null
     }
-  }, [modelUrl])
+  }, [modelUrl, retryToken])
 
   useEffect(() => {
     if (cameraMode === CAMERA_MODES.FIRST_PERSON) enterFirstPersonRef.current?.()
@@ -527,16 +638,24 @@ export function Campus3DViewer({
       <div className="campus-3d-annotations" aria-label="地图地点标签">
         {locations.map((location) => {
           const eventCount = eventCountByLocationId[location.id] ?? 0
+          const statusClass = showStatusColors && location.openStatus === 'closed'
+            ? 'is-closed'
+            : showStatusColors && location.openStatus === 'limited'
+              ? 'is-limited'
+              : showStatusColors && location.crowdStatus === 'busy'
+                ? 'is-busy'
+                : ''
           return (
             <button
-              className={`campus-3d-label ${selectedId === location.id ? 'is-selected' : ''}`}
+              className={`campus-3d-label ${selectedId === location.id ? 'is-selected' : ''} ${showLabels ? '' : 'is-compact'}`}
               data-location-id={location.id}
               key={location.id}
               onClick={() => onSelectLocation?.(location.id)}
               ref={setLabelRef(location.id)}
               type="button"
             >
-              <span className="campus-3d-label__title"><i className="campus-3d-label__pin" />{location.name}</span>
+              <i className={`campus-3d-label__pin ${statusClass}`} />
+              <span className="campus-3d-label__title">{location.name}</span>
               <small>{CATEGORY_LABELS[location.category]}</small>
               {eventCount > 0 && <em className="campus-3d-label__hotspot">{eventCount} 条热点</em>}
             </button>
@@ -565,8 +684,14 @@ export function Campus3DViewer({
       )}
       {status !== 'ready' && (
         <div className={`campus-3d-state campus-3d-state--${status}`} role="status">
-          <strong>{status === 'error' ? '三维模型加载失败' : '正在加载全园模型'}</strong>
-          <span>{status === 'error' ? '请检查共享仓库 GLB 资源与浏览器 WebGL 支持' : 'GLB / Draco 解码中…'}</span>
+          <strong>{status === 'error' ? '三维地图暂不可用' : '正在加载全园模型'}</strong>
+          <span>{status === 'error' ? (loadError || '请检查模型资源与浏览器 WebGL 支持。') : `GLB / Draco 解码中${loadProgress === null ? '…' : ` · ${loadProgress}%`}`}</span>
+          {status === 'error' && (
+            <div className="campus-3d-state__actions">
+              <button type="button" onClick={() => { setStatus('loading'); setRetryToken((token) => token + 1) }}>重新加载</button>
+              <button type="button" onClick={onSwitchTo2D}>切换到二维地图</button>
+            </div>
+          )}
         </div>
       )}
     </div>

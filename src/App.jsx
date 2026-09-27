@@ -140,6 +140,7 @@ function App() {
           currentLocationId={state.currentLocationId}
           cameraMode={state.cameraMode}
           routePlan={state.routePlan}
+          lastSyncedAt={state.lastSyncedAt}
           onPublishEvent={(event) => dispatch({ type: 'PUBLISH_EVENT', event })}
           onUpdateEvent={(eventId, changes) => dispatch({ type: 'UPDATE_EVENT', eventId, changes })}
           onCloseEvent={(eventId) => dispatch({ type: 'CLOSE_EVENT', eventId })}

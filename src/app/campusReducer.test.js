@@ -3,6 +3,7 @@ import { createInitialState, campusReducer } from './campusReducer.js'
 import { locationRepository } from '../data/locations.js'
 import { demoEvents } from '../data/events.js'
 import { CAMERA_MODES } from '../domain/camera.js'
+import { listActiveHotspots } from '../domain/campus.js'
 
 const initialState = createInitialState(locationRepository.loadAll(), demoEvents)
 
@@ -19,6 +20,17 @@ describe('campus reducer', () => {
 
     expect(library.mapPosition['3d']).toEqual([0, 3, -518.4])
     expect(library.openStatus).toBe('closed')
+  })
+
+  it('refreshes expired persisted demo hotspot windows for a new session', () => {
+    const persisted = {
+      events: demoEvents.map((event) => event.id === 'event-library-lecture'
+        ? { ...event, startAt: '2020-01-01T08:00:00.000Z', endAt: '2020-01-01T09:00:00.000Z' }
+        : event),
+    }
+    const state = createInitialState(locationRepository.loadAll(), demoEvents, persisted)
+
+    expect(listActiveHotspots(state.events, state.eventTime).map((event) => event.id)).toContain('event-library-lecture')
   })
 
   it('changes the active role and selected location', () => {
@@ -40,7 +52,46 @@ describe('campus reducer', () => {
     expect(updatedState.locations.find((location) => location.id === 'library')).toMatchObject({
       openStatus: 'closed',
       crowdStatus: 'busy',
-      updatedAt: '刚刚更新',
+    })
+    expect(Number.isNaN(Date.parse(updatedState.locations.find((location) => location.id === 'library').updatedAt))).toBe(false)
+  })
+
+  it('blocks and recalculates a route when its destination closes', () => {
+    const managerState = campusReducer(initialState, { type: 'SET_ROLE', role: 'manager' })
+    const routedState = campusReducer(managerState, {
+      type: 'SET_ROUTE_DESTINATION',
+      destinationId: 'library',
+    })
+    expect(routedState.routePlan.status).toBe('preview')
+
+    const closedState = campusReducer(routedState, {
+      type: 'UPDATE_LOCATION_STATUS',
+      locationId: 'library',
+      changes: { openStatus: 'closed' },
+    })
+
+    expect(closedState.routePlan).toMatchObject({
+      status: 'unavailable',
+      unavailableReason: 'destination-closed',
+    })
+  })
+
+  it('does not create a route to a location that is already closed', () => {
+    const managerState = campusReducer(initialState, { type: 'SET_ROLE', role: 'manager' })
+    const closedState = campusReducer(managerState, {
+      type: 'UPDATE_LOCATION_STATUS',
+      locationId: 'library',
+      changes: { openStatus: 'closed' },
+    })
+
+    const routedState = campusReducer(closedState, {
+      type: 'SET_ROUTE_DESTINATION',
+      destinationId: 'library',
+    })
+
+    expect(routedState.routePlan).toMatchObject({
+      status: 'unavailable',
+      unavailableReason: 'destination-closed',
     })
   })
 

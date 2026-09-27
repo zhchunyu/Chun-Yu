@@ -1,5 +1,10 @@
 import { isHotspotActiveAt } from '../domain/campus.js'
 
+const demoEventWindow = {
+  startAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+  endAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+}
+
 const demoEvents = [
   {
     id: 'event-library-lecture',
@@ -8,10 +13,9 @@ const demoEvents = [
     locationId: 'library',
     anchorId: 'ANCHOR_Library',
     status: 'active',
-    startAt: '2026-09-19T08:00:00+08:00',
-    endAt: '2026-09-19T20:30:00+08:00',
+    ...demoEventWindow,
     heatLevel: 'medium',
-    impact: '图书馆报告厅 18:30 开始，建议提前入场。',
+    impact: '图书馆报告厅正在举行讲座，建议提前入场。',
     source: 'manager',
     positionSource: 'shared-repo-anchor',
     updatedAt: '刚刚更新',
@@ -24,8 +28,7 @@ const demoEvents = [
     locationId: 'canteen',
     anchorId: 'ANCHOR_Canteen',
     status: 'active',
-    startAt: '2026-09-19T11:00:00+08:00',
-    endAt: '2026-09-19T13:30:00+08:00',
+    ...demoEventWindow,
     heatLevel: 'high',
     impact: '当前排队人数较多，建议错峰就餐。',
     source: 'manager',
@@ -39,8 +42,7 @@ const demoEvents = [
     type: 'construction',
     locationId: 'gymnasium',
     status: 'active',
-    startAt: '2026-09-19T07:30:00+08:00',
-    endAt: '2026-09-20T18:00:00+08:00',
+    ...demoEventWindow,
     heatLevel: 'medium',
     impact: '体育馆西侧路段临时施工，路线规划会自动避开。',
     anchorId: 'ANCHOR_Gymnasium',

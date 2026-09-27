@@ -53,6 +53,10 @@ button { cursor: pointer; }
 .campus-3d-label__title { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; }
 .campus-3d-label__title::after { content: ""; position: absolute; bottom: -9px; left: 50%; width: 1px; height: 9px; background: rgba(100,232,213,.7); }
 .campus-3d-label__pin { display: inline-block; width: 7px; height: 7px; border: 2px solid #64e8d5; border-radius: 50%; background: #0d3540; }
+.campus-3d-label__pin.is-busy, .campus-3d-label__pin.is-closed { border-color: #ffb18c; background: #a63f34; }
+.campus-3d-label__pin.is-limited { border-color: #ffd27d; background: #956719; }
+.campus-3d-label.is-compact { display: flex; align-items: center; gap: 5px; min-width: 0; padding: 5px; border-color: transparent; background: rgba(8,22,31,.58); box-shadow: none; }
+.campus-3d-label.is-compact .campus-3d-label__title, .campus-3d-label.is-compact > small { display: none; }
 .campus-3d-label small { color: #8fb9b2; font-size: 10px; }
 .campus-3d-label.is-selected { border-color: #64e8d5; box-shadow: 0 0 0 3px rgba(100,232,213,.16), 0 12px 30px rgba(0,0,0,.24); }
 .campus-3d-label__hotspot { color: #ffcc7a; font-size: 9px; font-style: normal; }
@@ -77,6 +81,9 @@ button { cursor: pointer; }
 .campus-3d-state { position: absolute; z-index: 2; top: 50%; left: 50%; display: grid; gap: 6px; min-width: 210px; transform: translate(-50%, -50%); padding: 13px 16px; border: 1px solid rgba(32,61,53,.15); border-radius: 10px; color: var(--green-deep); background: rgba(255,250,240,.88); box-shadow: 0 10px 24px rgba(32,61,53,.12); text-align: center; }
 .campus-3d-state strong { font: 700 13px/1.2 Georgia, serif; }
 .campus-3d-state span { color: var(--muted); font-size: 10px; }
+.campus-3d-state__actions { display: flex; justify-content: center; gap: 7px; margin-top: 4px; }
+.campus-3d-state__actions button { padding: 7px 9px; border: 1px solid rgba(49,94,76,.22); border-radius: 6px; color: var(--green-deep); background: #e7eee5; font-size: 10px; }
+.campus-3d-state__actions button:hover { background: #dbe8d7; }
 .campus-3d-state--error { color: var(--rose); }
 .campus-2d-viewer { position: absolute; z-index: 0; inset: 0; display: grid; place-items: center; overflow: hidden; background: #f4f0e4; touch-action: none; }
 .campus-2d-viewer.is-dragging { cursor: grabbing; }
@@ -100,7 +107,10 @@ button { cursor: pointer; }
 .campus-2d-marker__dot { width: 9px; height: 9px; border: 2px solid #fffaf0; border-radius: 50%; background: #4c9771; box-shadow: 0 0 0 2px rgba(76,151,113,.28); }
 .campus-2d-marker.is-current .campus-2d-marker__dot { background: #3996c3; box-shadow: 0 0 0 3px rgba(57,150,195,.24); }
 .campus-2d-marker.is-busy .campus-2d-marker__dot { background: var(--rose); box-shadow: 0 0 0 2px rgba(201,104,94,.25); }
+.campus-2d-marker.is-closed .campus-2d-marker__dot { background: #963f39; box-shadow: 0 0 0 2px rgba(150,63,57,.25); }
+.campus-2d-marker.is-limited .campus-2d-marker__dot { background: #c38b32; box-shadow: 0 0 0 2px rgba(195,139,50,.25); }
 .campus-2d-marker.has-hotspot .campus-2d-marker__label::after { content: " · 热点"; color: var(--orange); font-size: 9px; }
+.campus-2d-marker__hotspot-count { display: inline-flex; align-items: center; padding: 2px 4px; border-radius: 5px; color: #80551d; background: #f7ecd5; font-size: 8px; font-weight: 800; }
 .campus-2d-state { position: absolute; z-index: 4; top: 50%; left: 50%; display: flex; align-items: center; gap: 8px; transform: translate(-50%, -50%); padding: 12px 15px; border: 1px solid rgba(32,61,53,.14); border-radius: 10px; color: var(--green-deep); background: rgba(255,250,240,.92); box-shadow: 0 10px 24px rgba(32,61,53,.12); font-size: 11px; }
 .campus-2d-state--error { display: grid; justify-items: center; color: var(--rose); }
 .campus-2d-state button { display: inline-flex; align-items: center; gap: 5px; padding: 6px 8px; border: 0; border-radius: 6px; color: var(--paper-hi); background: var(--green); font-size: 10px; }

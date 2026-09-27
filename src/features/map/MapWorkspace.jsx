@@ -8,6 +8,7 @@ import { MapSearchOverlay } from './MapSearchOverlay.jsx'
 import { MapToolbar } from './MapToolbar.jsx'
 import { MapSceneSwitcher } from './MapSceneSwitcher.jsx'
 import { HotspotLegend } from '../events/HotspotLegend.jsx'
+import { projectVisibleMapContent } from './mapVisibility.js'
 
 export function MapWorkspace({
   locations,
@@ -26,6 +27,7 @@ export function MapWorkspace({
   currentLocationId,
   cameraMode,
   routePlan,
+  lastSyncedAt,
   canUndoAdminAction,
   lastAdminAction,
   onPublishEvent,
@@ -50,11 +52,11 @@ export function MapWorkspace({
   onCategoryChange,
   onMapSceneChange,
 }) {
-  const visibleIds = new Set(settings.showLabels ? visibleLocations.map((location) => location.id) : [])
-  const activeEvents = events.filter((event) => event.status === 'active')
-  const visibleEvents = settings.showHotspots
-    ? activeEvents.filter((event) => visibleIds.has(event.locationId))
-    : []
+  const {
+    visibleLocationIds,
+    activeEvents,
+    visibleEvents,
+  } = projectVisibleMapContent({ visibleLocations, events, settings })
   const displayedRoutePlan = settings.showRoute ? routePlan : null
 
   return (
@@ -67,7 +69,7 @@ export function MapWorkspace({
         onCategoryChange={onCategoryChange}
         onSelectResult={onSelectSearchResult}
       />
-      <CampusStatusOverlay locations={locations} hotspotCount={activeEvents.length} lastSyncedAt="刚刚更新" />
+      <CampusStatusOverlay locations={locations} hotspotCount={activeEvents.length} lastSyncedAt={lastSyncedAt} />
       <MapSceneSwitcher scene={mapScene} onChange={onMapSceneChange} />
       <MapToolbar
         open={toolbarOpen}
@@ -103,7 +105,7 @@ export function MapWorkspace({
           <Campus2DViewer
             mapUrl={teamCampusMap.scenes['2d'].imageUrl}
             locations={locations}
-            visibleLocationIds={visibleIds}
+            visibleLocationIds={visibleLocationIds}
             events={visibleEvents}
             selectedId={selectedId}
             currentLocationId={settings.showCurrentLocation ? currentLocationId : null}
@@ -118,16 +120,19 @@ export function MapWorkspace({
           <Campus3DViewer
             modelUrl={teamCampusMap.scenes['3d'].modelUrl}
             locations={locations}
-            visibleLocationIds={visibleIds}
+            visibleLocationIds={visibleLocationIds}
             events={visibleEvents}
             selectedId={selectedId}
             currentLocationId={settings.showCurrentLocation ? currentLocationId : null}
             cameraMode={cameraMode}
             routePlan={displayedRoutePlan}
+            showLabels={settings.showLabels}
+            showStatusColors={settings.showStatusColors}
             showTips={settings.showTips}
             resetViewToken={resetViewToken}
             onSelectLocation={onSelectLocation}
             onCameraModeChange={onCameraModeChange}
+            onSwitchTo2D={() => onMapSceneChange('2d')}
           />
         )}
         <div className="map-compass"><Navigation size={16} /><span>N</span></div>

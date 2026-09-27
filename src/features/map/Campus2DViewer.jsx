@@ -151,16 +151,17 @@ export function Campus2DViewer({
               const isCurrent = currentLocationId === location.id
               return (
                 <button
-                  className={`campus-2d-marker ${isSelected ? 'is-selected' : ''} ${isCurrent ? 'is-current' : ''} ${showStatusColors && location.crowdStatus === 'busy' ? 'is-busy' : ''} ${hotspotLocationIds.has(location.id) ? 'has-hotspot' : ''}`}
+                  className={`campus-2d-marker ${isSelected ? 'is-selected' : ''} ${isCurrent ? 'is-current' : ''} ${showStatusColors && location.crowdStatus === 'busy' ? 'is-busy' : ''} ${showStatusColors && location.openStatus === 'closed' ? 'is-closed' : ''} ${showStatusColors && location.openStatus === 'limited' ? 'is-limited' : ''} ${hotspotLocationIds.has(location.id) ? 'has-hotspot' : ''}`}
                   key={location.id}
                   type="button"
                   style={markerStyle(position)}
-                  aria-label={`查看${location.name}`}
+                  aria-label={`查看${location.name}${hotspotLocationIds.has(location.id) ? '，有热点' : ''}`}
                   aria-pressed={isSelected}
                   onClick={() => onSelectLocation(location.id)}
                 >
                   <span className="campus-2d-marker__dot" />
-                  <span className="campus-2d-marker__label">{location.name}</span>
+                  {showLabels && <span className="campus-2d-marker__label">{location.name}</span>}
+                  {!showLabels && hotspotLocationIds.has(location.id) && <span className="campus-2d-marker__hotspot-count">热点</span>}
                 </button>
               )
             })}
