@@ -178,11 +178,22 @@ button { cursor: pointer; }
 .map-layer-row small, .settings-toggle small { color: var(--muted); font-size: 8px; line-height: 1.25; }
 .map-layer-row input, .settings-toggle input { flex-shrink: 0; accent-color: var(--green); }
 .settings-panel { display: grid; gap: 9px; }
+.settings-route-mode { display: grid; gap: 6px; padding: 8px; border-radius: 7px; background: rgba(49,94,76,.04); }
+.settings-route-mode span { display: grid; gap: 3px; }
+.settings-route-mode strong { color: var(--ink); font-size: 10px; }
+.settings-route-mode small { color: var(--muted); font-size: 8px; }
+.settings-route-mode select { width: 100%; padding: 7px 8px; border: 1px solid rgba(32,61,53,.14); border-radius: 6px; color: var(--green-deep); background: #fffaf0; font-size: 9px; }
 .settings-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 .settings-actions button, .settings-footer-actions button { align-items: center; display: flex; justify-content: center; gap: 5px; padding: 7px 5px; border: 1px solid rgba(32,61,53,.13); border-radius: 6px; color: var(--green); background: #fffaf0; font-size: 9px; }
 .settings-actions button:hover, .settings-footer-actions button:hover { border-color: rgba(49,94,76,.4); background: #e1ecdc; }
 .settings-footer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding-top: 8px; border-top: 1px solid var(--line); }
 .settings-footer-actions button { color: var(--muted); background: transparent; }
+.settings-reset-confirm { display: grid; gap: 6px; padding: 9px; border: 1px solid rgba(177,98,67,.26); border-radius: 7px; color: var(--ink); background: #fbefe6; }
+.settings-reset-confirm strong { font-size: 9px; }
+.settings-reset-confirm > span { color: var(--muted); font-size: 8px; line-height: 1.4; }
+.settings-reset-confirm > div { display: flex; justify-content: flex-end; gap: 5px; }
+.settings-reset-confirm button { padding: 5px 8px; border: 1px solid rgba(32,61,53,.16); border-radius: 5px; color: var(--muted); background: #fffaf0; font-size: 8px; }
+.settings-reset-confirm button:last-child { border-color: #a65d46; color: #fffaf0; background: #a65d46; }
 .settings-undo { align-items: center; display: flex; justify-content: space-between; gap: 7px; margin: 8px 0; padding: 8px; border: 1px solid rgba(49,94,76,.16); border-radius: 7px; background: #e9eee4; }
 .settings-undo span { display: grid; min-width: 0; gap: 3px; }
 .settings-undo small { color: var(--muted); font-size: 8px; }
