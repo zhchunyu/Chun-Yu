@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:pages": "npm run build && node scripts/prepare-pages.mjs",
     "test": "vitest run"
   },
   "dependencies": {
