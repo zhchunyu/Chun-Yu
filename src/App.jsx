@@ -59,8 +59,31 @@ function App() {
     () => filterLocations(state.locations, state.query, state.category),
     [state.locations, state.query, state.category],
   )
-  const activeHotspots = useMemo(() => listActiveHotspots(state.events), [state.events])
+  const activeHotspots = useMemo(
+    () => listActiveHotspots(state.events, state.eventTime),
+    [state.events, state.eventTime],
+  )
   const selectedLocation = state.locations.find((location) => location.id === state.selectedId) ?? null
+
+  useEffect(() => {
+    const now = Date.now()
+    const nextBoundary = state.events
+      .filter((event) => event.status === 'active')
+      .flatMap((event) => [event.startAt, event.endAt])
+      .filter(Boolean)
+      .map((value) => new Date(value).getTime())
+      .filter((timestamp) => Number.isFinite(timestamp) && timestamp > now)
+      .sort((a, b) => a - b)[0]
+
+    if (!nextBoundary) return undefined
+
+    const delay = Math.min(Math.max(nextBoundary - now + 20, 20), 2_147_483_647)
+    const timer = window.setTimeout(() => {
+      dispatch({ type: 'REFRESH_EVENT_TIMELINE', now: Date.now() })
+    }, delay)
+
+    return () => window.clearTimeout(timer)
+  }, [state.events, state.eventTime])
 
   return (
     <div className="app-shell">

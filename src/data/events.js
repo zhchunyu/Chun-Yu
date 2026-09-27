@@ -1,3 +1,5 @@
+import { isHotspotActiveAt } from '../domain/campus.js'
+
 const demoEvents = [
   {
     id: 'event-library-lecture',
@@ -60,9 +62,9 @@ export const eventRepository = {
   },
 }
 
-export function getActiveBlockedEdgeIds(events = []) {
+export function getActiveBlockedEdgeIds(events = [], now = new Date()) {
   return [...new Set(events
-    .filter((event) => event.status === 'active')
+    .filter((event) => isHotspotActiveAt(event, now))
     .flatMap((event) => event.affectedEdgeIds ?? []))]
 }
 

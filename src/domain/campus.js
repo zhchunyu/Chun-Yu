@@ -107,12 +107,18 @@ export function filterHotspots(events, filters = {}) {
   })
 }
 
-export function listActiveHotspots(events, now = new Date()) {
+export function isHotspotActiveAt(event, now = new Date()) {
   const timestamp = new Date(now).getTime()
+  if (!Number.isFinite(timestamp) || event?.status !== HOTSPOT_STATUS.ACTIVE) return false
 
-  return events.filter((event) => {
-    const starts = !event.startAt || new Date(event.startAt).getTime() <= timestamp
-    const notEnded = !event.endAt || new Date(event.endAt).getTime() > timestamp
-    return event.status === HOTSPOT_STATUS.ACTIVE && starts && notEnded
-  })
+  const startTime = event.startAt ? new Date(event.startAt).getTime() : Number.NEGATIVE_INFINITY
+  const endTime = event.endAt ? new Date(event.endAt).getTime() : Number.POSITIVE_INFINITY
+  const starts = startTime <= timestamp
+  const notEnded = endTime > timestamp
+
+  return starts && notEnded
+}
+
+export function listActiveHotspots(events, now = new Date()) {
+  return events.filter((event) => isHotspotActiveAt(event, now))
 }

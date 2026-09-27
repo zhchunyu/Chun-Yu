@@ -50,6 +50,7 @@ export function createInitialState(locations, events = [], persistedState = null
   return {
     locations: nextLocations,
     events: nextEvents,
+    eventTime: Date.now(),
     query: '',
     category: 'all',
     selectedId: null,
@@ -72,6 +73,14 @@ export function campusReducer(state, action) {
   switch (action.type) {
     case 'SET_MAP_SCENE':
       return { ...state, mapScene: action.scene === '2d' ? '2d' : '3d' }
+    case 'REFRESH_EVENT_TIMELINE': {
+      const eventTime = action.now ?? Date.now()
+      const routePlan = state.routePlan
+        ? createRouteForState(state, {}, state.events)
+        : null
+
+      return { ...state, eventTime, routePlan }
+    }
     case 'SET_ROLE':
       return { ...state, role: action.role }
     case 'SET_QUERY':
