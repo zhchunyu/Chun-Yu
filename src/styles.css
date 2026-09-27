@@ -121,13 +121,30 @@ button { cursor: pointer; }
 .empty-state p { margin: 7px 0 11px; color: var(--muted); font-size: 10px; }
 .text-button { padding: 5px 8px; border: 0; border-radius: 5px; color: var(--green); background: #e1ecdc; font-size: 10px; font-weight: 700; }
 
-.map-search-overlay { position: absolute; z-index: 15; left: clamp(24px, 4vw, 62px); top: 44px; display: flex; gap: 8px; width: min(510px, calc(100% - 48px)); }
+.map-search-overlay { position: absolute; z-index: 19; left: clamp(24px, 4vw, 62px); top: 44px; display: flex; gap: 8px; width: min(510px, calc(100% - 48px)); }
+.map-search-stack { position: relative; flex: 1; min-width: 0; }
+.map-search-control { display: flex; min-width: 0; }
 .map-search-field, .map-filter-select { align-items: center; display: flex; border: 1px solid rgba(32,61,53,.16); color: var(--green); background: rgba(255,250,240,.95); box-shadow: 0 11px 25px rgba(74,78,54,.12); }
 .map-search-field { flex: 1; gap: 10px; min-width: 0; padding: 0 13px; border-radius: 10px; }
+.map-search-control.has-clear .map-search-field { border-radius: 10px 0 0 10px; }
 .map-search-field:focus-within { border-color: rgba(49,94,76,.62); }
 .map-search-field input { min-width: 0; flex: 1; padding: 14px 0; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 13px; }
 .map-search-field input::placeholder { color: #8a948b; }
 .map-search-shortcut { color: #8a948b; font: 10px/1 ui-monospace, monospace; }
+.map-search-clear { display: grid; place-items: center; width: 36px; border: 1px solid rgba(32,61,53,.16); border-left: 0; border-radius: 0 10px 10px 0; color: var(--muted); background: rgba(255,250,240,.95); box-shadow: 0 11px 25px rgba(74,78,54,.12); }
+.map-search-clear:hover { color: var(--green); background: #e7eee5; }
+.map-search-results { position: absolute; z-index: 21; top: calc(100% + 6px); right: 0; left: 0; display: grid; gap: 3px; max-height: min(360px, calc(100vh - 180px)); overflow: auto; padding: 6px; border: 1px solid rgba(32,61,53,.15); border-radius: 10px; background: rgba(255,250,240,.98); box-shadow: 0 14px 30px rgba(26,47,41,.19); }
+.map-search-result { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 9px; border: 0; border-radius: 7px; color: var(--green); background: transparent; text-align: left; }
+.map-search-result:hover, .map-search-result:focus-visible { outline: 0; background: #e7eee5; }
+.map-search-result__icon { display: grid; flex: 0 0 26px; place-items: center; width: 26px; height: 26px; border-radius: 7px; color: var(--green); background: #e1ecdc; }
+.map-search-result__copy { display: grid; min-width: 0; gap: 3px; }
+.map-search-result__copy strong { overflow: hidden; color: var(--ink); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.map-search-result__copy small { overflow: hidden; color: var(--muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.map-search-empty { display: grid; justify-items: start; gap: 5px; padding: 10px; }
+.map-search-empty strong { color: var(--ink); font-size: 11px; }
+.map-search-empty span, .map-search-more { color: var(--muted); font-size: 9px; line-height: 1.45; }
+.map-search-empty button { margin-top: 3px; padding: 6px 9px; border: 0; border-radius: 5px; color: var(--green); background: #e1ecdc; font-size: 9px; font-weight: 700; }
+.map-search-more { padding: 6px 9px 4px; border-top: 1px solid var(--line); }
 .map-filter-select { gap: 6px; padding: 0 10px; border-radius: 10px; }
 .map-filter-select select { max-width: 88px; padding: 13px 0; border: 0; outline: 0; color: var(--green); background: transparent; font-size: 11px; }
 .map-scene-switcher { position: absolute; z-index: 18; top: 100px; left: clamp(24px, 4vw, 62px); display: flex; gap: 4px; padding: 4px; border: 1px solid rgba(32,61,53,.16); border-radius: 10px; background: rgba(255,250,240,.92); box-shadow: 0 10px 22px rgba(74,78,54,.12); }
@@ -307,6 +324,7 @@ button { cursor: pointer; }
   .map-workspace { padding: 12px; }
   .map-surface { min-height: 690px; border-radius: 15px; }
   .map-search-overlay { left: 18px; top: 18px; width: calc(100% - 36px); }
+  .map-search-results { max-height: 45vh; }
   .campus-status-overlay { top: 73px; right: 18px; align-items: flex-end; }
   .campus-status-overlay__stats { display: none; }
   .map-scene-switcher { top: 116px; left: 18px; }

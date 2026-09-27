@@ -6,6 +6,7 @@ import { teamCampusMap } from './data/campusMap.js'
 import { eventRepository } from './data/events.js'
 import { locationRepository } from './data/locations.js'
 import { listActiveHotspots, filterLocations, ROLE_LABELS } from './domain/campus.js'
+import { searchCampusResources } from './domain/search.js'
 import { campusReducer, createInitialState } from './app/campusReducer.js'
 import { LocationDetail } from './features/locations/LocationDetail.jsx'
 import { MapWorkspace } from './features/map/MapWorkspace.jsx'
@@ -55,15 +56,34 @@ function App() {
     }
   }
 
-  const filteredLocations = useMemo(
-    () => filterLocations(state.locations, state.query, state.category),
-    [state.locations, state.query, state.category],
-  )
   const activeHotspots = useMemo(
     () => listActiveHotspots(state.events, state.eventTime),
     [state.events, state.eventTime],
   )
+  const searchResults = useMemo(
+    () => searchCampusResources(state.query, {
+      locations: state.locations,
+      events: activeHotspots,
+      category: state.category,
+    }),
+    [state.query, state.locations, activeHotspots, state.category],
+  )
+  const searchLocationIds = useMemo(
+    () => new Set(searchResults.map((result) => result.locationId)),
+    [searchResults],
+  )
+  const filteredLocations = useMemo(
+    () => state.query.trim()
+      ? state.locations.filter((location) => searchLocationIds.has(location.id))
+      : filterLocations(state.locations, '', state.category),
+    [state.locations, state.query, state.category, searchLocationIds],
+  )
   const selectedLocation = state.locations.find((location) => location.id === state.selectedId) ?? null
+
+  const handleSearchResult = (result) => {
+    dispatch({ type: 'SELECT_LOCATION', locationId: result.locationId })
+    dispatch({ type: 'SET_QUERY', query: '' })
+  }
 
   useEffect(() => {
     const now = Date.now()
@@ -107,6 +127,7 @@ function App() {
           locations={state.locations}
           visibleLocations={filteredLocations}
           events={activeHotspots}
+          searchResults={searchResults}
           selectedId={state.selectedId}
           query={state.query}
           category={state.category}
@@ -139,6 +160,7 @@ function App() {
           onResetDemoData={() => dispatch({ type: 'RESET_DEMO_DATA', locations: initialSnapshot.locations, events: initialSnapshot.events })}
           onSelectLocation={(locationId) => dispatch({ type: 'SELECT_LOCATION', locationId })}
           onQueryChange={(query) => dispatch({ type: 'SET_QUERY', query })}
+          onSelectSearchResult={handleSearchResult}
           onCategoryChange={(category) => dispatch({ type: 'SET_CATEGORY', category })}
           onMapSceneChange={(scene) => dispatch({ type: 'SET_MAP_SCENE', scene })}
         />

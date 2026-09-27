@@ -13,6 +13,7 @@ export function MapWorkspace({
   locations,
   visibleLocations = locations,
   events,
+  searchResults = [],
   selectedId,
   query,
   category,
@@ -45,6 +46,7 @@ export function MapWorkspace({
   onResetDemoData,
   onSelectLocation,
   onQueryChange,
+  onSelectSearchResult,
   onCategoryChange,
   onMapSceneChange,
 }) {
@@ -57,7 +59,14 @@ export function MapWorkspace({
 
   return (
     <section className="map-workspace" aria-label={`${teamCampusMap.campusName}地图工作区`}>
-      <MapSearchOverlay query={query} category={category} onQueryChange={onQueryChange} onCategoryChange={onCategoryChange} />
+      <MapSearchOverlay
+        query={query}
+        category={category}
+        results={searchResults}
+        onQueryChange={onQueryChange}
+        onCategoryChange={onCategoryChange}
+        onSelectResult={onSelectSearchResult}
+      />
       <CampusStatusOverlay locations={locations} hotspotCount={activeEvents.length} lastSyncedAt="刚刚更新" />
       <MapSceneSwitcher scene={mapScene} onChange={onMapSceneChange} />
       <MapToolbar
@@ -132,7 +141,7 @@ export function MapWorkspace({
           </span>
           <a href={mapScene === '2d' ? teamCampusMap.scenes['2d'].sourceUrl : teamCampusMap.scenes['3d'].modelSourceUrl} target="_blank" rel="noreferrer">查看来源</a>
         </div>
-        {visibleLocations.length === 0 && (query.trim() || category !== 'all') && (
+        {visibleLocations.length === 0 && !query.trim() && category !== 'all' && (
           <div className="map-empty-state">
             <EmptyState
               onReset={() => {
