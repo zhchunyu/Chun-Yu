@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { CATEGORY_LABELS } from '../../domain/campus.js'
 import { CAMERA_MODES } from '../../domain/camera.js'
 import { collectModelAnchors, createRoutePoints, isProjectedPointVisible, projectWorldToContainer } from './campus3d.js'
+import { MapControls } from './MapControls.jsx'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
@@ -96,6 +97,7 @@ export function Campus3DViewer({
   const orbitControlsRef = useRef(null)
   const cameraRef = useRef(null)
   const cameraSnapshotRef = useRef(null)
+  const mapCommandsRef = useRef(null)
   const enterFirstPersonRef = useRef(null)
   const exitFirstPersonRef = useRef(null)
   const resetViewRef = useRef(null)
@@ -244,6 +246,53 @@ export function Campus3DViewer({
       camera.far = 30000
       camera.updateProjectionMatrix()
       controls.update()
+    }
+
+    const focusPoint = (point, distance = 420) => {
+      const viewDirection = camera.position.clone().sub(controls.target)
+      if (viewDirection.lengthSq() < 0.001) viewDirection.set(0, 1, 1)
+      viewDirection.normalize()
+      controls.target.copy(point)
+      camera.position.copy(point).addScaledVector(viewDirection, distance)
+      controls.update()
+    }
+
+    const focusLocation = (locationId) => {
+      const anchor = modelAnchorsRef.current.get(locationId)
+      if (!anchor) return
+      anchor.getWorldPosition(spawnPoint)
+      focusPoint(spawnPoint)
+    }
+
+    const focusRoute = () => {
+      const route = propsRef.current.routePlan
+      if (route?.status !== 'preview' || route.points.length < 2) return
+      const points = route.points.map((position) => new THREE.Vector3(...position))
+      const bounds = new THREE.Box3().setFromPoints(points)
+      const sphere = bounds.getBoundingSphere(new THREE.Sphere())
+      focusPoint(sphere.center, THREE.MathUtils.clamp(sphere.radius * 2.8, 420, 1800))
+    }
+
+    const zoom = (factor) => {
+      if (cameraModeRef.current === CAMERA_MODES.FIRST_PERSON) return
+      const offset = camera.position.clone().sub(controls.target)
+      const nextDistance = THREE.MathUtils.clamp(
+        offset.length() * factor,
+        controls.minDistance,
+        controls.maxDistance,
+      )
+      offset.setLength(nextDistance)
+      camera.position.copy(controls.target).add(offset)
+      controls.update()
+    }
+
+    mapCommandsRef.current = {
+      zoomIn: () => zoom(0.82),
+      zoomOut: () => zoom(1.22),
+      focusSelected: () => focusLocation(propsRef.current.selectedId),
+      focusCurrentLocation: () => focusLocation(propsRef.current.currentLocationId),
+      focusRoute,
+      resetView,
     }
 
     enterFirstPersonRef.current = enterFirstPerson
@@ -431,6 +480,7 @@ export function Campus3DViewer({
       modelAnchorsRef.current = new Map()
       cameraRef.current = null
       orbitControlsRef.current = null
+      mapCommandsRef.current = null
       enterFirstPersonRef.current = null
       exitFirstPersonRef.current = null
       resetViewRef.current = null
@@ -461,6 +511,19 @@ export function Campus3DViewer({
 
   return (
     <div className={`campus-3d-viewer ${cameraMode === CAMERA_MODES.FIRST_PERSON ? 'is-first-person' : ''}`} ref={containerRef}>
+      {status === 'ready' && cameraMode === CAMERA_MODES.ORBIT && (
+        <MapControls
+          canFocusSelected={Boolean(selectedId && modelAnchorsRef.current.has(selectedId))}
+          canFocusCurrentLocation={Boolean(currentLocationId && modelAnchorsRef.current.has(currentLocationId))}
+          canFocusRoute={routePlan?.status === 'preview' && routePlan.points.length > 1}
+          onZoomIn={() => mapCommandsRef.current?.zoomIn()}
+          onZoomOut={() => mapCommandsRef.current?.zoomOut()}
+          onFocusSelected={() => mapCommandsRef.current?.focusSelected()}
+          onFocusCurrentLocation={() => mapCommandsRef.current?.focusCurrentLocation()}
+          onFocusRoute={() => mapCommandsRef.current?.focusRoute()}
+          onResetView={() => mapCommandsRef.current?.resetView()}
+        />
+      )}
       <div className="campus-3d-annotations" aria-label="地图地点标签">
         {locations.map((location) => {
           const eventCount = eventCountByLocationId[location.id] ?? 0
