@@ -133,7 +133,7 @@ export function campusReducer(state, action) {
       }
     }
     case 'SET_ROUTE_DESTINATION': {
-      const originId = state.currentLocationId ?? state.routePlan?.originId ?? 'east-gate'
+      const originId = state.routePlan?.originId ?? state.currentLocationId ?? 'east-gate'
       return {
         ...state,
         selectedId: action.destinationId,

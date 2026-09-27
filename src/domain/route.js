@@ -16,6 +16,68 @@ export const ROUTE_MODE_LABELS = Object.freeze({
   night: '夜间安全',
 })
 
+export const ROUTE_MODE_DESCRIPTIONS = Object.freeze({
+  shortest: '优先缩短校园路网距离。',
+  accessible: '只使用路网标记为无障碍的路段。',
+  'avoid-construction': '优先绕开路网中的施工路段。',
+  rain: '优先选择有遮挡的校园道路。',
+  night: '优先选择标记为夜间安全的道路。',
+})
+
+const COMPASS_DIRECTIONS = Object.freeze(['北', '东北', '东', '东南', '南', '西南', '西', '西北'])
+
+function getCompassDirection(from, to) {
+  const dx = to.position[0] - from.position[0]
+  const dz = to.position[2] - from.position[2]
+  if (Math.hypot(dx, dz) < 0.01) return '继续直行'
+
+  const bearing = (Math.atan2(dx, -dz) + Math.PI * 2) % (Math.PI * 2)
+  const directionIndex = Math.round(bearing / (Math.PI / 4)) % COMPASS_DIRECTIONS.length
+  return `向${COMPASS_DIRECTIONS[directionIndex]}`
+}
+
+export function getRouteInstructions(routePlan, locations = [], graph = campusRouteGraph) {
+  if (routePlan?.status !== 'preview') return []
+
+  const locationNames = new Map(locations.map((location) => [location.id, location.name]))
+  const instructions = []
+
+  routePlan.segments.forEach((segment) => {
+    const from = graph.nodes[segment.from]
+    const to = graph.nodes[segment.to]
+    if (!from?.position || !to?.position) return
+
+    const direction = getCompassDirection(from, to)
+    const destinationName = to.locationId
+      ? locationNames.get(to.locationId) ?? to.locationId
+      : null
+    const lastInstruction = instructions.at(-1)
+
+    if (lastInstruction?.direction === direction && !lastInstruction.destinationName) {
+      lastInstruction.distance += segment.distance
+      lastInstruction.destinationName = destinationName
+      return
+    }
+
+    instructions.push({
+      direction,
+      distance: segment.distance,
+      destinationName,
+    })
+  })
+
+  return instructions.map((instruction) => ({
+    ...instruction,
+    distance: Math.round(instruction.distance),
+  }))
+}
+
+export function getRouteModeDescription(routePlan) {
+  const description = ROUTE_MODE_DESCRIPTIONS[routePlan?.mode] ?? ROUTE_MODE_DESCRIPTIONS.shortest
+  const blockedCount = routePlan?.blockedEdgeIds?.length ?? 0
+  return blockedCount ? `${description}本次计算已排除 ${blockedCount} 段有效封闭道路。` : description
+}
+
 function edgeAllowed(edge, mode, blockedEdgeIds) {
   if (blockedEdgeIds.has(edge.id)) return false
   if (mode === ROUTE_MODES.ACCESSIBLE && !edge.accessible) return false
@@ -103,7 +165,14 @@ function buildRouteResult({ originId, destinationId, mode, nodeIds, graph, block
     const to = nodeIds[index]
     const edge = findEdge(graph, from, to)
     const segmentDistance = edge?.distance ?? heuristic(graph.nodes[from], graph.nodes[to])
-    segments.push({ from, to, distance: segmentDistance })
+    segments.push({
+      from,
+      to,
+      distance: segmentDistance,
+      accessible: edge?.accessible ?? false,
+      covered: edge?.covered ?? false,
+      safeAtNight: edge?.safeAtNight ?? false,
+    })
     distance += segmentDistance
   }
 

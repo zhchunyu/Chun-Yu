@@ -154,6 +154,8 @@ function App() {
             locations={state.locations}
             showRoute={state.settings.showRoute}
             onModeChange={(mode) => dispatch({ type: 'SET_ROUTE_MODE', mode })}
+            onOriginChange={(originId) => dispatch({ type: 'SET_ROUTE_ORIGIN', originId })}
+            onDestinationChange={(destinationId) => dispatch({ type: 'SET_ROUTE_DESTINATION', destinationId })}
             onSwap={() => dispatch({ type: 'SWAP_ROUTE_ENDPOINTS' })}
             onClear={() => dispatch({ type: 'CLEAR_ROUTE' })}
           />
