@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>安全管理模式 · 效果验证台 · ③ 暴雨联动（封路 + 避雨模式 + 处置时效）</title>
+<style>
+  :root {
+    --bg: #0d141c;
+    --panel: #141d27;
+    --panel-2: #1a2530;
+    --line: #24313e;
+    --text: #dce6f0;
+    --text-dim: #8fa3b8;
+    --accent: #4ea1ff;
+    --ok: #3fa96a;
+    --warn: #e0a92b;
+    --high: #e2703a;
+    --crit: #d1414a;
+    --info: #5b8def;
+    font-synthesis: none;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.55 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  }
+  .harness { max-width: 1440px; margin: 0 auto; padding: 20px 22px 60px; }
+  .harness__head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .harness__head h1 { font-size: 20px; margin: 0; letter-spacing: .5px; }
+  .harness__sub { color: var(--text-dim); font-size: 12.5px; }
+  .demo-badge {
+    display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 11px;
+    background: #3a2f16; color: #e8c46a; border: 1px solid #5c4a1e; margin-left: 8px;
+  }
+
+  /* ---- 场景切换 ---- */
+  .scenario-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 20px;
+    padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  }
+  .scenario-bar__label { color: var(--text-dim); font-size: 12.5px; align-self: center; margin-right: 4px; }
+  .scenario-btn {
+    padding: 6px 13px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    transition: .15s;
+  }
+  .scenario-btn:hover { border-color: var(--accent); }
+  .scenario-btn.is-active { background: var(--accent); color: #06121f; border-color: var(--accent); font-weight: 600; }
+
+  /* ---- 通用面板 ---- */
+  .harness section, .harness .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .harness h2 { font-size: 15px; margin: 22px 0 10px; color: var(--text); }
+  .harness h2 small { color: var(--text-dim); font-weight: 400; font-size: 12px; margin-left: 8px; }
+  .row { display: grid; gap: 14px; }
+  .row--2 { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+  .row--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 1100px) { .row--2, .row--3 { grid-template-columns: 1fr; } }
+
+  /* ---- 风险总览 ---- */
+  .risk-overview__head, .response-metrics__head, .alert-timeline__head, .spatial-status__head,
+  .crowd-threshold-control__head, .evidence-chain__header, .safety-briefing__head,
+  .weather-strip__head, .alert-card__playbook-head {
+    display: flex; align-items: center; gap: 7px; margin-bottom: 11px;
+  }
+  .risk-overview__head strong, .response-metrics__head strong { font-size: 13.5px; }
+  .risk-overview__head small, .response-metrics__head small, .spatial-status__head small { color: var(--text-dim); font-size: 11.5px; }
+  .risk-overview__active { margin-left: auto; font-size: 11.5px; color: var(--text-dim); }
+  .risk-overview__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .risk-tile {
+    background: var(--panel-2); border: 1px solid var(--line); border-left: 3px solid var(--tile-color);
+    border-radius: 6px; padding: 9px 10px; display: flex; flex-direction: column; gap: 1px;
+  }
+  .risk-tile.is-zero { opacity: .42; }
+  .risk-tile__count { font-size: 21px; font-weight: 700; color: var(--tile-color); line-height: 1.1; }
+  .risk-tile__label { font-size: 11.5px; color: var(--text-dim); }
+  .risk-overview__summary { margin-top: 10px; font-size: 12px; color: var(--text-dim); }
+
+  /* ---- 处置时效 ---- */
+  .response-metrics__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .response-tile {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px;
+    display: grid; grid-template-columns: auto 1fr; gap: 0 7px; align-items: center;
+  }
+  .response-tile.is-warn { border-color: var(--high); }
+  .response-tile__icon { color: var(--accent); }
+  .response-tile__value { font-size: 18px; font-weight: 700; }
+  .response-tile__label { grid-column: 1 / -1; font-size: 11.5px; color: var(--text-dim); }
+  .response-tile__hint { grid-column: 1 / -1; font-size: 10.5px; color: #6d8399; }
+  .response-metrics__by-level { list-style: none; margin: 10px 0 0; padding: 0; font-size: 12px; }
+  .response-level-row { display: flex; align-items: center; gap: 7px; padding: 3px 0; }
+  .response-level-row__dot { width: 7px; height: 7px; border-radius: 50%; }
+  .response-level-row__label { min-width: 46px; }
+  .response-level-row__count { color: var(--text-dim); }
+  .response-level-row__avg { margin-left: auto; color: var(--text-dim); }
+
+  /* ---- 预警时间线 ---- */
+  .alert-timeline__count { margin-left: auto; font-size: 11.5px; color: var(--text-dim); }
+  .alert-timeline__list { list-style: none; margin: 0; padding: 0; }
+  .timeline-item { border-bottom: 1px solid var(--line); }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-item__button {
+    width: 100%; display: flex; align-items: center; gap: 9px; padding: 7px 2px;
+    background: none; border: none; color: inherit; text-align: left; cursor: pointer; font: inherit;
+  }
+  .timeline-item__time { color: var(--text-dim); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .timeline-item__badge {
+    padding: 1px 6px; border-radius: 3px; font-size: 11px; font-weight: 600;
+    background: color-mix(in srgb, var(--item-color) 22%, transparent); color: var(--item-color);
+    border: 1px solid color-mix(in srgb, var(--item-color) 45%, transparent);
+  }
+  .timeline-item__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .timeline-item__state { font-size: 11.5px; color: var(--text-dim); }
+  .alert-timeline__empty { color: var(--text-dim); font-size: 12.5px; padding: 8px 0; }
+
+  /* ---- 空间态势 ---- */
+  .spatial-status__groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .spatial-group { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; }
+  .spatial-group__head { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-bottom: 6px; }
+  .spatial-group__count {
+    margin-left: auto; font-size: 11px; background: var(--line); padding: 0 6px; border-radius: 8px;
+  }
+  .spatial-group__list { list-style: none; margin: 0; padding: 0; font-size: 11.5px; color: #b9cbdd; }
+  .spatial-group__list li { padding: 2px 0; font-family: Consolas, monospace; font-size: 11px; }
+  .spatial-group__empty { font-size: 11.5px; color: var(--text-dim); }
+  .spatial-group__state { font-size: 11.5px; color: var(--ok); }
+  .spatial-group__state.is-paused { color: var(--warn); }
+  .spatial-status__risks { margin-top: 11px; border-top: 1px solid var(--line); padding-top: 9px; }
+  .spatial-status__risks-head { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+  .spatial-status__risks ul { margin: 0; padding-left: 18px; font-size: 12px; }
+
+  /* ---- 天气条 ---- */
+  .weather-strip { border-left: 3px solid var(--weather-color); }
+  .weather-strip__icon { display: flex; }
+  .weather-strip__title-block { flex: 1; min-width: 0; }
+  .weather-strip__title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .weather-strip__text { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .weather-strip__change { font-size: 11.5px; padding: 1px 7px; border-radius: 3px; font-weight: 600; }
+  .weather-strip__change.is-up { background: #4a2020; color: #ff9b9b; }
+  .weather-strip__change.is-down { background: #1e3a26; color: #8be0a8; }
+  .weather-strip__metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0; }
+  .weather-metric { background: var(--panel-2); border-radius: 5px; padding: 6px 8px; display: flex; flex-direction: column; }
+  .weather-metric__value { font-size: 14px; font-weight: 600; }
+  .weather-metric__label { font-size: 10.5px; color: var(--text-dim); }
+  .weather-strip__switcher { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .weather-chip {
+    padding: 4px 10px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--line);
+    color: var(--text-dim); cursor: pointer; font: inherit; font-size: 12px;
+  }
+  .weather-chip.is-active { color: var(--text); border-width: 1.5px; }
+  .weather-strip__translation { border-top: 1px solid var(--line); padding-top: 11px; }
+  .weather-strip__translation-head { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+  .weather-strip__translation-head small { color: var(--text-dim); font-size: 11.5px; margin-left: 4px; }
+  .weather-strip__risks { font-size: 12px; color: #b9cbdd; margin-bottom: 8px; }
+  .weather-strip__risks-label { color: var(--text-dim); }
+  .weather-strip__actions { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .weather-action { display: grid; grid-template-columns: auto auto 1fr; gap: 7px; align-items: baseline; font-size: 12px; }
+  .weather-action__label { font-weight: 600; }
+  .weather-action__detail { color: var(--text-dim); font-size: 11px; }
+  .weather-strip__no-action { color: var(--text-dim); font-size: 12px; }
+
+  /* ---- 预警卡片 ---- */
+  .alert-card {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--alert-color);
+    border-radius: 8px; padding: 13px 15px; margin-bottom: 14px;
+  }
+  .alert-card__header { display: flex; gap: 10px; align-items: flex-start; }
+  .alert-card__level {
+    color: #fff; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 3px; flex-shrink: 0;
+  }
+  .alert-card__headline { flex: 1; min-width: 0; }
+  .alert-card__title {
+    background: none; border: none; color: var(--text); font: inherit; font-size: 15px; font-weight: 600;
+    padding: 0; cursor: pointer; text-align: left;
+  }
+  .alert-card__title:disabled { cursor: default; }
+  .alert-card__meta { font-size: 11.5px; color: var(--text-dim); margin-top: 3px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .alert-card__dot { opacity: .5; }
+  .alert-card__state { padding: 0 6px; border-radius: 3px; background: var(--line); }
+  .alert-card__state.is-verifying { background: #3a3520; color: #e8d48a; }
+  .alert-card__state.is-published { background: #1e3a26; color: #8be0a8; }
+  .alert-card__state.is-dispatched { background: #26364a; color: #9cc4f0; }
+  .alert-card__escalation {
+    margin-top: 9px; font-size: 12px; color: #f0b98a; background: #2b2015;
+    border: 1px solid #4a3720; border-radius: 5px; padding: 6px 9px; display: flex; gap: 7px; align-items: center;
+  }
+  .alert-card__sla {
+    margin-top: 8px; font-size: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    padding: 6px 9px; border-radius: 5px; background: var(--panel-2);
+  }
+  .alert-card__sla.is-overdue { background: #3a1c1c; color: #ffb0b0; }
+  .alert-card__sla-detail { color: var(--text-dim); }
+  .alert-card__sla.is-overdue .alert-card__sla-detail { color: #ffc9c9; }
+  .alert-card__sla-target { margin-left: auto; font-size: 11.5px; color: var(--text-dim); }
+  .alert-card__confidence { margin-top: 8px; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .alert-card__confidence-label { color: var(--text-dim); }
+  .alert-card__confidence-value { font-weight: 700; font-size: 14px; }
+  .alert-card__confidence-value.is-high { color: var(--ok); }
+  .alert-card__confidence-value.is-mid { color: var(--warn); }
+  .alert-card__confidence-value.is-low { color: var(--crit); }
+
+  .alert-card__playbook { margin-top: 13px; border-top: 1px solid var(--line); padding-top: 11px; }
+  .alert-card__playbook-count { margin-left: auto; font-size: 11.5px; color: var(--text-dim); }
+  .playbook-steps { list-style: none; margin: 0 0 11px; padding: 0; }
+  .playbook-step { display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .playbook-step:last-child { border-bottom: none; }
+  .playbook-step__icon { color: var(--accent); padding-top: 2px; }
+  .playbook-step__body { flex: 1; min-width: 0; }
+  .playbook-step__line { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .playbook-step__target { font-size: 11.5px; color: var(--text-dim); }
+  .playbook-step__note { font-size: 11px; color: #6d8399; margin-top: 1px; }
+  .playbook-step__missing { font-size: 11px; color: var(--crit); margin-top: 2px; }
+  .playbook-step.is-done .playbook-step__icon { color: var(--ok); }
+  .playbook-step.is-blocked { opacity: .6; }
+  .alert-card__playbook-actions { display: flex; gap: 8px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+    cursor: pointer; font: inherit; font-size: 12.5px;
+  }
+  .btn--primary { background: var(--accent); color: #06121f; border-color: var(--accent); font-weight: 600; }
+  .btn--danger { background: #3a1c1c; color: #ffb0b0; border-color: #5c2a2a; }
+  .btn--ghost { background: transparent; }
+  .btn.is-disabled, .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .alert-card__dispatches { list-style: none; margin: 9px 0 0; padding: 0; }
+  .dispatch-row {
+    display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 5px 9px;
+    background: var(--panel-2); border-radius: 5px; margin-bottom: 5px;
+  }
+  .dispatch-row__role { font-weight: 600; }
+  .dispatch-row__task { color: var(--text-dim); flex: 1; min-width: 0; }
+  .dispatch-row__count { color: var(--text-dim); }
+  .dispatch-row__status { font-size: 11px; padding: 0 6px; border-radius: 3px; background: var(--line); }
+  .alert-card__advance { display: flex; gap: 7px; margin-top: 11px; flex-wrap: wrap; }
+  .alert-card__evidence, .alert-card__history { margin-top: 11px; }
+  .alert-card__evidence > summary, .alert-card__history > summary {
+    cursor: pointer; font-size: 12.5px; color: var(--accent); display: flex; align-items: center; gap: 6px;
+    padding: 4px 0;
+  }
+  .alert-card__timeline { list-style: none; margin: 9px 0 0; padding: 0 0 0 4px; }
+  .timeline-row {
+    display: grid; grid-template-columns: 46px 76px 1fr auto; gap: 9px; font-size: 11.5px;
+    padding: 5px 0; border-bottom: 1px dashed var(--line);
+  }
+  .timeline-row.is-latest { color: var(--text); }
+  .timeline-row__time { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+  .timeline-row__state { font-weight: 600; }
+  .timeline-row__detail { color: var(--text-dim); }
+  .timeline-row__actor { color: #6d8399; }
+
+  /* ---- 证据链 ---- */
+  .evidence-chain { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px 13px; }
+  .evidence-chain__title { font-size: 13px; font-weight: 600; }
+  .evidence-chain__score { margin-left: auto; font-size: 17px; font-weight: 700; }
+  .evidence-chain__score.is-passed { color: var(--ok); }
+  .evidence-chain__score.is-pending { color: var(--warn); }
+  .evidence-chain__threshold { font-size: 11.5px; color: var(--text-dim); }
+  .evidence-chain__warning {
+    display: flex; gap: 7px; align-items: center; font-size: 11.5px; color: #f0b98a;
+    background: #2b2015; border: 1px solid #4a3720; border-radius: 5px; padding: 6px 9px; margin-bottom: 9px;
+  }
+  .evidence-chain__rows { list-style: none; margin: 0; padding: 0; }
+  .evidence-row {
+    display: grid; grid-template-columns: 88px 54px 1fr; gap: 9px; padding: 5px 0;
+    border-bottom: 1px dashed var(--line); font-size: 12px; align-items: baseline;
+  }
+  .evidence-row__label { color: var(--text); }
+  .evidence-row__value { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .evidence-row.is-positive .evidence-row__value { color: var(--ok); }
+  .evidence-row.is-negative .evidence-row__value { color: var(--crit); }
+  .evidence-row.is-neutral .evidence-row__value { color: var(--text-dim); }
+  .evidence-row__detail { color: var(--text-dim); font-size: 11px; }
+  .evidence-chain__formula {
+    margin-top: 9px; padding: 6px 9px; background: #101a24; border-radius: 5px;
+    font-family: Consolas, monospace; font-size: 12px; color: #9cc4f0; letter-spacing: .4px;
+  }
+  .evidence-chain__verdict {
+    margin-top: 9px; display: flex; gap: 7px; align-items: center; font-size: 12px;
+    padding: 7px 9px; border-radius: 5px;
+  }
+  .evidence-chain__verdict.is-passed { background: #1a2f22; color: #8be0a8; }
+  .evidence-chain__verdict.is-pending { background: #3a3520; color: #e8d48a; }
+  .evidence-chain__extra { list-style: none; margin: 11px 0 0; padding: 9px 0 0; border-top: 1px dashed var(--line); }
+  .evidence-chain__extra-title { font-size: 11.5px; color: var(--text-dim); display: flex; gap: 6px; align-items: center; margin-bottom: 5px; }
+  .evidence-extra-row { display: grid; grid-template-columns: 88px 1fr; gap: 9px; font-size: 11.5px; padding: 2px 0; }
+  .evidence-extra-row__label { color: var(--text-dim); }
+  .evidence-extra-row__detail { color: #b9cbdd; }
+
+  /* ---- 阈值控制 ---- */
+  .crowd-threshold-control__mode { margin-left: auto; font-size: 11px; color: var(--warn); }
+  .crowd-threshold-control__mode.is-editable { color: var(--ok); }
+  .crowd-threshold-control__intro { font-size: 12px; color: var(--text-dim); margin: 0 0 12px; }
+  .threshold-row {
+    display: grid; grid-template-columns: 78px repeat(3, 92px) 1fr; gap: 9px; align-items: center;
+    padding: 8px 0; border-bottom: 1px dashed var(--line);
+  }
+  .threshold-row__level { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+  .threshold-row__dot { width: 8px; height: 8px; border-radius: 50%; }
+  .threshold-field { display: flex; flex-direction: column; gap: 2px; }
+  .threshold-field__label { font-size: 10.5px; color: var(--text-dim); }
+  .threshold-field input {
+    width: 100%; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--line);
+    background: #0f1922; color: var(--text); font: inherit; font-size: 12px;
+  }
+  .threshold-row__hint { font-size: 11px; color: #6d8399; display: flex; gap: 6px; align-items: center; }
+  .threshold-weather-preview { margin-top: 12px; padding: 10px 11px; background: var(--panel-2); border-radius: 6px; }
+  .threshold-weather-preview__head { display: flex; gap: 7px; align-items: center; font-size: 12.5px; margin-bottom: 6px; }
+  .threshold-weather-preview ul { list-style: none; margin: 0; padding: 0; font-size: 11.5px; }
+  .threshold-weather-preview li { padding: 2px 0; color: #b9cbdd; }
+  .threshold-weather-preview__delta { color: var(--text-dim); }
+  .threshold-empty { margin-top: 10px; font-size: 11.5px; color: var(--text-dim); display: flex; gap: 7px; align-items: center; }
+  .capacity-basis-list { margin-top: 13px; border-top: 1px solid var(--line); padding-top: 11px; }
+  .capacity-basis-list__head { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+  .capacity-basis { background: var(--panel-2); border-radius: 5px; padding: 8px 10px; margin-bottom: 6px; }
+  .capacity-basis__head { display: flex; gap: 7px; align-items: baseline; font-size: 12px; flex-wrap: wrap; }
+  .capacity-basis__formula { color: var(--accent); font-size: 11.5px; margin-left: auto; }
+  .capacity-basis__rationale { font-size: 11.5px; color: var(--text-dim); margin: 4px 0 0; }
+  .capacity-basis__result { font-size: 11.5px; color: #8be0a8; margin-top: 4px; }
+
+  /* ---- 安全简报 ---- */
+  .safety-briefing__mode { margin-left: auto; font-size: 11px; color: var(--text-dim); background: var(--line); padding: 1px 7px; border-radius: 3px; }
+  .safety-briefing__text { font-size: 13px; line-height: 1.65; margin: 0 0 10px; color: #e6eef7; }
+  .safety-briefing__facts { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; }
+  .safety-briefing__facts-label { color: var(--text-dim); }
+  .safety-fact { color: #b9cbdd; }
+  .safety-briefing__note {
+    margin-top: 10px; padding-top: 9px; border-top: 1px dashed var(--line);
+    font-size: 11.5px; color: #6d8399;
+  }
+
+  /* ---- 自查面板 ---- */
+  .selfcheck { display: grid; gap: 8px; }
+  .selfcheck-row { display: flex; align-items: center; gap: 9px; font-size: 12.5px; }
+  .selfcheck-badge { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 3px; }
+  .selfcheck-badge.is-pass { background: #1e3a26; color: #8be0a8; }
+  .selfcheck-badge.is-fail { background: #3a1c1c; color: #ffb0b0; }
+  .selfcheck-name { font-family: Consolas, monospace; font-size: 11.5px; color: var(--text-dim); }
+  .selfcheck-summary { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 600; }
+  .selfcheck-summary.is-ok { color: var(--ok); }
+  .selfcheck-summary.is-bad { color: var(--crit); }
+</style>
+</head>
+<body>
+<div class="harness" id="root">
+  <div class="harness__head">
+    <h1>安全管理模式 · 效果验证台</h1>
+    <span class="harness__sub">真实 DOM 渲染 ｜ 数据源为 W3 预置场景快照</span>
+    <span class="demo-badge">演示数据</span>
+  </div>
+  <div id="app"><div class="scenario-bar"><span class="scenario-bar__label">切换态势：</span><button type="button" class="scenario-btn">① 常态（无人流告警）</button><button type="button" class="scenario-btn">② 午间高峰（人流风控 + 证据链）</button><button type="button" class="scenario-btn is-active">③ 暴雨联动（封路 + 避雨模式 + 处置时效）</button></div><section><h2>天气与应急联动</h2><section class="weather-strip" aria-label="天气与应急联动" style="--weather-color: #d1414a;"><header class="weather-strip__head"><span class="weather-strip__icon" style="color: rgb(209, 65, 74);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25 M8 19v2 M12 19v2 M16 19v2"></path></svg></span><div class="weather-strip__title-block"><div class="weather-strip__title">暴雨红色预警<span class="demo-badge" title="演示数据，非真实气象">演示数据</span></div><div class="weather-strip__text">未来 3 小时内降雨量将达 100 毫米以上</div></div></header><div class="weather-strip__metrics"><div class="weather-metric" key="气温"><span class="weather-metric__value">24°C</span><span class="weather-metric__label">气温</span></div><div class="weather-metric" key="湿度"><span class="weather-metric__value">92%</span><span class="weather-metric__label">湿度</span></div><div class="weather-metric" key="风力"><span class="weather-metric__value">9 m/s</span><span class="weather-metric__label">风力</span></div><div class="weather-metric" key="降水"><span class="weather-metric__value">62 mm/h</span><span class="weather-metric__label">降水</span></div><div class="weather-metric" key="能见度"><span class="weather-metric__value">1.2 km</span><span class="weather-metric__label">能见度</span></div></div><div class="weather-strip__switcher" role="group" aria-label="天气场景切换"><button type="button" key="rainstorm_red" class="weather-chip is-active" style="border-color: rgb(209, 65, 74);">🌧️ 暴雨红色预警</button><button type="button" key="hail_orange" class="weather-chip">🧊 冰雹橙色预警</button><button type="button" key="heat_orange" class="weather-chip">🌡️ 高温橙色预警</button><button type="button" key="gale_yellow" class="weather-chip">🌬️ 大风黄色预警</button><button type="button" key="thunder_yellow" class="weather-chip">⚡ 雷电黄色预警</button><button type="button" key="clear" class="weather-chip">☀️ 晴好天气</button></div><div class="weather-strip__translation"><div class="weather-strip__translation-head"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01"></path></svg><strong>气象 → 校园处置动作</strong><small>★ 我们不预报天气，我们把天气翻译成行动</small></div><div class="weather-strip__risks"><span class="weather-strip__risks-label">识别到的校园风险点：</span><span>低洼路段积水、地下车库倒灌、户外活动受阻、通行不便</span></div><ul class="weather-strip__actions"><li class="weather-action" key="broadcast"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z M15 9a4 4 0 0 1 0 6 M18 6a8 8 0 0 1 0 12"></path></svg><span class="weather-action__label">定向广播</span><span class="weather-action__detail"></span></li><li class="weather-action" key="block-edge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M4.93 4.93l14.14 14.14"></path></svg><span class="weather-action__label">路段封控</span><span class="weather-action__detail"></span></li><li class="weather-action" key="reroute"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6"></path></svg><span class="weather-action__label">路线重算</span><span class="weather-action__detail"></span></li><li class="weather-action" key="dispatch"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M16 11l2 2 4-4"></path></svg><span class="weather-action__label">派单处置</span><span class="weather-action__detail"></span></li><li class="weather-action" key="close-place"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 2h16v20H4z M14 12h.01"></path></svg><span class="weather-action__label">关闭场所</span><span class="weather-action__detail"></span></li><li class="weather-action" key="highlight-route"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6"></path></svg><span class="weather-action__label">高亮路线</span><span class="weather-action__detail"></span></li><li class="weather-action" key="pause-outdoor"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0z M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0z"></path></svg><span class="weather-action__label">暂停户外活动</span><span class="weather-action__detail"></span></li><li class="weather-action" key="log-evidence"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg><span class="weather-action__label">拍照留痕</span><span class="weather-action__detail"></span></li></ul></div></section></section><section><h2>安全态势大屏</h2><div class="safety-dashboard"><div class="safety-dashboard__row safety-dashboard__row--top"><section class="risk-overview" aria-label="风险总览"><header class="risk-overview__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M12 8v4 M12 16h.01"></path></svg><strong>风险总览</strong><span class="risk-overview__active">活跃 3 条</span></header><div class="risk-overview__grid"><div class="risk-tile is-critical is-zero" key="critical" style="--tile-color: #d1414a;"><span class="risk-tile__count">0</span><span class="risk-tile__label">紧急</span></div><div class="risk-tile is-high" key="high" style="--tile-color: #e2703a;"><span class="risk-tile__count">1</span><span class="risk-tile__label">高</span></div><div class="risk-tile is-medium is-zero" key="medium" style="--tile-color: #e0a92b;"><span class="risk-tile__count">0</span><span class="risk-tile__label">中</span></div><div class="risk-tile is-low is-zero" key="low" style="--tile-color: #3fa96a;"><span class="risk-tile__count">0</span><span class="risk-tile__label">低</span></div><div class="risk-tile is-info is-zero" key="info" style="--tile-color: #5b8def;"><span class="risk-tile__count">0</span><span class="risk-tile__label">提示</span></div></div><div class="risk-overview__summary">严重 0 · 高风险 1 · 关注 0 · 正常 0</div></section><section class="response-metrics" aria-label="处置时效"><header class="response-metrics__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><strong>处置时效</strong><small>★ 有响应时间，才证明闭环真的闭合了</small></header><div class="response-metrics__grid"><div class="response-tile" key="avg" title="从上报到派单的平均耗时"><span class="response-tile__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg></span><span class="response-tile__value">3 分</span><span class="response-tile__label">平均响应时长</span><span class="response-tile__hint">从上报到派单的平均耗时</span></div><div class="response-tile" key="overdue" title="0 / 2 条超出响应时限"><span class="response-tile__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01"></path></svg></span><span class="response-tile__value">0%</span><span class="response-tile__label">超时率</span><span class="response-tile__hint">0 / 2 条超出响应时限</span></div><div class="response-tile" key="closure" title="1 / 4 条已归档"><span class="response-tile__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4 12 14.01l-3-3"></path></svg></span><span class="response-tile__value">25%</span><span class="response-tile__label">闭环率</span><span class="response-tile__hint">1 / 4 条已归档</span></div><div class="response-tile" key="dispatched" title="共 4 条预警"><span class="response-tile__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6h13 M3 12h13 M3 18h13 M18 6l2 2 3-3 M18 12l2 2 3-3"></path></svg></span><span class="response-tile__value">2</span><span class="response-tile__label">已派单</span><span class="response-tile__hint">共 4 条预警</span></div></div><ul class="response-metrics__by-level"><li class="response-level-row" key="critical"><span class="response-level-row__dot" style="background-color: rgb(209, 65, 74);"></span><span class="response-level-row__label">紧急</span><span class="response-level-row__count">3 条</span><span class="response-level-row__avg">平均 1 分</span></li><li class="response-level-row" key="high"><span class="response-level-row__dot" style="background-color: rgb(226, 112, 58);"></span><span class="response-level-row__label">高</span><span class="response-level-row__count">1 条</span><span class="response-level-row__avg">平均 5 分</span></li></ul></section></div><div class="safety-dashboard__row"><section class="alert-timeline" aria-label="预警时间线"><header class="alert-timeline__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg><strong>预警时间线</strong><span class="alert-timeline__count">4 条</span></header><ol class="alert-timeline__list"><li class="timeline-item is-critical" key="alert:weather:rainstorm_red" style="--item-color: #d1414a;"><button type="button" class="timeline-item__button" disabled=""><span class="timeline-item__time">11:30</span><span class="timeline-item__badge">紧急</span><span class="timeline-item__title">暴雨红色预警：未来 3 小时内降雨量将达 100 毫米以上</span><span class="timeline-item__state">已派单</span></button></li><li class="timeline-item is-critical" key="alert:e-railing" style="--item-color: #d1414a;"><button type="button" class="timeline-item__button" disabled=""><span class="timeline-item__time">11:28</span><span class="timeline-item__badge">紧急</span><span class="timeline-item__title">湖边挑台护栏松动</span><span class="timeline-item__state">待核实</span></button></li><li class="timeline-item is-critical" key="alert:crowd:Canteen" style="--item-color: #d1414a;"><button type="button" class="timeline-item__button" disabled=""><span class="timeline-item__time">11:25</span><span class="timeline-item__badge">紧急</span><span class="timeline-item__title">第三食堂人流达安全容量上限</span><span class="timeline-item__state">已发布</span></button></li><li class="timeline-item is-high" key="alert:e-truck" style="--item-color: #e2703a;"><button type="button" class="timeline-item__button" disabled=""><span class="timeline-item__time">11:28</span><span class="timeline-item__badge">高</span><span class="timeline-item__title">三食堂门口停了辆卡车，无法通行</span><span class="timeline-item__state">已结束</span></button></li></ol></section><section class="spatial-status" aria-label="空间态势"><header class="spatial-status__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6"></path></svg><strong>空间态势</strong><small>封路集合即喂给 createCampusRoute 的 blockedEdgeIds</small></header><div class="spatial-status__groups"><div class="spatial-group" key="blocked"><div class="spatial-group__head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M4.93 4.93l14.14 14.14"></path></svg><span>封控路段</span><span class="spatial-group__count">5</span></div><ul class="spatial-group__list"><li key="outer_s3→inner_e_s4">outer_s3→inner_e_s4</li><li key="axis_gate→outer_s2">axis_gate→outer_s2</li><li key="outer_s3→outer_se3">outer_s3→outer_se3</li><li key="ring_w1→ring_w2">ring_w1→ring_w2</li><li key="sport_access_1→outer_se3">sport_access_1→outer_se3</li></ul></div><div class="spatial-group" key="closed"><div class="spatial-group__head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 2h16v20H4z M14 12h.01"></path></svg><span>关闭场所</span><span class="spatial-group__count">7</span></div><ul class="spatial-group__list"><li key="地下车库入口">地下车库入口</li><li key="低洼路段">低洼路段</li><li key="下沉广场">下沉广场</li><li key="地下车库入口（北）">地下车库入口（北）</li><li key="地下车库入口（南）">地下车库入口（南）</li><li key="操场">操场</li><li key="露天球场">露天球场</li></ul></div><div class="spatial-group" key="outdoor"><div class="spatial-group__head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M23 6l-9.5 9.5-5-5L1 18 M17 6h6v6"></path></svg><span>户外活动</span><span class="spatial-group__count">暂停</span></div><div class="spatial-group__state is-paused">已暂停（天气预案生效中）</div></div></div><div class="spatial-status__risks"><div class="spatial-status__risks-head">人流告警地点</div><ul><li key="第三食堂：高风险（96% / 396 人）-0">第三食堂：高风险（96% / 396 人）</li></ul></div></section></div><section class="safety-briefing" aria-label="AI 安全简报"><header class="safety-briefing__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01"></path></svg><strong>AI 安全简报</strong><span class="safety-briefing__mode" title="判定走规则引擎，LLM 只负责把结论说成人话">模板生成</span></header><p class="safety-briefing__text">暴雨红色预警生效中；第三食堂占用率 96%，建议提前启动分流；待处置预警 3 条（其中高等级 3 条）；已封控 5 段道路；关闭 7 个场所；户外活动已暂停；平均响应 3 分钟，超时率 0%；暴雨红色预警：命中 4 条处置规则，封控 5 段道路，管控 6 处场所，开放 2 处避险点，派出 2 项任务，发布 3 条广播，共 8 类处置动作。。</p><div class="safety-briefing__facts"><span class="safety-briefing__facts-label">依据：</span><span class="safety-fact" key="天气-0"><strong>天气 </strong>暴雨红色预警</span><span class="safety-fact" key="预警-1"><strong>预警 </strong>4 条（活跃 3）</span><span class="safety-fact" key="封控路段-2"><strong>封控路段 </strong>5 段</span><span class="safety-fact" key="平均响应-3"><strong>平均响应 </strong>3 分</span></div><div class="safety-briefing__note">判定逻辑（级别 / 阈值 / 处置动作）全部由规则引擎产出，可解释、可审计；LLM 仅参与自然语言表达，不参与判定。</div></section></div></section><div class="row row--2"><section><h2>预警卡片（含一键预案与证据链）</h2><article class="alert-card is-critical" aria-label="紧急预警：暴雨红色预警：未来 3 小时内降雨量将达 100 毫米以上" style="--alert-color: #d1414a;"><header class="alert-card__header"><span class="alert-card__level" title="严重度 紧急" style="background-color: rgb(209, 65, 74);">紧急</span><div class="alert-card__headline"><button type="button" class="alert-card__title" disabled="">暴雨红色预警：未来 3 小时内降雨量将达 100 毫米以上</button><div class="alert-card__meta"><span>全校</span><span class="alert-card__dot">·</span><span>11:30</span><span class="alert-card__state is-dispatched">已派单</span></div></div></header><div class="alert-card__escalation"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01"></path></svg><span>分级上调：分级由基础档上调 1 档（）</span></div><div class="alert-card__sla is-overdue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg><span class="alert-card__sla-time">时限 3 分钟</span><span class="alert-card__sla-detail">★ 超出响应时限 7 分钟，应升级至：保卫处值班、校领导</span><span class="alert-card__sla-target">升级至 保卫处值班、校领导</span></div><ul class="alert-card__dispatches"><li class="dispatch-row is-dispatched" key="后勤-0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M16 11l2 2 4-4"></path></svg><span class="dispatch-row__role">后勤</span><span class="dispatch-row__task">排查低洼路段积水与排水口堵塞情况</span><span class="dispatch-row__status">处置中</span></li></ul><section class="alert-card__playbook"><div class="alert-card__playbook-head"><strong>暴雨应急联动预案</strong><span class="alert-card__playbook-count">6 个动作</span></div><ul class="playbook-steps"><li class="playbook-step is-pending" key="rainstorm:step-1"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M4.93 4.93l14.14 14.14"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>路段封控</strong><span class="playbook-step__target">低洼路段</span></div><div class="playbook-step__note">低洼路段积水风险最高，先隔离再谈疏导</div></div></li><li class="playbook-step is-pending" key="rainstorm:step-2"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 2h16v20H4z M14 12h.01"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>关闭场所</strong><span class="playbook-step__target">地下车库入口</span></div><div class="playbook-step__note">车库倒灌的损失远大于临时封闭的不便</div></div></li><li class="playbook-step is-pending" key="rainstorm:step-3"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0z M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0z"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>暂停户外活动</strong><span class="playbook-step__target">全校户外活动</span></div><div class="playbook-step__note">体育课、军训、社团活动一并暂停</div></div></li><li class="playbook-step is-pending" key="rainstorm:step-4"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>高亮路线</strong><span class="playbook-step__target">环廊避雨通道</span></div><div class="playbook-step__note">★ 复用已有 `ROUTE_MODES.RAIN`，零新增代码</div></div></li><li class="playbook-step is-pending" key="rainstorm:step-6"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M16 11l2 2 4-4"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>派单处置</strong><span class="playbook-step__target">后勤</span></div><div class="playbook-step__note">预警落到具体任务才算闭环</div></div></li><li class="playbook-step is-pending" key="rainstorm:step-5"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z M15 9a4 4 0 0 1 0 6 M18 6a8 8 0 0 1 0 12"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>定向广播</strong><span class="playbook-step__target">全校</span></div><div class="playbook-step__note">一句话给出可执行动作，而不是复述气象级别</div></div></li></ul><div class="alert-card__playbook-actions"><button type="button" class="btn btn--primary" title="一键执行全部动作"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 3l14 9-14 9V3z"></path></svg>一键启动预案</button><button type="button" class="btn is-disabled" disabled="" title="撤销全部动作，封路与场所自动恢复"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 4v6h6 M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>撤销</button></div></section><div class="alert-card__advance"><button type="button" class="btn btn--ghost" key="dispatched"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已派单</button><button type="button" class="btn btn--ghost" key="resolved"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已处置</button><button type="button" class="btn btn--ghost" key="closed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已结束</button></div><details class="alert-card__evidence"><summary><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path></svg>查看 AI 判定依据与证据链</summary><section class="evidence-chain" aria-label="AI 判定依据"><div class="evidence-chain__header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"></path></svg><span class="evidence-chain__title">AI 判定依据</span><span class="evidence-chain__score is-pending">0%</span><span class="evidence-chain__threshold">阈值 65%</span></div><ul class="evidence-chain__rows"></ul><div class="evidence-chain__verdict is-pending"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M15 9l-6 6 M9 9l6 6"></path></svg><span>★ 低于阈值，进入人工审核队列；安全类只显示「待核实」、灰色虚标不打点</span></div><ul class="evidence-chain__extra"><li class="evidence-chain__extra-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01"></path></svg>分级与风控判定依据</li><li class="evidence-extra-row" key="事件类型定级-0"><span class="evidence-extra-row__label">事件类型定级</span><span class="evidence-extra-row__detail">safety → 基础档「高」· 安全类事件直接涉及人身安全，基础定级为「高」</span></li><li class="evidence-extra-row" key="场所敏感度-1"><span class="evidence-extra-row__label">场所敏感度</span><span class="evidence-extra-row__detail">全校（plaza）敏感度 ×1，敏感度分值 4.0 —— 疏散条件好，作为基准，档位不变</span></li><li class="evidence-extra-row" key="时段权重-2"><span class="evidence-extra-row__label">时段权重</span><span class="evidence-extra-row__detail">事发时刻 11:30 属日间时段，不升档</span></li><li class="evidence-extra-row" key="显式严重度-3"><span class="evidence-extra-row__label">显式严重度</span><span class="evidence-extra-row__detail">事件自报严重度「紧急」高于矩阵推演结果，取较高者</span></li></ul></section></details><details class="alert-card__history"><summary><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4 12 14.01l-3-3"></path></svg>处置时间线（3 步）</summary><ol class="alert-card__timeline"><li class="timeline-row" key="reported-0"><span class="timeline-row__time">11:30</span><span class="timeline-row__state">上报</span><span class="timeline-row__detail">用户在地图上选点并提交一句话描述</span></li><li class="timeline-row" key="published-1"><span class="timeline-row__time">11:30</span><span class="timeline-row__state">已发布</span><span class="timeline-row__detail">气象等级升档至「暴雨红色预警」，自动生成预警并关联预案</span><span class="timeline-row__actor">系统</span></li><li class="timeline-row is-latest" key="dispatched-2"><span class="timeline-row__time">11:31</span><span class="timeline-row__state">已派单</span><span class="timeline-row__detail">执行预案「暴雨应急联动预案」</span><span class="timeline-row__actor">管理者</span></li></ol></details></article><article class="alert-card is-critical" aria-label="紧急预警：湖边挑台护栏松动" style="--alert-color: #d1414a;"><header class="alert-card__header"><span class="alert-card__level" title="严重度 紧急" style="background-color: rgb(209, 65, 74);">紧急</span><div class="alert-card__headline"><button type="button" class="alert-card__title" disabled="">湖边挑台护栏松动</button><div class="alert-card__meta"><span>亭兰图书馆</span><span class="alert-card__dot">·</span><span>11:28</span><span class="alert-card__state is-verifying">待核实</span></div></div></header><div class="alert-card__escalation"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01"></path></svg><span>分级上调：分级由基础档上调 1 档（场所敏感度 ×1.2）</span></div><div class="alert-card__sla is-overdue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg><span class="alert-card__sla-time">时限 3 分钟</span><span class="alert-card__sla-detail">★ 超出响应时限 9 分钟，应升级至：保卫处值班、校领导</span><span class="alert-card__sla-target">升级至 保卫处值班、校领导</span></div><div class="alert-card__confidence"><span class="alert-card__confidence-label">可信度</span><span class="alert-card__confidence-value is-low">55%</span><span class="alert-card__confidence-hint">低于阈值，进人工审核队列</span></div><div class="alert-card__advance"><button type="button" class="btn btn--ghost" key="dispatched"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已派单</button><button type="button" class="btn btn--ghost" key="resolved"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已处置</button><button type="button" class="btn btn--ghost" key="closed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已结束</button></div><details class="alert-card__evidence" open=""><summary><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path></svg>查看 AI 判定依据与证据链</summary><section class="evidence-chain" aria-label="AI 判定依据"><div class="evidence-chain__header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"></path></svg><span class="evidence-chain__title">AI 判定依据</span><span class="evidence-chain__score is-pending">55%</span><span class="evidence-chain__threshold">阈值 75%</span></div><ul class="evidence-chain__rows"></ul><div class="evidence-chain__verdict is-pending"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M15 9l-6 6 M9 9l6 6"></path></svg><span>★ 低于阈值，进入人工审核队列；安全类只显示「待核实」、灰色虚标不打点</span></div><ul class="evidence-chain__extra"><li class="evidence-chain__extra-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01"></path></svg>分级与风控判定依据</li><li class="evidence-extra-row" key="事件类型定级-0"><span class="evidence-extra-row__label">事件类型定级</span><span class="evidence-extra-row__detail">safety → 基础档「高」· 安全类事件直接涉及人身安全，基础定级为「高」</span></li><li class="evidence-extra-row" key="场所敏感度-1"><span class="evidence-extra-row__label">场所敏感度</span><span class="evidence-extra-row__detail">亭兰图书馆（teaching）敏感度 ×1.2，敏感度分值 4.8 —— 人员密集、疏散通道相对有限，档位由「高」上调至「紧急」</span></li><li class="evidence-extra-row" key="时段权重-2"><span class="evidence-extra-row__label">时段权重</span><span class="evidence-extra-row__detail">事发时刻 11:28 属日间时段，不升档</span></li></ul></section></details><details class="alert-card__history"><summary><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4 12 14.01l-3-3"></path></svg>处置时间线（3 步）</summary><ol class="alert-card__timeline"><li class="timeline-row" key="reported-0"><span class="timeline-row__time">11:28</span><span class="timeline-row__state">上报</span><span class="timeline-row__detail">用户在地图上选点并提交一句话描述</span></li><li class="timeline-row" key="pending-1"><span class="timeline-row__time">11:28</span><span class="timeline-row__state">待核查</span><span class="timeline-row__detail">完成抽取与锚点匹配，进入核查</span><span class="timeline-row__actor">系统</span></li><li class="timeline-row is-latest" key="verifying-2"><span class="timeline-row__time">11:28</span><span class="timeline-row__state">待核实</span><span class="timeline-row__detail">可信度 55% &lt; 阈值 75%，★ 安全类强制闸门生效：进人工审核队列，前端只显示「待核实」、灰色虚标不打点</span><span class="timeline-row__actor">AI 核查</span></li></ol></details></article><article class="alert-card is-critical" aria-label="紧急预警：第三食堂人流达安全容量上限" style="--alert-color: #d1414a;"><header class="alert-card__header"><span class="alert-card__level" title="严重度 紧急" style="background-color: rgb(209, 65, 74);">紧急</span><div class="alert-card__headline"><button type="button" class="alert-card__title" disabled="">第三食堂人流达安全容量上限</button><div class="alert-card__meta"><span>第三食堂</span><span class="alert-card__dot">·</span><span>11:25</span><span class="alert-card__state is-published">已发布</span></div></div></header><div class="alert-card__escalation"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01"></path></svg><span>分级上调：分级由基础档上调 1 档（场所敏感度 ×1.3）</span></div><div class="alert-card__sla is-overdue"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg><span class="alert-card__sla-time">时限 3 分钟</span><span class="alert-card__sla-detail">★ 超出响应时限 12 分钟，应升级至：保卫处值班、校领导</span><span class="alert-card__sla-target">升级至 保卫处值班、校领导</span></div><div class="alert-card__confidence"><span class="alert-card__confidence-label">可信度</span><span class="alert-card__confidence-value is-high">95%</span></div><section class="alert-card__playbook"><div class="alert-card__playbook-head"><strong>人流超限分流预案</strong><span class="alert-card__playbook-count">4 个动作</span></div><ul class="playbook-steps"><li class="playbook-step is-pending" key="crowd-overflow:step-2"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>高亮路线</strong><span class="playbook-step__target">就近替代地点</span></div><div class="playbook-step__note">同时高亮替代路线，把"建议"变成"可点的一步"</div></div></li><li class="playbook-step is-pending" key="crowd-overflow:step-3"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M16 11l2 2 4-4"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>派单处置</strong><span class="playbook-step__target">保安</span></div><div class="playbook-step__note">人流超限的真正风险往往是**溢出到车道**</div></div></li><li class="playbook-step is-pending" key="crowd-overflow:step-1"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z M15 9a4 4 0 0 1 0 6 M18 6a8 8 0 0 1 0 12"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>定向广播</strong><span class="playbook-step__target">该地点周边 300 m</span></div><div class="playbook-step__note">分流提示要给出**具体去处**，否则用户不会执行</div></div></li><li class="playbook-step is-pending" key="crowd-overflow:step-4"><span class="playbook-step__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path></svg></span><div class="playbook-step__body"><div class="playbook-step__line"><strong>拍照留痕</strong><span class="playbook-step__target">该地点</span></div><div class="playbook-step__note">留痕用于事后统计与责任界定</div></div></li></ul><div class="alert-card__playbook-actions"><button type="button" class="btn btn--primary" title="一键执行全部动作"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 3l14 9-14 9V3z"></path></svg>一键启动预案</button><button type="button" class="btn is-disabled" disabled="" title="撤销全部动作，封路与场所自动恢复"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 4v6h6 M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>撤销</button></div></section><div class="alert-card__advance"><button type="button" class="btn btn--ghost" key="dispatched"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已派单</button><button type="button" class="btn btn--ghost" key="resolved"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已处置</button><button type="button" class="btn btn--ghost" key="closed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>已结束</button></div><details class="alert-card__evidence"><summary><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path></svg>查看 AI 判定依据与证据链</summary><section class="evidence-chain" aria-label="AI 判定依据"><div class="evidence-chain__header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"></path></svg><span class="evidence-chain__title">AI 判定依据</span><span class="evidence-chain__score is-passed">95%</span><span class="evidence-chain__threshold">阈值 65%</span></div><ul class="evidence-chain__rows"><li class="evidence-row is-positive" key="sensor"><span class="evidence-row__label">传感器计数</span><span class="evidence-row__value">+70%</span><span class="evidence-row__detail">人流计数来自位置采样聚合，非人工输入，无主观偏差</span></li><li class="evidence-row is-positive" key="dwell"><span class="evidence-row__label">驻留确认</span><span class="evidence-row__value">+15%</span><span class="evidence-row__detail">连续 3 片超限，已排除瞬时尖峰</span></li><li class="evidence-row is-positive" key="threshold"><span class="evidence-row__label">阈值一致性</span><span class="evidence-row__value">+10%</span><span class="evidence-row__detail">阈值取自消防疏散容量 / 座位数折算，口径可追溯</span></li></ul><div class="evidence-chain__formula">70 + 15 + 10 = 95%</div><div class="evidence-chain__verdict is-passed"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4 12 14.01l-3-3"></path></svg><span>可信度达标，自动发布并在地图打点</span></div><ul class="evidence-chain__extra"><li class="evidence-chain__extra-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01"></path></svg>分级与风控判定依据</li><li class="evidence-extra-row" key="占用率-0"><span class="evidence-extra-row__label">占用率</span><span class="evidence-extra-row__detail">380 / 396 人 = 96.0%</span></li><li class="evidence-extra-row" key="阈值判定-1"><span class="evidence-extra-row__label">阈值判定</span><span class="evidence-extra-row__detail">占用率 96.0% ≥ 高风险档上升沿 90%</span></li><li class="evidence-extra-row" key="驻留确认-2"><span class="evidence-extra-row__label">驻留确认</span><span class="evidence-extra-row__detail">3 / 3 片（已确认）</span></li><li class="evidence-extra-row" key="场所敏感度-3"><span class="evidence-extra-row__label">场所敏感度</span><span class="evidence-extra-row__detail">第三食堂（dining）敏感度 ×1.3 —— 明火与燃气并存，且高峰时段高度聚集</span></li><li class="evidence-extra-row" key="上次同档告警-4"><span class="evidence-extra-row__label">上次同档告警</span><span class="evidence-extra-row__detail">时间戳 1790565900000（用于冷却期去重）</span></li><li class="evidence-extra-row" key="事件类型定级-5"><span class="evidence-extra-row__label">事件类型定级</span><span class="evidence-extra-row__detail">safety → 基础档「高」· 安全类事件直接涉及人身安全，基础定级为「高」</span></li><li class="evidence-extra-row" key="场所敏感度-6"><span class="evidence-extra-row__label">场所敏感度</span><span class="evidence-extra-row__detail">第三食堂（dining）敏感度 ×1.3，敏感度分值 5.2 —— 明火与燃气并存，且高峰时段高度聚集，档位由「高」上调至「紧急」</span></li><li class="evidence-extra-row" key="时段权重-7"><span class="evidence-extra-row__label">时段权重</span><span class="evidence-extra-row__detail">事发时刻 11:25 属日间时段，不升档</span></li><li class="evidence-extra-row" key="显式严重度-8"><span class="evidence-extra-row__label">显式严重度</span><span class="evidence-extra-row__detail">事件自报严重度「高」不高于矩阵推演结果「紧急」，以矩阵为准</span></li></ul></section></details><details class="alert-card__history"><summary><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4 12 14.01l-3-3"></path></svg>处置时间线（2 步）</summary><ol class="alert-card__timeline"><li class="timeline-row" key="reported-0"><span class="timeline-row__time">11:25</span><span class="timeline-row__state">上报</span><span class="timeline-row__detail">用户在地图上选点并提交一句话描述</span></li><li class="timeline-row is-latest" key="published-1"><span class="timeline-row__time">11:25</span><span class="timeline-row__state">已发布</span><span class="timeline-row__detail">人流风控「高风险」自动生成预警</span><span class="timeline-row__actor">系统</span></li></ol></details></article></section><section><h2>人流阈值与容量口径</h2><section class="crowd-threshold-control" aria-label="人流阈值设置"><header class="crowd-threshold-control__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75"></path></svg><strong>人流阈值与容量口径</strong><span class="crowd-threshold-control__mode is-editable">管理者可调</span></header><p class="crowd-threshold-control__intro">★ 阈值不是拍的：容量口径取自消防疏散容量、座位数与通道宽度人流量；四项防抖机制（迟滞 / 驻留 / 冷却 / 趋势）避免告警响成背景噪音。</p><div class="threshold-rows"><div class="threshold-row" key="warn"><div class="threshold-row__level"><span class="threshold-row__dot" style="background-color: rgb(224, 169, 43);"></span><strong>关注</strong></div><label class="threshold-field"><span class="threshold-field__label">上升沿</span><input type="number" min="0" max="2" step="0.01" value="0.75" aria-label="关注档上升沿阈值"></label><label class="threshold-field"><span class="threshold-field__label">下降沿</span><input type="number" min="0" max="2" step="0.01" value="0.65" aria-label="关注档下降沿阈值"></label><label class="threshold-field"><span class="threshold-field__label">驻留片数</span><input type="number" min="1" max="12" step="1" value="2" aria-label="关注档驻留片数"></label><div class="threshold-row__hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg><span>迟滞带 10 个百分点 ｜ 需连续 2 片（约 2 分钟） ｜ 处置后 10 分钟 内不重复告警</span></div></div><div class="threshold-row" key="high"><div class="threshold-row__level"><span class="threshold-row__dot" style="background-color: rgb(226, 112, 58);"></span><strong>高风险</strong></div><label class="threshold-field"><span class="threshold-field__label">上升沿</span><input type="number" min="0" max="2" step="0.01" value="0.9" aria-label="高风险档上升沿阈值"></label><label class="threshold-field"><span class="threshold-field__label">下降沿</span><input type="number" min="0" max="2" step="0.01" value="0.8" aria-label="高风险档下降沿阈值"></label><label class="threshold-field"><span class="threshold-field__label">驻留片数</span><input type="number" min="1" max="12" step="1" value="3" aria-label="高风险档驻留片数"></label><div class="threshold-row__hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg><span>迟滞带 10 个百分点 ｜ 需连续 3 片（约 3 分钟） ｜ 处置后 15 分钟 内不重复告警</span></div></div><div class="threshold-row" key="critical"><div class="threshold-row__level"><span class="threshold-row__dot" style="background-color: rgb(209, 65, 74);"></span><strong>严重</strong></div><label class="threshold-field"><span class="threshold-field__label">上升沿</span><input type="number" min="0" max="2" step="0.01" value="1.05" aria-label="严重档上升沿阈值"></label><label class="threshold-field"><span class="threshold-field__label">下降沿</span><input type="number" min="0" max="2" step="0.01" value="0.95" aria-label="严重档下降沿阈值"></label><label class="threshold-field"><span class="threshold-field__label">驻留片数</span><input type="number" min="1" max="12" step="1" value="3" aria-label="严重档驻留片数"></label><div class="threshold-row__hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2"></path></svg><span>迟滞带 10 个百分点 ｜ 需连续 3 片（约 3 分钟） ｜ 处置后 20 分钟 内不重复告警</span></div></div></div><div class="threshold-weather-preview"><div class="threshold-weather-preview__head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M23 6l-9.5 9.5-5-5L1 18 M17 6h6v6"></path></svg><strong>天气修正预览（暴雨红色预警）</strong></div><ul><li key="Canteen">第三食堂：容量 396 → 317 人<span class="threshold-weather-preview__delta">（室内 ×0.8，减少 79 人）</span></li><li key="Playground">东操场：容量 2200 → 1320 人<span class="threshold-weather-preview__delta">（室外 ×0.6，减少 880 人）</span></li><li key="Library">亭兰图书馆：容量 800 → 640 人<span class="threshold-weather-preview__delta">（室内 ×0.8，减少 160 人）</span></li></ul></div><div class="capacity-basis-list"><div class="capacity-basis-list__head">容量口径一览（评审问"阈值怎么定的"时看这里）</div><div class="capacity-basis"><div class="capacity-basis__head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01"></path></svg><strong>餐饮场所</strong><span class="capacity-basis__formula">座位数 × 1.2 瞬时容差</span></div><p class="capacity-basis__rationale">食堂存在大量打包/排队人群，瞬时人数可超过座位数约 20%</p><div class="capacity-basis__result">安全容量 396 座（第三食堂）</div></div><div class="capacity-basis"><div class="capacity-basis__head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01"></path></svg><strong>体育场所</strong><span class="capacity-basis__formula">报备人数 × 1.1</span></div><p class="capacity-basis__rationale">集会和赛事按报备人数控制，留 10% 余量</p><div class="capacity-basis__result">安全容量 2200 人（东操场）</div></div><div class="capacity-basis"><div class="capacity-basis__head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 16v-4 M12 8h.01"></path></svg><strong>教学场所</strong><span class="capacity-basis__formula">消防疏散容量（有法定依据）</span></div><p class="capacity-basis__rationale">教学楼、图书馆按消防疏散容量控制，超限即是安全隐患而非体验问题</p><div class="capacity-basis__result">安全容量 800 人（亭兰图书馆）</div></div></div></section></section></div><section><h2>数据自查（模块自检结果 —— 在浏览器里实跑）</h2><div class="selfcheck"><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">domain/crowd.js</span><span style="color: rgb(143, 163, 184);">12 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">domain/crowdRisk.js</span><span style="color: rgb(143, 163, 184);">13 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">domain/alert.js</span><span style="color: rgb(143, 163, 184);">11 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">domain/playbook.js</span><span style="color: rgb(143, 163, 184);">12 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">domain/safetyStore.js</span><span style="color: rgb(143, 163, 184);">16 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">data/weatherDataSource.js</span><span style="color: rgb(143, 163, 184);">18 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">data/weatherActionMap.js</span><span style="color: rgb(143, 163, 184);">40 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">data/safetyBaseline.js</span><span style="color: rgb(143, 163, 184);">37 项检查</span></div><div class="selfcheck-row"><span class="selfcheck-badge is-pass">PASS</span><span class="selfcheck-name">features/alerts/weatherIntegration.js</span><span style="color: rgb(143, 163, 184);">1 项检查</span></div><div class="selfcheck-summary is-ok">9 / 9 个模块在浏览器里实跑通过</div></div></section></div>
+  <div id="error"></div>
+</div>
+
+<script>
+  // 先把错误捕获装上，再加载业务脚本 —— 否则 bundle 阶段的报错会看不到
+  window.__ERRORS__ = []
+  window.addEventListener('error', (e) => {
+    window.__ERRORS__.push(`${e.message} @ ${e.filename}:${e.lineno}`)
+    var box = document.getElementById('error')
+    if (box) box.textContent = window.__ERRORS__.join(' | ')
+  })
+  window.addEventListener('unhandledrejection', (e) => {
+    window.__ERRORS__.push('unhandledrejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason))
+    var box = document.getElementById('error')
+    if (box) box.textContent = window.__ERRORS__.join(' | ')
+  })
+</script>
+<script src="./bundle.js"></script>
+<script src="./harness.js"></script>
+
+
+<div id="render-probe" hidden="">{"scenario":"storm","evidenceRows":3,"playbookSteps":10,"timelineRows":8,"alertCards":3,"dispatchRows":1,"selfCheckPassed":9,"selfCheckFailed":0}</div></body></html>
