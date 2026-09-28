@@ -8,6 +8,7 @@ import { locationRepository } from './data/locations.js'
 import { listActiveHotspots, filterLocations, ROLE_LABELS } from './domain/campus.js'
 import { searchCampusResources } from './domain/search.js'
 import { campusReducer, createInitialState } from './app/campusReducer.js'
+import { useSafetyState } from './app/useSafetyState.js'
 import { LocationDetail } from './features/locations/LocationDetail.jsx'
 import { MapWorkspace } from './features/map/MapWorkspace.jsx'
 import { RouteDock } from './features/routes/RouteDock.jsx'
@@ -42,6 +43,27 @@ function App() {
 
     window.addEventListener('keydown', focusSearch)
     return () => window.removeEventListener('keydown', focusSearch)
+  }, [])
+
+  /**
+   * ★ URL 开关：`?safety=1` 直接进入安全管理模式
+   * 用途有两层：
+   *   1. 演示与截图可以**定格**到指定态势，不必每次手点工具栏；
+   *   2. 给评审一个可直接分享的深链接（例如方案书里写 `…/?safety=1`）。
+   * 与 `?scene=2d` 配合可直达 2D 风险叠加层。
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has('safety')) return
+    const on = params.get('safety') !== '0'
+    dispatch({ type: 'SET_SETTINGS', changes: { safetyMode: on } })
+    if (on) {
+      dispatch({ type: 'TOGGLE_TOOLBAR', open: true })
+      dispatch({ type: 'SET_ACTIVE_TOOL', tool: 'safety' })
+    }
+    if (params.get('scene') === '2d') dispatch({ type: 'SET_MAP_SCENE', scene: '2d' })
+    // 只在首次挂载时读取一次，之后交给用户操作
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleFullscreen = async () => {
@@ -79,6 +101,18 @@ function App() {
     [state.locations, state.query, state.category, searchLocationIds],
   )
   const selectedLocation = state.locations.find((location) => location.id === state.selectedId) ?? null
+
+  /**
+   * ★ 安全管理模式态势
+   * 用 `state.eventTime` 作为统一时钟，保证同一帧里风控、预警、SLA 用的是同一时刻。
+   * 计算结果由 MapWorkspace 同时提供给**面板**与**地图叠加层**，
+   * 两处共享同一份数据 —— 不会出现"面板说高风险、地图没画红圈"的不一致。
+   */
+  const safety = useSafetyState({
+    locations: state.locations,
+    events: activeHotspots,
+    now: state.eventTime,
+  })
 
   const handleSearchResult = (result) => {
     dispatch({ type: 'SELECT_LOCATION', locationId: result.locationId })
@@ -127,6 +161,8 @@ function App() {
           locations={state.locations}
           visibleLocations={filteredLocations}
           events={activeHotspots}
+          safety={safety}
+          now={state.eventTime}
           searchResults={searchResults}
           selectedId={state.selectedId}
           query={state.query}

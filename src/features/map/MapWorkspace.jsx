@@ -8,6 +8,8 @@ import { MapSearchOverlay } from './MapSearchOverlay.jsx'
 import { MapToolbar } from './MapToolbar.jsx'
 import { MapSceneSwitcher } from './MapSceneSwitcher.jsx'
 import { HotspotLegend } from '../events/HotspotLegend.jsx'
+import { SafetyMapOverlay } from '../safety/SafetyMapOverlay.jsx'
+import { SafetyModePanel } from '../safety/SafetyModePanel.jsx'
 import { projectVisibleMapContent } from './mapVisibility.js'
 
 export function MapWorkspace({
@@ -51,6 +53,8 @@ export function MapWorkspace({
   onSelectSearchResult,
   onCategoryChange,
   onMapSceneChange,
+  safety,
+  now,
 }) {
   const {
     visibleLocationIds,
@@ -135,6 +139,18 @@ export function MapWorkspace({
             onSwitchTo2D={() => onMapSceneChange('2d')}
           />
         )}
+        {/* ★ 安全管理模式叠加层：与面板共享同一份态势，不会出现"面板说高风险、地图没画红圈" */}
+        {settings.safetyMode && safety && mapScene === '2d' && (
+          <SafetyMapOverlay
+            riskResults={safety.crowd.results}
+            propagated={safety.crowd.propagation.propagated}
+            blockedEdges={safety.blockedEdges}
+            highlightEdges={safety.highlightEdges}
+            showRiskZones={settings.showRiskZones !== false}
+            showCrowdHeat={settings.showCrowdHeat !== false}
+            showBlockedRoads={settings.showBlockedRoads !== false}
+          />
+        )}
         <div className="map-compass"><Navigation size={16} /><span>N</span></div>
         <div className="map-source-note">
           <MapPin size={15} />
@@ -158,6 +174,31 @@ export function MapWorkspace({
         )}
       </div>
       {settings.showHotspots && <HotspotLegend />}
+
+      {/*
+        ★ 安全面板：由工具栏抽屉改为**居中浮层**
+        之前面板挂在 `.map-toolbar`（左上角、宽 206px）内部，自身没有底色，
+        宽度一超出工具栏就"半透明地"压在地图上，内容又被视口底边裁掉，
+        观感差且难滚动。现在改为中心定位、自带不透明卡片底色、正文内部滚动。
+        面板关闭（onToolChange(null)）后 `safetyMode` 仍为 true —— 地图叠加层保留。
+      */}
+      {settings.safetyMode && settings.showSafetyPanel !== false && safety && activeTool === 'safety' && (
+        <div className="safety-dialog">
+          <div
+            className="safety-dialog__scrim"
+            aria-hidden="true"
+            onClick={() => onToolChange(null)}
+          />
+          <SafetyModePanel
+            safety={safety}
+            now={now}
+            settings={settings}
+            onSettingsChange={onSettingsChange}
+            onSelectLocation={onSelectLocation}
+            onClose={() => onToolChange(null)}
+          />
+        </div>
+      )}
     </section>
   )
 }
