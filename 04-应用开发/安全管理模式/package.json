@@ -1,0 +1,16 @@
+{
+  "name": "campus-safety-mode",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "数字校园安全管理模式 —— 人流阈值风控 / 事故突发预警 / 天气应急联动 / 安全与路网双向联动",
+  "scripts": {
+    "test": "node scripts/check-all.mjs && node scripts/check-components.mjs && node scripts/verify-ui.mjs --all",
+    "check": "node scripts/check-all.mjs",
+    "check:ui": "node scripts/check-components.mjs",
+    "verify:browser": "node scripts/verify-ui.mjs --all",
+    "dev": "node scripts/verify-ui.mjs --serve-only",
+    "demo": "node scenarios/demo-run.mjs",
+    "demo:json": "node scenarios/demo-run.mjs --json"
+  }
+}

@@ -20,6 +20,10 @@
 *.ps1   text
 *.txt   text
 
+# 例外：Windows 批处理只能是 CRLF —— cmd.exe 解析 if/for 代码块时对 LF 结尾不可靠
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
 # ---- 二进制：禁止任何换行转换（否则文件会被写坏）----
 *.blend   binary
 *.blend1  binary
