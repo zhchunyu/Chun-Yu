@@ -1,4 +1,4 @@
-import { Layers3, LocateFixed, Megaphone, PanelLeft, PersonStanding, Settings2, ShieldCheck, Tags } from 'lucide-react'
+import { Layers3, LocateFixed, Megaphone, PanelLeft, PersonStanding, Settings2, ShieldAlert, ShieldCheck, Tags } from 'lucide-react'
 import { CAMERA_MODES } from '../../domain/camera.js'
 import { RoleSwitcher } from '../roles/RoleSwitcher.jsx'
 import { EventComposer } from '../events/EventComposer.jsx'
@@ -7,6 +7,7 @@ import { MapLayerPanel } from './MapLayerPanel.jsx'
 import { SettingsPanel } from './SettingsPanel.jsx'
 
 const tools = [
+  { id: 'safety', label: '安全管理', icon: ShieldAlert },
   { id: 'categories', label: '地点分类', icon: Tags },
   { id: 'layers', label: '图层显示', icon: Layers3 },
   { id: 'role', label: '角色模式', icon: ShieldCheck },
@@ -30,6 +31,18 @@ export function MapToolbar({ open, activeTool, role, settings, locations, events
       return
     }
 
+    // ★ 安全管理模式：开启工具时同步打开安全叠加层与**居中浮层面板**
+    //   面板本体由 MapWorkspace 渲染（居中浮层），这里只负责"开/关"这一个状态开关。
+    if (toolId === 'safety') {
+      const next = activeTool === toolId ? null : toolId
+      onToolChange(next)
+      onSettingsChange?.(next === 'safety'
+        ? { safetyMode: true, showSafetyPanel: true }
+        : { safetyMode: false })
+      if (next === 'safety') onToggle(true)
+      return
+    }
+
     onToolChange(activeTool === toolId ? null : toolId)
   }
 
@@ -42,7 +55,7 @@ export function MapToolbar({ open, activeTool, role, settings, locations, events
       <div className="map-toolbar__tools">
         {visibleTools.map(({ id, label, icon: Icon }) => (
           <button
-            className={`map-tool-button ${activeTool === id ? 'is-active' : ''}`}
+            className={`map-tool-button ${activeTool === id ? 'is-active' : ''} ${id === 'safety' && settings.safetyMode ? 'is-safety-on' : ''}`}
             type="button"
             key={id}
             onClick={() => handleToolClick(id)}

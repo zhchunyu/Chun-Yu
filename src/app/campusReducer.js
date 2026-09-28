@@ -112,7 +112,10 @@ export function createInitialState(locations, events = [], persistedState = null
       : teamCampusMap.defaultScene,
     cameraMode: persisted.cameraMode === CAMERA_MODES.FIRST_PERSON ? CAMERA_MODES.FIRST_PERSON : CAMERA_MODES.ORBIT,
     role: ['visitor', 'student', 'manager'].includes(persisted.role) ? persisted.role : 'visitor',
-    settings: mergeSettings({ ...DEFAULT_SETTINGS, ...persisted.settings }),
+    // ★ 安全模式属于"演示态"，不跨会话记忆：
+    //   否则打开过一次 `?safety=1` 之后，普通 URL（`/`）也会带着上次的风险图层与
+    //   叠加标签，看起来像"整合把原有默认体验弄坏了"。其余图层偏好照旧持久化。
+    settings: mergeSettings({ ...DEFAULT_SETTINGS, ...persisted.settings, safetyMode: DEFAULT_SETTINGS.safetyMode }),
     toolbarOpen: false,
     activeTool: null,
     routePlan: null,

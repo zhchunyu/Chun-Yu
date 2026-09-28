@@ -8,6 +8,11 @@ export const DEFAULT_SETTINGS = Object.freeze({
   showStatusColors: true,
   showTips: true,
   defaultRouteMode: 'shortest',
+  // ---- 安全管理模式（默认关闭，不改变既有默认体验）----
+  safetyMode: false, // 是否开启安全管理模式（面板 + 叠加层）
+  showRiskZones: true, // 风险区四色图层
+  showCrowdHeat: true, // 人流热力图层
+  showBlockedRoads: true, // 封控路段与推荐通道
 })
 
 const BOOLEAN_SETTING_KEYS = Object.freeze([
@@ -17,6 +22,10 @@ const BOOLEAN_SETTING_KEYS = Object.freeze([
   'showCurrentLocation',
   'showStatusColors',
   'showTips',
+  'safetyMode',
+  'showRiskZones',
+  'showCrowdHeat',
+  'showBlockedRoads',
 ])
 
 export function mergeSettings(value = {}) {
