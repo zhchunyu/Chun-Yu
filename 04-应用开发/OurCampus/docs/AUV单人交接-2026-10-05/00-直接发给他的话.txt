@@ -1,0 +1,13 @@
+这份包是 AUV 接入校园软件的完整交接包，你负责模型服务和 Supabase 转发部署，所以两部分已合并在一起。
+
+软件里已经有「大厅 → AUV 校园助手」入口，支持校园建议（persona）和事件分析（extract）。
+目前还需要你：
+1. 启动 AUV 服务并确认端口映射，测试 extract、persona 两个模型，确认最新 HTTPS 根地址。
+2. 把最新地址填进包里的 .env.auv-secrets；AUV_API_KEY 已填好，如果你换过密钥，请同步更新。
+3. 在我们现有 Supabase 项目部署 auv-assistant，配置模型地址和密钥，保留登录校验。
+4. 按「02-完成后回复我.txt」告知结果，我再交给手机端做真实联调和安卓 APK 更新。
+
+项目 ID：hkdblizadnkskxslyjyq
+具体操作看「01-完整接入步骤.md」，代码在 supabase 文件夹。
+
+这个包含真实模型密钥，只用于我们这次私聊交接，不要上传 Git 或转发群聊。

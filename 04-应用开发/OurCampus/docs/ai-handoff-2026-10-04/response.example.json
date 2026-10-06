@@ -1,0 +1,37 @@
+{
+  "example_only": true,
+  "request_id": "example-library-service-001",
+  "status": "insufficient_data",
+  "reply": "当前数据没有图书馆的开放时间。你可以查看图书馆官网的最新通知，或打开地图中的图书馆地点。",
+  "cards": [
+    {
+      "type": "place",
+      "location_id": "library",
+      "title": "图书馆"
+    }
+  ],
+  "actions": [
+    {
+      "type": "open_place",
+      "location_id": "library",
+      "label": "查看地点"
+    },
+    {
+      "type": "open_website",
+      "url": "https://libweb.sxau.edu.cn/",
+      "label": "访问图书馆官网"
+    }
+  ],
+  "evidence": [
+    {
+      "table": "campus_services",
+      "id": "library-service",
+      "source_url": "https://www.sxau.edu.cn/ksdh/xxfw.htm",
+      "origin": "local-seed-example"
+    }
+  ],
+  "warnings": [
+    "该响应为根据当前初始化数据人工编写的合成样例，接口尚未部署。",
+    "开放时间未录入，不能据此确定图书馆当前是否开放。"
+  ]
+}

@@ -1,0 +1,2 @@
+[functions.auv-assistant]
+verify_jwt = true

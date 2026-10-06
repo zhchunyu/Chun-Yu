@@ -1,0 +1,13 @@
+{
+  "appId": "cn.edu.sxau.campustwin",
+  "appName": "数字校园孪生",
+  "webDir": "dist",
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK",
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover",
+      "hidden": false
+    }
+  }
+}

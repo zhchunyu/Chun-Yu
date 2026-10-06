@@ -1,0 +1,107 @@
+.community-tabs { display: flex; gap: 4px; margin: 0 0 14px; padding: 5px; border: 1px solid #e1e8df; border-radius: 16px; background: #edf1e9; }
+.community-tabs button { flex: 1; min-width: 0; min-height: 44px; padding: 8px 2px; border: 0; border-radius: 12px; color: #607266; background: transparent; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.community-tabs button.is-active { color: #24573f; background: #fff; box-shadow: 0 3px 9px #243f3010; }
+.community-scroll[hidden] { display: none; }
+.mobile-page-panel--hall > .community-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.community-content { display: grid; min-width: 0; gap: 12px; padding-bottom: 16px; }
+.community-content h3 { margin: 0; color: #244334; font-size: 16px; line-height: 1.45; overflow-wrap: anywhere; }
+.community-content button, .community-my-entry, .community-location-posts { cursor: pointer; }
+.community-content button:disabled { cursor: default; opacity: .5; }
+.community-content :is(button,input,select,textarea,summary):focus-visible, .community-tabs button:focus-visible { outline: 3px solid #5a9b7880; outline-offset: 2px; }
+.community-banner { display: flex; align-items: center; gap: 12px; padding: 17px 15px; border-radius: 18px; color: #347357; background: #e8f0e5; }
+.community-banner > svg { flex: 0 0 auto; }
+.community-banner strong { display: block; color: #27523d; font-size: 15px; line-height: 1.5; }
+.community-banner p { margin: 5px 0 0; color: #647e6c; font-size: 12px; line-height: 1.65; }
+.community-banner--hotspot { color: #b97535; background: #f6ecdc; }
+.community-banner--hotspot strong { color: #795433; }
+.community-banner--hotspot p { color: #927858; }
+.community-action-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.community-local-label { color: #778678; font-size: 12px; line-height: 1.5; }
+.community-primary, .community-secondary { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; gap: 6px; min-height: 44px; padding: 9px 14px; border: 0; border-radius: 12px; color: #fff; background: #2f674f; font-size: 13px; font-weight: 700; }
+.community-secondary { border: 1px solid #d3e2d4; color: #35664e; background: #edf3e9; }
+.community-chip-strip { display: flex; gap: 6px; overflow-x: auto; padding: 1px 0 3px; scrollbar-width: none; }
+.community-chip-strip button { flex: 0 0 auto; min-height: 44px; padding: 8px 14px; border: 1px solid #e0e7dc; border-radius: 24px; color: #6a786c; background: #fff; font-size: 13px; }
+.community-chip-strip button.is-active { border-color: #4b795f; color: #fff; background: #3e6c52; }
+.community-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.community-list-heading > span { color: #7d8b7f; font-size: 12px; }
+.community-card { display: grid; min-width: 0; gap: 10px; padding: 15px; border: 1px solid #e5e8df; border-radius: 18px; background: #fff; box-shadow: 0 4px 13px #28403206; }
+.community-card-top { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; min-width: 0; }
+.community-card-top > small { margin-left: auto; color: #7b897e; font-size: 12px; }
+.community-icon { display: grid; flex: 0 0 35px; place-items: center; width: 35px; height: 35px; border-radius: 11px; color: #3d7959; background: #edf4e9; }
+.community-hotspot .community-icon { color: #a27539; background: #f7eedf; }
+.community-tag { display: inline-flex; align-items: center; flex: 0 0 auto; padding: 4px 8px; border-radius: 7px; color: #697b6c; background: #f1f4ed; font-size: 12px; line-height: 1.35; }
+.community-tag--lost { color: #966330; background: #faf0df; }
+.community-tag--found { color: #367254; background: #e9f4eb; }
+.community-description { margin: 0; color: #606f63; font-size: 13px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.community-meta { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 5px; color: #7c897d; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.community-meta > svg { flex: 0 0 auto; margin-top: 3px; }
+.community-card-actions { display: flex; gap: 8px; padding-top: 5px; }
+.community-card-actions button { display: inline-flex; align-items: center; justify-content: center; flex: 1; gap: 6px; min-width: 0; min-height: 44px; padding: 9px 5px; border: 1px solid #dce5d8; border-radius: 11px; color: #4e7159; background: #f3f7ef; font-size: 13px; font-weight: 650; }
+.community-card-actions button:last-child { color: #fff; background: #3d6b50; border-color: #3d6b50; }
+.community-card-actions svg { flex-shrink: 0; }
+.community-empty { display: grid; place-items: center; gap: 10px; padding: 32px 16px; border: 1px dashed #d5e0cf; border-radius: 18px; text-align: center; color: #7c937e; background: #ffffff90; }
+.community-empty strong { color: #546957; font-size: 14px; }
+.community-empty p { margin: 0; color: #829184; font-size: 12px; line-height: 1.75; }
+.community-footnote { margin: 0; color: #849183; font-size: 12px; line-height: 1.75; }
+.restaurant-hall__intro { display: flex; align-items: center; gap: 13px; padding: 18px 15px; border-radius: 18px; color: #eaf2e7; background: #315e4c; }
+.restaurant-hall__intro-icon { display: grid; place-items: center; flex: 0 0 45px; width: 45px; height: 45px; border-radius: 14px; color: #eacb94; background: #ffffff20; }
+.restaurant-hall__intro strong { display: block; font-size: 16px; }
+.restaurant-hall__intro p { margin: 5px 0 0; color: #d5e1d5; font-size: 12px; line-height: 1.5; }
+.restaurant-hall__list { display: grid; gap: 10px; }
+.restaurant-hall__card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 78px; padding: 14px; border: 1px solid #e3e8dc; border-radius: 16px; color: #315e4c; background: #fff; text-align: left; }
+.restaurant-hall__card:focus-visible { outline: 3px solid #5a9b7880; outline-offset: 2px; }
+.restaurant-hall__number { display: grid; place-items: center; flex: 0 0 45px; width: 45px; height: 45px; border-radius: 13px; color: #a47848; background: #f5eddf; font: 700 18px/1 Georgia, serif; }
+.restaurant-hall__card:nth-child(2n) .restaurant-hall__number { color: #5d815e; background: #eaf1e5; }
+.restaurant-hall__card-copy { display: grid; flex: 1; min-width: 0; gap: 5px; }
+.restaurant-hall__card-copy strong { font-size: 15px; }
+.restaurant-hall__card-copy small { color: #829081; font-size: 11px; line-height: 1.45; }
+.restaurant-hall__card > svg { flex: 0 0 auto; color: #9aaa98; }
+.community-search-row { display: flex; gap: 8px; }
+.community-search { display: flex; align-items: center; flex: 1; gap: 8px; min-width: 0; min-height: 44px; padding: 0 11px; border: 1px solid #dfe5d9; border-radius: 12px; color: #7c8a7c; background: #fff; }
+.community-search input { width: 100%; min-width: 0; min-height: 42px; padding: 6px 0; border: 0; color: #354d3c; background: transparent; font: inherit; font-size: 13px; }
+.community-search-row > select { min-width: 88px; padding: 6px; border: 1px solid #dfe5d9; border-radius: 12px; color: #5c725f; background: #fff; font-size: 12px; }
+.community-map-toggle { display: flex; align-items: center; gap: 8px; min-height: 44px; color: #72816f; font-size: 12px; }
+.community-map-toggle input { width: 18px; height: 18px; accent-color: #3d6b50; }
+.community-form { display: grid; gap: 14px; padding: 16px; border: 1px solid #c8d9c5; border-radius: 18px; background: #fff; box-shadow: 0 5px 16px #2d4c3210; }
+.community-form > label { display: grid; gap: 7px; color: #52664f; font-size: 13px; font-weight: 650; }
+.community-form :is(input:not([type=file]),select,textarea) { width: 100%; min-width: 0; min-height: 44px; padding: 11px 10px; border: 1px solid #dce4d5; border-radius: 10px; color: #35513e; background: #fafcf8; font: inherit; font-size: 14px; font-weight: 400; box-sizing: border-box; }
+.community-form textarea { resize: vertical; }
+.community-icon-button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; color: #6a7a6a; background: #f0f4eb; }
+.community-submit { width: 100%; }
+.community-notice, .community-error { margin: 0; padding: 12px; border-radius: 11px; color: #486d4e; background: #eaf3e6; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.community-error { color: #986047; background: #faf0e7; }
+.community-photo-field { display: grid; gap: 8px; }
+.community-photo-field small { color: #899384; font-size: 12px; line-height: 1.5; }
+.community-upload { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border: 1px dashed #afc4a4; border-radius: 10px; color: #668455; background: #f4f8ee; font-size: 13px; cursor: pointer; }
+.community-upload input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.community-upload:focus-within { outline: 3px solid #5a9b7880; outline-offset: 2px; }
+.community-photo-preview { display: grid; gap: 7px; justify-items: start; }
+.community-photo-preview img { max-width: 100%; max-height: 150px; border-radius: 12px; }
+.community-photo-preview button { min-height: 44px; padding: 7px 12px; border: 0; border-radius: 10px; color: #997450; background: #f9f1e6; }
+.lost-found-card-heading { display: flex; gap: 11px; align-items: flex-start; }
+.lost-found-card-heading > div:last-child { display: grid; min-width: 0; flex: 1; gap: 6px; }
+.lost-found-thumbnail { display: grid; place-items: center; flex: 0 0 66px; width: 66px; height: 66px; overflow: hidden; border-radius: 14px; color: #b78b4d; background: #f7eedc; }
+.lost-found-thumbnail--found { color: #559677; background: #e8f3e8; }
+.lost-found-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+.lost-found-card.is-resolved { border-color: #d4e4d1; background: #fcfdf9; }
+.community-details { border-top: 1px solid #edf0e8; border-bottom: 1px solid #edf0e8; color: #65745e; font-size: 13px; }
+.community-details summary { padding: 13px 0; min-height: 44px; box-sizing: border-box; cursor: pointer; color: #507458; }
+.community-details p { margin: 0 0 10px; padding: 10px; border-radius: 9px; background: #f5f8ef; line-height: 1.8; overflow-wrap: anywhere; white-space: pre-wrap; }
+.community-details small { display: block; padding-bottom: 12px; color: #8e987f; font-size: 12px; }
+.lost-found-detail-photo { display: block; max-width: 100%; max-height: 260px; margin: 0 auto 12px; border-radius: 12px; object-fit: contain; }
+.community-owner-actions { display: flex; justify-content: space-between; gap: 6px; border-top: 1px solid #edf0e8; padding-top: 6px; }
+.community-owner-actions button { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; padding: 7px 8px; border: 0; border-radius: 9px; color: #78806e; background: #f5f7f0; font-size: 12px; }
+.community-owner-actions button:last-child { min-width: 44px; color: #ad7f65; background: #faf4ed; }
+.community-delete-confirm { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; padding: 10px; border-radius: 10px; color: #a16a50; background: #faf0e6; font-size: 12px; }
+.community-delete-confirm span { margin-right: auto; }
+.community-delete-confirm button { min-height: 44px; padding: 7px; border: 0; border-radius: 8px; background: #fff; color: #996d50; }
+.community-facility-types { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; }
+.community-facility-types button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 50px; padding: 8px 5px; border: 1px solid #e2e8dc; border-radius: 12px; color: #708268; background: #fff; font-size: 12px; }
+.community-facility-types button.is-active { border-color: #4d7858; color: #fff; background: #477454; }
+.facility-card .community-card-top h3 { flex: 1; min-width: 100px; font-size: 15px; }
+.community-contributions { display: grid; gap: 10px; padding-top: 12px; }
+.community-my-entry, .community-location-posts { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 56px; padding: 12px 14px; border: 1px solid #dfe7d9; border-radius: 13px; text-align: left; color: #45664e; background: #f1f7ec; font-size: 13px; }
+.community-my-entry small, .community-location-posts small { display: block; margin-top: 5px; color: #78896f; font-size: 12px; }
+.campus-2d-marker__lost-found { padding: 4px 6px; border-radius: 7px; color: #fff; background: #337d68; font-size: 10px; white-space: nowrap; }
+.tencent-poi-card__community { display: block; width: 100%; margin: 8px 0; padding: 10px; border: 1px solid #d3e5d8; border-radius: 10px; text-align: left; color: #427156; background: #eff7ed; font-size: 12px; cursor: pointer; }
+@media (max-width: 350px) { .community-action-line { align-items: flex-start; } .community-banner { padding: 13px; } .community-banner > svg { display: none; } .community-facility-types button { flex-direction: column; gap: 4px; } .lost-found-thumbnail { flex-basis: 52px; width: 52px; height: 52px; } }

@@ -1,0 +1,23 @@
+可以直接复制以下文字发送：
+
+麻烦在我们现有 Supabase 项目部署 AUV 转发函数，项目 ID：
+hkdblizadnkskxslyjyq
+项目地址：
+https://hkdblizadnkskxslyjyq.supabase.co
+
+共享包里有完整 supabase/functions 代码、函数配置段和部署说明。
+函数名：auv-assistant。
+函数代码会核验现有登录用户，然后在服务器上使用 AUV 密钥调用模型。
+
+请做这几件事：
+1. 合并函数代码及配置段，不覆盖现有 Supabase 工程的其他设置。
+2. 配置后端 Secrets：AUV_API_KEY、AUV_BASE_URL。真实密钥我另用私聊文件发给你；AUV_BASE_URL 等 AI 同学提供最新地址后填写。
+3. 部署 auv-assistant；按包内配置保留用户 JWT 校验，函数内部也会调用 Auth 验证会话。
+4. 检查函数环境内可取得 Supabase 自动提供的 SUPABASE_URL、SUPABASE_ANON_KEY。
+5. 确认登录用户可以调用、未登录请求被拒绝；如果校验报错，把去掉凭据的错误代码发回来。
+
+函数部署后预期地址：
+https://hkdblizadnkskxslyjyq.supabase.co/functions/v1/auv-assistant
+
+这次不需要重新执行建表 SQL，也不要改原来的登录、聊天功能。
+部署好后按「04-联调回执模板.txt」回复，我再做手机端真实请求联调和 APK 更新。

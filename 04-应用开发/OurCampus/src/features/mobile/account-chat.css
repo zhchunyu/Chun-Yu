@@ -1,0 +1,29 @@
+.mobile-login-submit:disabled,
+.mobile-login-sheet button:disabled { cursor: default; opacity: .55; }
+.mobile-login-field input { font-size: 16px; }
+.mobile-login-notice { overflow-wrap: anywhere; }
+.mobile-login-entry__identity small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mobile-account-settings { margin: -4px 0 14px; padding: 0 5px; }
+.mobile-account-settings > button,
+.mobile-account-retry { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 6px; border: 0; color: var(--green); background: transparent; font-size: 12px; font-weight: 700; }
+.mobile-account-settings form { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: #fff; }
+.mobile-account-settings label { color: var(--muted); font-size: 12px; }
+.mobile-account-settings form > div { display: flex; align-items: center; gap: 6px; }
+.mobile-account-settings input { width: 100%; min-width: 0; min-height: 40px; padding: 0 9px; border: 1px solid #e1e8e0; border-radius: 10px; background: #fafbf9; font-size: 16px; }
+.mobile-account-settings form button { flex-shrink: 0; min-height: 40px; padding: 0 10px; border: 0; border-radius: 10px; color: var(--green); background: #edf4ec; }
+.mobile-account-settings + .mobile-login-notice { margin-bottom: 14px; }
+.mobile-hall-login-gate { display: grid; justify-items: center; align-content: center; gap: 12px; min-height: 230px; padding: 20px 14px; text-align: center; color: var(--green); }
+.mobile-hall-login-gate > svg { box-sizing: content-box; padding: 17px; border-radius: 23px; background: #e9f1e5; }
+.mobile-hall-login-gate h3 { margin: 3px 0 0; color: var(--ink); font-size: 17px; }
+.mobile-hall-login-gate p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.mobile-hall-login-gate button { display: flex; align-items: center; gap: 7px; min-height: 43px; margin-top: 5px; padding: 0 22px; border: 0; border-radius: 13px; color: #fff; background: var(--green); font-size: 13px; font-weight: 700; }
+.mobile-chat-error { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; padding: 10px; border-radius: 12px; color: #974c3e; background: #faf0e9; font-size: 12px; line-height: 1.5; }
+.mobile-chat-error button { flex-shrink: 0; min-height: 34px; padding: 0 10px; border: 0; border-radius: 9px; color: #974c3e; background: #fff; }
+.mobile-chat-load-more { display: block; min-height: 38px; margin: 0 auto 8px; padding: 0 15px; border: 0; border-radius: 10px; color: var(--green); background: #eef3eb; font-size: 12px; }
+.mobile-hall-message.is-own article { border-color: #d5e5d5; background: #f0f6ec; }
+.mobile-hall-message__header { flex-wrap: wrap; }
+.mobile-hall-message__header strong { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mobile-chat-retract { display: block; min-height: 30px; margin: 4px 0 -4px auto; padding: 0 5px; border: 0; color: #718276; background: transparent; font-size: 10px; }
+.mobile-chat-retract:disabled { opacity: .5; }
+.mobile-chat-send-error { margin: 0; color: #974c3e; font-size: 12px; line-height: 1.5; }
+.mobile-hall-composer input:disabled { opacity: .7; }

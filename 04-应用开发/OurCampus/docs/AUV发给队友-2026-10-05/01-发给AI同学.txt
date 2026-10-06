@@ -1,0 +1,18 @@
+可以直接复制以下文字发送：
+
+我这边已把 AUV 接入校园软件，入口在「大厅 → AUV 校园助手」。
+「校园建议」调用 persona，「事件分析」调用 extract，按你文档的 OpenAI 兼容格式发送；system 为 You are a helpful assistant.，user 为固定 instruction + 单个换行 + 输入。
+
+现在你交接包里的地址：
+https://u1199722-6hqt-2f39f661.weste.seetacloud.com:8443
+在 2026-10-05 检查时，/docs、/v1/models 和 /v1/chat/completions 都返回 AutoDL HTML 404。
+
+麻烦你：
+1. 启动推理服务，检查 GPU 状态和端口映射。
+2. 确认 POST /v1/chat/completions 可以使用现有密钥调用 extract 和 persona；我们使用非流式请求。
+3. 测一条 extract：「谷园餐厅现在排队很久」，应得到可解析的事件 JSON。
+4. 测一条 persona：只给图书馆开放时间未知的上下文，确认能返回自然语言，并且不会编造开放时间。
+5. 给我们最新 HTTPS 服务根地址（不要只发 /docs 页面），并说明现有密钥是否仍然有效、服务能保持在线多久。
+
+模型输出的地点和严重度由软件后端校验；接口字段不用临时改名。若模型名或协议改变，请一并说明。
+请发一份去掉密钥的实际调用结果。不要发用户密码、会话 token 或其他同学的聊天内容。
