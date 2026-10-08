@@ -496,7 +496,7 @@ export function makeEvent({ type, x, z, text, reporter, official = false, place,
 /** 从模板随机造一条事件 */
 /* —— 热点锚点池（模拟真实校园里事件集中的区域）—— */
 // 食堂、图书馆、体育场是人流密集区，事件更容易扎堆
-const HOTSPOT_NAMES = ['食堂', '亭兰图书馆', '体育场', '实验楼A', '宿舍A'];
+const HOTSPOT_NAMES = ['食堂', '中心图书馆', '体育场', '实验楼A', '宿舍A'];
 
 export function randomEvent(anchors, official = false) {
   const keys = official ? ['notice'] : Object.keys(TEMPLATES);

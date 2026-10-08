@@ -34,3 +34,6 @@ docs/screenshots/*
 !docs/screenshots/2026-10-06-map-default-17.png
 !docs/screenshots/2026-10-06-ourcampus-startup.png
 !docs/screenshots/2026-10-06-startup-brighter.png
+
+# 本机 POI 匹配提示（含真实建筑名，仅用于 tools/harvest-tencent-poi.mjs 定位，不共享、不提交）。
+tools/poi-name-hints.local.json

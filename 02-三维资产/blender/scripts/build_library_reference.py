@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-build_tinglan_library.py —— 亭兰图书馆（1936，墨菲设计）程序化建模
+build_tinglan_library.py —— 中心图书馆（1936，墨菲设计）程序化建模
 ================================================================
 在 Blender 里执行（通过 blender_bridge.py 送入）。
 
-参考：山西农业大学「亭兰图书馆」实景照片（references/亭兰图书馆_*.jpg）。
+参考：本校区「中心图书馆」实景照片（references/中心图书馆_*.jpg）。
 提取到的建筑特征：
   · 二层楼身，坐落在一层通高的朱红色基座上（基座开小方窗）
   · 楼身墙面为灰褐色砖石，窗间设壁柱，窗框为浅色
@@ -668,7 +668,7 @@ pm.materials.append(pmat)
 # 8. 汇报
 # ==================================================================
 tris = sum(sum(len(p.vertices) - 2 for p in ob.data.polygons) for ob in objs)
-print('=== 亭兰图书馆 建模完成 ===')
+print('=== 中心图书馆 建模完成 ===')
 print(f'尺寸: 面宽 {LEN:.1f} × 进深 {DEP:.1f} × 檐高 {WALL_TOP:.2f} m；正脊 {RIDGE_Z:.2f} m')
 print(f'基座 {BASE_H:.2f} m + 两层 {F1_H:.2f}/{F2_H:.2f} m；开间 {BAYS}×{BAY:.2f} m')
 print(f'出檐 {ROOF_OV:.2f} m，四角起翘 {UP_LIFT:.2f} m，正脊半长 {RIDGE_HALF:.2f} m')

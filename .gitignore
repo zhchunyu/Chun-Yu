@@ -44,6 +44,30 @@ venv/
 /02-三维资产/blender/projects/_tmp_*.blend
 /02-三维资产/99-临时工作区/
 
+# .blend 工程文件走 GitHub Release（tag: blend-projects）分发，不入仓库树 —— 单文件 40~90 MB，
+# 远超 GitHub API 的 blob 单请求体积上限（实测约 36 MB）。放在这里可避免误提交。
+/02-三维资产/blender/projects/*.blend
+
 # ---- 工具产物与外部素材 ----
 /.trae-html-share-packages/
 /picture/
+
+# ---- 本机分析产物与本机工具（不入库）----
+# POI / OCR 采集与标定的中间数据
+/.pois.json
+/.poi-harvest.json
+/.poi-hits.json
+/.plan-ocr.json
+/.plan-ocr-tiled.json
+/.osm-campus.json
+/.affine-refit.json
+# 本机预览与下载辅助脚本、验证截图
+/OurCampus-手机预览.cmd
+/start-ourcampus-preview.ps1
+/download-blend-release.ps1
+/OurCampus-预览截图-*.png
+# 内部核验文档（含真实名称对照，仅供本机人工核验，禁止随提交物打包）
+/项目分析报告.md
+/地名替换清单.md
+/腾讯地图地名核验清单.md
+/提交打包排除清单.md

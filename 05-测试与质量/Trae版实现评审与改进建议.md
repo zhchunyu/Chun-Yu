@@ -265,7 +265,7 @@ const SCENARIOS = [
   // ① 单条弱证据：短文本 + 无锚点 → 50% 以下，卡在待核实
   { type:'help',    text:'捡到一张卡',            anchor:null,        reporters:1 },
   // ② 单条中等证据：正常文本 → 55%，卡在阈值下
-  { type:'service', text:'图书馆三楼自习区空位挺多', anchor:'亭兰图书馆', reporters:1 },
+  { type:'service', text:'图书馆三楼自习区空位挺多', anchor:'中心图书馆', reporters:1 },
   // ③ 三人同簇：同一地点 8 分钟内 3 条 → crowd +18% → 73%，自动发布
   { type:'traffic', text:'三食堂门口排队排到马路上了', anchor:'食堂', reporters:3 },
   // ④ 五人同簇 + 官方源确认 → 40+35+25+5+5 = 100% → 高亮发布
@@ -316,7 +316,7 @@ const a = anchors[Math.floor(Math.random() * anchors.length)];   // 与 text 完
 ```js
 traffic: [
   { t:'三食堂门口排队排到马路上了，队伍占了一半车道', at:['食堂','商业街'] },
-  { t:'图书馆西侧路口两车剐蹭，暂时只能单边通行',     at:['亭兰图书馆','环廊S4站'] },
+  { t:'图书馆西侧路口两车剐蹭，暂时只能单边通行',     at:['中心图书馆','环廊S4站'] },
   ...
 ]
 ```

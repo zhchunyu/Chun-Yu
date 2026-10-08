@@ -99,7 +99,7 @@ button { cursor: pointer; }
 .campus-3d-state__actions button { padding: 7px 9px; border: 1px solid rgba(49,94,76,.22); border-radius: 6px; color: var(--green-deep); background: #e7eee5; font-size: 10px; }
 .campus-3d-state__actions button:hover { background: #dbe8d7; }
 .campus-3d-state--error { color: var(--rose); }
-.campus-2d-viewer { position: absolute; z-index: 0; inset: 0; display: grid; place-items: center; overflow: hidden; background: #f4f0e4; touch-action: none; }
+.campus-2d-viewer { position: absolute; z-index: 0; inset: 0; display: grid; place-items: center; overflow: hidden; background: #f4f0e4; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 .campus-2d-viewer.is-dragging { cursor: grabbing; }
 .campus-2d-stage { position: relative; width: min(100%, 1080px); overflow: hidden; border: 1px solid rgba(32,61,53,.13); border-radius: 14px; background: #d5d5d5; box-shadow: 0 16px 38px rgba(59,83,56,.14); cursor: grab; touch-action: none; transform-origin: center center; transition: transform 120ms ease-out; will-change: transform; }
 .campus-2d-viewer.is-dragging .campus-2d-stage { transition: none; }
@@ -155,6 +155,9 @@ button { cursor: pointer; }
 .map-source-note a { flex-shrink: 0; color: var(--green); font-size: 9px; font-weight: 700; text-decoration: none; }
 .map-source-note a:hover { color: var(--orange); text-decoration: underline; }
 .map-empty-state { position: absolute; z-index: 21; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.map-unavailable-note { position: absolute; z-index: 21; top: 50%; left: 50%; display: grid; justify-items: center; gap: 6px; transform: translate(-50%, -50%); padding: 16px 20px; border: 1px solid rgba(32,61,53,.15); border-radius: 12px; color: var(--green-deep); background: rgba(255,250,240,.92); box-shadow: 0 12px 26px rgba(32,61,53,.12); text-align: center; }
+.map-unavailable-note strong { font: 700 13px/1.2 Georgia, serif; }
+.map-unavailable-note span { color: var(--muted); font-size: 10px; }
 .empty-state { display: grid; justify-items: center; min-width: 210px; padding: 22px; border: 1px solid rgba(32,61,53,.14); border-radius: 12px; color: var(--ink); background: rgba(255,250,240,.96); box-shadow: 0 14px 30px rgba(74,78,54,.16); text-align: center; }
 .empty-state__icon { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 9px; border-radius: 50%; color: var(--orange); background: #f7e3d3; }
 .empty-state strong { font: 700 14px/1.2 Georgia, serif; }

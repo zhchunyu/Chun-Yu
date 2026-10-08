@@ -18,7 +18,7 @@
     },
     {
       "type": "open_website",
-      "url": "https://libweb.sxau.edu.cn/",
+      "url": "https://libweb.campus.example.invalid/",
       "label": "访问图书馆官网"
     }
   ],
@@ -26,7 +26,7 @@
     {
       "table": "campus_services",
       "id": "library-service",
-      "source_url": "https://www.sxau.edu.cn/ksdh/xxfw.htm",
+      "source_url": "https://www.campus.example.invalid/ksdh/xxfw.htm",
       "origin": "local-seed-example"
     }
   ],

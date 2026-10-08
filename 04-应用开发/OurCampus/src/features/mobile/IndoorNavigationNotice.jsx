@@ -1,8 +1,4 @@
-import { Building2, ExternalLink, MapPinned } from 'lucide-react'
-
-import { canShowCampusLink } from '../../data/campusPresentation.js'
-
-const OFFICIAL_CAMPUS_MAP = 'https://map.sxau.edu.cn/'
+import { Building2 } from 'lucide-react'
 
 export function IndoorNavigationNotice() {
   return (
@@ -16,7 +12,6 @@ export function IndoorNavigationNotice() {
         <div>
           <strong>需要可靠的楼层平面图</strong>
           <p>当前项目没有图书馆或教学楼的楼层图和室内通道数据，因此暂不生成室内路线。</p>
-          {canShowCampusLink(OFFICIAL_CAMPUS_MAP) && <a href={OFFICIAL_CAMPUS_MAP} target="_blank" rel="noopener noreferrer"><MapPinned size={13} />打开校园地图 <ExternalLink size={12} /></a>}
         </div>
       </div>
     </section>

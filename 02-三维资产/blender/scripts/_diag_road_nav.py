@@ -18,7 +18,7 @@
     python blender/scripts/_diag_road_nav.py --block outer_s2,outer_s3
 
     # 只看某几栋楼的入口诊断
-    python blender/scripts/_diag_road_nav.py --buildings 食堂,宿舍E,亭兰图书馆
+    python blender/scripts/_diag_road_nav.py --buildings 食堂,宿舍E,中心图书馆
 
 输出：彩色终端报告 + 退出码（0=全部通过，非0=有问题）
 """
@@ -568,7 +568,7 @@ def diag_key_routes(data, routes=None):
 
     if routes is None:
         routes = [
-            ('主校门', '亭兰图书馆'),
+            ('主校门', '中心图书馆'),
             ('主校门', '食堂'),
             ('宿舍E', '食堂'),
             ('创新中心', '科研中心'),

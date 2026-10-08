@@ -80,7 +80,7 @@ export function createDemoLostFoundPosts() {
   const now = new Date().toISOString()
   return [
     { id: 'demo-lost-umbrella', type: 'lost', title: '深蓝色折叠伞', locationId: 'library', regionId: 'teaching', description: '示例：伞柄带一根灰色挂绳。可发布照片和特征，方便同学辨认。', locationDetail: '图书馆附近（示例）' },
-    { id: 'demo-found-keys', type: 'found', title: '一串钥匙', locationId: 'canteen', regionId: 'living', description: '示例：拾获物品可以关联校园地点，认领完成后由发布者更新状态。', locationDetail: '谷园餐厅附近（示例）' },
+    { id: 'demo-found-keys', type: 'found', title: '一串钥匙', locationId: 'canteen', regionId: 'living', description: '示例：拾获物品可以关联校园地点，认领完成后由发布者更新状态。', locationDetail: '禾香餐厅附近（示例）' },
   ].map((post) => ({ ...post, authorId: 'demo', status: 'active', createdAt: now, occurredAt: now, updatedAt: now, image: '', isDemo: true, contact: '示例信息，没有真实联系人。' }))
 }
 

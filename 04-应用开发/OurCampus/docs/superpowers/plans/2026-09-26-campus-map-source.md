@@ -1,10 +1,10 @@
-# 山西农业大学太谷校区地图切换实施计划
+# 本校区本校区地图切换实施计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 将 CampusTwin 从山河大学 GLB 地图切换为山西农业大学太谷校区地图体验，优先提供官方在线三维地图入口，并用官方发布的二维校园图作为稳定主视图和兜底。
+**Goal:** 将 CampusTwin 从山河大学 GLB 地图切换为本校区本校区地图体验，优先提供官方在线三维地图入口，并用官方发布的二维校园图作为稳定主视图和兜底。
 
-**Architecture:** 页面不再把山河大学 GLB 当作当前校园地图。`campusMap.js` 提供山西农大地图配置；`CampusPlanMap` 负责本地二维地图、地点标签、热点、模拟位置和路线覆盖；官方在线三维地图通过外部链接打开，不把外部站点嵌入为核心依赖。未来拿到山西农大 GLB 后，只替换地图 provider，不改地点、事件和路线业务接口。
+**Architecture:** 页面不再把山河大学 GLB 当作当前校园地图。`campusMap.js` 提供本校区地图配置；`CampusPlanMap` 负责本地二维地图、地点标签、热点、模拟位置和路线覆盖；官方在线三维地图通过外部链接打开，不把外部站点嵌入为核心依赖。未来拿到本校区 GLB 后，只替换地图 provider，不改地点、事件和路线业务接口。
 
 **Tech Stack:** React 19、Vite、Three.js（保留备用）、SVG/CSS 二维覆盖层、Vitest。
 
@@ -12,19 +12,19 @@
 
 ## 数据与来源约束
 
-- 官方在线三维地图：`https://map.sxau.edu.cn/`。
+- 官方在线三维地图：`https://map.campus.example.invalid/`。
 - 当前可用的官方发布校园平面图：`https://p8.itc.cn/q_70/images03/20201009/c379dde2acf948048f161f24ffe59b27.jpeg`。
 - 页面必须显示“二维官方校园图 / 官方三维地图入口”来源说明。
 - 官方三维站点可能出现验证跳转，因此不在 iframe 中依赖它；点击按钮打开新页面。
-- 当前 `/public/assets/campus.glb` 是旧山河大学模型，不能继续作为山西农大地图展示。
+- 当前 `/public/assets/campus.glb` 是旧山河大学模型，不能继续作为本校区地图展示。
 - 本地二维坐标是演示用空间标定，后续拿到更精确的官方数据或 GLB 后替换 `planPosition` 和路线图，不修改组件接口。
 
 ## 文件结构
 
 | 文件 | 操作 | 职责 |
 | --- | --- | --- |
-| `src/data/campusMap.js` | 修改 | 切换到山西农大太谷校区配置，保存官方地图和二维图来源 |
-| `src/data/locations.js` | 修改 | 使用山西农大核心地点名称、别名、服务和二维坐标 |
+| `src/data/campusMap.js` | 修改 | 切换到本校区本校区配置，保存官方地图和二维图来源 |
+| `src/data/locations.js` | 修改 | 使用本校区核心地点名称、别名、服务和二维坐标 |
 | `src/data/routeGraph.js` | 修改 | 保存二维地图坐标系下的节点和路线边 |
 | `src/data/routeGraph.test.js` | 修改 | 校验地点与二维节点绑定 |
 | `src/features/map/CampusPlanMap.jsx` | 新建 | 渲染二维官方图、地点标签、热点、当前位置和路线 |
@@ -32,11 +32,11 @@
 | `src/features/map/campusPlan.test.js` | 新建 | 测试坐标投影、路线点和边界处理 |
 | `src/features/map/MapWorkspace.jsx` | 修改 | 以二维地图 provider 替换当前 GLB 主视图，并保留官方三维入口 |
 | `src/styles.css` | 修改 | 增加二维地图、来源栏、标签和路线样式 |
-| `src/domain/route.test.js` | 修改 | 把默认起点和地点 id 迁移到太谷校区语义 |
+| `src/domain/route.test.js` | 修改 | 把默认起点和地点 id 迁移到本校区语义 |
 | `src/app/campusReducer.js` | 修改 | 将默认起点迁移为西校门，保留动作接口 |
-| `src/data/events.js` | 修改 | 将示例热点迁移到山西农大真实地点 |
+| `src/data/events.js` | 修改 | 将示例热点迁移到本校区真实地点 |
 
-## Task 1: 固定山西农大地图配置
+## Task 1: 固定本校区地图配置
 
 **Files:**
 
@@ -49,12 +49,12 @@
 import { describe, expect, it } from 'vitest'
 import { teamCampusMap } from './campusMap.js'
 
-describe('Shanxi Agricultural University campus map profile', () => {
+describe('Campus campus map profile', () => {
   it('uses the Taigu campus and official map sources', () => {
-    expect(teamCampusMap.campusName).toContain('山西农业大学')
-    expect(teamCampusMap.campusName).toContain('太谷校区')
+    expect(teamCampusMap.campusName).toContain('本校区')
+    expect(teamCampusMap.campusName).toContain('本校区')
     expect(teamCampusMap.mapMode).toBe('plan-2d')
-    expect(teamCampusMap.officialMapUrl).toBe('https://map.sxau.edu.cn/')
+    expect(teamCampusMap.officialMapUrl).toBe('https://map.campus.example.invalid/')
     expect(teamCampusMap.planImageUrl).toMatch(/^https:\/\//)
   })
 })
@@ -70,17 +70,17 @@ Expected: FAIL because the current profile is 山河大学 and has no `mapMode`/
 
 ```js
 export const teamCampusMap = Object.freeze({
-  campusName: '山西农业大学 · 太谷校区',
-  campusShortName: '山西农大太谷校区',
+  campusName: '本校区 · 本校区',
+  campusShortName: '本校区本校区',
   mapMode: 'plan-2d',
   modelUrl: null,
-  officialMapUrl: 'https://map.sxau.edu.cn/',
+  officialMapUrl: 'https://map.campus.example.invalid/',
   planImageUrl: 'https://p8.itc.cn/q_70/images03/20201009/c379dde2acf948048f161f24ffe59b27.jpeg',
-  mapSource: '山西农业大学官方发布的校园地图攻略',
+  mapSource: '本校区官方发布的校园地图攻略',
   mapVersion: '2020 官方发布图 · 二维演示底图',
   modelSource: '官方三维校园 GIS 入口',
-  modelSourceUrl: 'https://map.sxau.edu.cn/',
-  previewSourceUrl: 'https://www.sxau.edu.cn/',
+  modelSourceUrl: 'https://map.campus.example.invalid/',
+  previewSourceUrl: 'https://www.campus.example.invalid/',
 })
 ```
 
@@ -90,7 +90,7 @@ Run: `npm test -- --run src/data/campusMap.test.js`
 
 Expected: PASS。
 
-## Task 2: 迁移地点和路线数据到太谷校区语义
+## Task 2: 迁移地点和路线数据到本校区语义
 
 **Files:**
 
@@ -134,7 +134,7 @@ it('uses Taigu campus places with 2D map positions', () => {
 }
 {
   id: 'teaching-a',
-  name: '崇学楼',
+  name: '明德楼',
   category: 'learning',
   modelAnchorId: null,
   entryNodeId: 'chongxue-entry',
@@ -143,12 +143,12 @@ it('uses Taigu campus places with 2D map positions', () => {
 }
 {
   id: 'canteen',
-  name: '谷园餐厅',
+  name: '禾香餐厅',
   category: 'dining',
   modelAnchorId: null,
   entryNodeId: 'guyuan-entry',
   planPosition: { x: 58, y: 55 },
-  aliases: ['谷园', '学生食堂'],
+  aliases: ['禾香', '学生食堂'],
 }
 {
   id: 'dormitory',
@@ -175,7 +175,7 @@ it('uses Taigu campus places with 2D map positions', () => {
   modelAnchorId: null,
   entryNodeId: 'west-gate-entry',
   planPosition: { x: 10, y: 53 },
-  aliases: ['西门', '农大西门'],
+  aliases: ['西门', '校园西门'],
 }
 ```
 
@@ -204,7 +204,7 @@ const nodes = {
 
 - [ ] **Step 4: 更新演示事件**
 
-把现有“图书馆/体育馆/食堂”事件改成山农大语义，例如：谷园午餐高峰、图书馆讲座、体育场馆活动、西校门通行状态。事件不能再引用 `east-gate`。
+把现有“图书馆/体育馆/食堂”事件改成本校区语义，例如：禾香午餐高峰、图书馆讲座、体育场馆活动、西校门通行状态。事件不能再引用 `east-gate`。
 
 - [ ] **Step 5: 运行数据测试**
 
@@ -298,7 +298,7 @@ export function routeNodesToPercent(nodeIds, graph) {
 
 - [ ] **Step 2: 修改来源栏和无障碍文本**
 
-来源栏显示“山西农业大学官方二维校园图”，并提供“打开官方三维地图”链接。地图区域 `aria-label` 改为“山西农业大学太谷校区二维校园地图”。
+来源栏显示“本校区官方二维校园图”，并提供“打开官方三维地图”链接。地图区域 `aria-label` 改为“本校区本校区二维校园地图”。
 
 - [ ] **Step 3: 增加二维地图样式**
 
@@ -325,7 +325,7 @@ Expected: PASS，且构建产物不再把山河大学 GLB 作为当前地图入�
 
 - [ ] **Step 2: 防止备用 3D viewer 误显示旧模型说明**
 
-保留 `Campus3DViewer` 供未来山农大 GLB 使用，但它不能在 `plan-2d` 模式被创建；错误提示中的 `assets/campus.glb` 仅保留在备用组件内部。
+保留 `Campus3DViewer` 供未来本校区 GLB 使用，但它不能在 `plan-2d` 模式被创建；错误提示中的 `assets/campus.glb` 仅保留在备用组件内部。
 
 - [ ] **Step 3: 运行完整测试**
 
@@ -337,18 +337,18 @@ Expected: 所有现有测试和新增地图配置、二维坐标测试通过。
 
 - [ ] 启动：`npm run dev -- --host 127.0.0.1`
 - [ ] 打开 `http://127.0.0.1:5173/`。
-- [ ] 确认标题显示“山西农业大学 · 太谷校区”。
+- [ ] 确认标题显示“本校区 · 本校区”。
 - [ ] 确认二维校园图加载；断开图片后仍显示本地简化底图。
 - [ ] 搜索“图书馆”，确认标签出现在二维图上并能打开详情。
 - [ ] 规划西校门到图书馆路线，确认路线沿二维图显示。
-- [ ] 切换管理员，发布谷园拥挤或图书馆活动，确认热点绑定地点。
+- [ ] 切换管理员，发布禾香拥挤或图书馆活动，确认热点绑定地点。
 - [ ] 选择模拟位置，确认蓝色位置标记和路线起点变化。
-- [ ] 点击“打开官方三维地图”，确认打开 `https://map.sxau.edu.cn/`。
+- [ ] 点击“打开官方三维地图”，确认打开 `https://map.campus.example.invalid/`。
 - [ ] 刷新页面，确认主流程没有回到山河大学名称。
 
 ## 完成定义
 
-- 页面当前主地图语义全部是山西农业大学太谷校区。
+- 页面当前主地图语义全部是本校区本校区。
 - 官方三维地图作为外部入口存在，但不成为本地演示的单点故障。
 - 官方二维校园图或本地简化底图始终可显示。
 - 地点标签、热点、模拟位置和路线共享同一套二维坐标。

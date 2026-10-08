@@ -188,7 +188,11 @@ export function Campus2DViewer({
 
   const handlePointerDown = (event) => {
     const startsOnMarker = Boolean(event.target.closest('.campus-2d-marker'))
-    if (!startsOnMarker) event.currentTarget.setPointerCapture?.(event.pointerId)
+    if (!startsOnMarker) {
+      // 阻止浏览器在拖动地图时启动原生框选/拖放（否则拖动会变成选文本，地图拖不动）
+      event.preventDefault()
+      event.currentTarget.setPointerCapture?.(event.pointerId)
+    }
     pointersRef.current.set(event.pointerId, {
       x: event.clientX,
       y: event.clientY,
@@ -288,6 +292,7 @@ export function Campus2DViewer({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onDoubleClick={handleDoubleClick}
+        onDragStart={(event) => event.preventDefault()}
       >
         <img
           key={imageKey}
@@ -295,6 +300,7 @@ export function Campus2DViewer({
           src={mapUrl}
           alt={`${teamCampusMap.campusName}校园 2D 引导图`}
           style={imageStyle}
+          draggable={false}
           onLoad={() => setImageState('ready')}
           onError={() => setImageState('error')}
         />

@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "cn.edu.sxau.campustwin"
+    namespace = "cn.edu.campus.campustwin"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "cn.edu.sxau.campustwin"
+        applicationId "cn.edu.campus.campustwin"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 8

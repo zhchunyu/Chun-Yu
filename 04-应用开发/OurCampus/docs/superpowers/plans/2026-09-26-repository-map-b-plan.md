@@ -45,7 +45,7 @@ describe('shared campus map configuration', () => {
 
 Run: `npm test -- --run src/data/campusMap.test.js`
 
-Expected: FAIL because the existing map configuration still points to the Shanxi Agricultural University image and extracted GLB.
+Expected: FAIL because the existing map configuration still points to the Campus image and extracted GLB.
 
 - [ ] **Step 3: Add the shared map manifest**
 
@@ -64,11 +64,11 @@ export const sharedCampusSource = Object.freeze({
 })
 ```
 
-Update `src/data/campusMap.js` so both scenes read from this manifest, use the shared identity, and retain source/version metadata. Keep the old Shanxi Agricultural University asset entries only as a named legacy source, not as the active default.
+Update `src/data/campusMap.js` so both scenes read from this manifest, use the shared identity, and retain source/version metadata. Keep the old Campus asset entries only as a named legacy source, not as the active default.
 
 - [ ] **Step 4: Add the two repository assets**
 
-Confirm `public/assets/campus.glb` is the shared repository GLB by checking its size and loadability. Import the repository’s 2D plan as `public/assets/shanhe-campus-plan.svg`. Do not rename or delete the existing Shanxi Agricultural University assets; they remain available for a future adapter.
+Confirm `public/assets/campus.glb` is the shared repository GLB by checking its size and loadability. Import the repository’s 2D plan as `public/assets/shanhe-campus-plan.svg`. Do not rename or delete the existing Campus assets; they remain available for a future adapter.
 
 - [ ] **Step 5: Run the focused test and verify it passes**
 
@@ -190,7 +190,7 @@ Test that `blockedEdges` removes an edge from the graph used by route planning b
 
 Run: `npm test -- --run src/data/sharedNavigation.test.js src/domain/route.test.js`
 
-Expected: FAIL because the local project still uses the previous Shanxi Agricultural University node set.
+Expected: FAIL because the local project still uses the previous Campus node set.
 
 - [ ] **Step 3: Add shared location and navigation adapters**
 

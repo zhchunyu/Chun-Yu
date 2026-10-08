@@ -1,4 +1,4 @@
-package cn.edu.sxau.campustwin;
+package cn.edu.campus.campustwin;
 
 import android.graphics.Color;
 import android.os.Build;

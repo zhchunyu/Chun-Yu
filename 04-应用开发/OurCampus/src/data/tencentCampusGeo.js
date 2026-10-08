@@ -1,9 +1,14 @@
 import { teamCampusMap } from './campusMap.js'
+import { locationRepository } from './locations.js'
+import { TENCENT_POI_POSITIONS } from './tencentPoiPositions.js'
 
 export const TENCENT_CAMPUS_CENTER = Object.freeze({ lat: 37.423038, lng: 112.583703 })
 export const TENCENT_CAMPUS_ZOOM = 17
+// 缩放下限锁定 14 级：再往外缩就会把校园缩成一小块，标签也会互相压住，因此禁止。
+export const TENCENT_CAMPUS_MIN_ZOOM = 14
+export const TENCENT_CAMPUS_MAX_ZOOM = 20
 
-// 由西校门、牌楼、崇学楼、教学主楼和实验大楼的腾讯 POI 坐标校准。
+// 由西校门、牌楼、明德楼、教学主楼和实验大楼的腾讯 POI 坐标校准。
 // 输入是校园引导图原图像素位置，输出为腾讯地图使用的 GCJ-02 坐标。
 const IMAGE_TO_GCJ02 = Object.freeze({
   lngX: 0.000007751548461,
@@ -67,15 +72,48 @@ export function getCampusMapPositionFromTencentPosition({ lat, lng }) {
 }
 
 // 有独立腾讯 POI 坐标的地点直接使用实测点，避免只靠校园引导图外推。
-const TENCENT_POI_POSITIONS = Object.freeze({
-  'east-gate': { lat: 37.424548, lng: 112.578701 },
-  paifang: { lat: 37.424444, lng: 112.579655 },
-  'teaching-a': { lat: 37.425144, lng: 112.583579 },
-  'main-teaching-building': { lat: 37.423786, lng: 112.585820 },
-  'lab-building': { lat: 37.424905, lng: 112.581233 },
-  'qinxue-building': { lat: 37.423319, lng: 112.578307 },
-  'apartment-18': { lat: 37.423057, lng: 112.590528 },
-})
+// ★ 实测坐标表见 tencentPoiPositions.js，由 tools/harvest-tencent-poi.mjs 自动生成。
+// ★ 系统误差校正：官方引导图是手绘示意图，全局仿射变换平均误差约 16 m（个别点 40 m）。
+//   以实测 POI 点为控制点，把"实测 − 仿射"的残差按反距离权重平滑地加到其余地点上：
+//   控制点处误差归零，邻近建筑获得同向修正，远处保持原状（不会引入新的偏差）。
+const CONTROL_RESIDUALS = Object.freeze((() => {
+  const scene = teamCampusMap.scenes['2d']
+  if (!scene) return []
+  const locations = locationRepository.loadAll()
+  return Object.entries(TENCENT_POI_POSITIONS)
+    .map(([id, exact]) => {
+      const position = locations.find((item) => item.id === id)?.mapPosition?.['2d']
+      if (!Array.isArray(position)) return null
+      const imageX = (scene.crop.x + position[0] * scene.crop.width) * scene.imageWidth
+      const imageY = (scene.crop.y + position[1] * scene.crop.height) * scene.imageHeight
+      const base = applyAffine(imageX, imageY)
+      return { imageX, imageY, dLat: exact.lat - base.lat, dLng: exact.lng - base.lng }
+    })
+    .filter(Boolean)
+})())
+
+function applyAffine(imageX, imageY) {
+  const { lngX, lngY, lngOffset, latX, latY, latOffset } = IMAGE_TO_GCJ02
+  return {
+    lat: latX * imageX + latY * imageY + latOffset,
+    lng: lngX * imageX + lngY * imageY + lngOffset,
+  }
+}
+
+function residualCorrection(imageX, imageY) {
+  let weightSum = 0, latSum = 0, lngSum = 0
+  for (const control of CONTROL_RESIDUALS) {
+    const distance = Math.hypot(imageX - control.imageX, imageY - control.imageY)
+    if (distance < 1) return { lat: control.dLat, lng: control.dLng }
+    // 反距离平方加权：越近修正越强，超过 1200 px（约等于整个校园）后影响自然衰减
+    const weight = 1 / (distance * distance)
+    weightSum += weight
+    latSum += weight * control.dLat
+    lngSum += weight * control.dLng
+  }
+  if (!weightSum) return { lat: 0, lng: 0 }
+  return { lat: latSum / weightSum, lng: lngSum / weightSum }
+}
 
 export function getTencentCampusPosition(location) {
   const tencentPosition = TENCENT_POI_POSITIONS[location?.id]
@@ -90,9 +128,10 @@ export function getTencentCampusPosition(location) {
 
   const imageX = (scene.crop.x + normalizedX * scene.crop.width) * scene.imageWidth
   const imageY = (scene.crop.y + normalizedY * scene.crop.height) * scene.imageHeight
-  const { lngX, lngY, lngOffset, latX, latY, latOffset } = IMAGE_TO_GCJ02
-  const lat = latX * imageX + latY * imageY + latOffset
-  const lng = lngX * imageX + lngY * imageY + lngOffset
+  const base = applyAffine(imageX, imageY)
+  const correction = residualCorrection(imageX, imageY)
+  const lat = base.lat + correction.lat
+  const lng = base.lng + correction.lng
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
   return { lat, lng }

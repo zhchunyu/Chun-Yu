@@ -12,7 +12,7 @@
 
 ## 文件边界
 
-- Create: `public/assets/sxau-campus-plan.jpeg` — 山西农业大学官方校园平面图本地副本。
+- Create: `public/assets/campus-plan.jpeg` — 本校区官方校园平面图本地副本。
 - Modify: `src/data/campusMap.js` — 双场景地图资源和来源配置。
 - Modify: `src/data/locations.js` — 六个演示地点的 2D / 3D 显示坐标。
 - Modify: `src/data/routeGraph.js` — 路线节点增加 2D 坐标。
@@ -32,7 +32,7 @@
 ### Task 1: 添加官方 2D 资源和双场景配置
 
 **Files:**
-- Create: `public/assets/sxau-campus-plan.jpeg`
+- Create: `public/assets/campus-plan.jpeg`
 - Modify: `src/data/campusMap.js`
 
 - [ ] **Step 1: 下载并核对 2D 官方平面图**
@@ -42,8 +42,8 @@ Run:
 ```powershell
 Invoke-WebRequest `
   -Uri 'https://p8.itc.cn/q_70/images03/20201009/c379dde2acf948048f161f24ffe59b27.jpeg' `
-  -OutFile 'public/assets/sxau-campus-plan.jpeg'
-Get-Item 'public/assets/sxau-campus-plan.jpeg' | Select-Object FullName,Length
+  -OutFile 'public/assets/campus-plan.jpeg'
+Get-Item 'public/assets/campus-plan.jpeg' | Select-Object FullName,Length
 ```
 
 Expected: 文件存在且大小大于 0；该图作为官方校园地图文章中的平面图使用，后续在界面来源说明中保留来源链接。
@@ -54,20 +54,20 @@ Expected: 文件存在且大小大于 0；该图作为官方校园地图文章�
 
 ```js
 export const teamCampusMap = Object.freeze({
-  campusName: '山西农业大学 · 太谷校区数字孪生',
+  campusName: '本校区 · 本校区数字孪生',
   defaultScene: '2d',
   scenes: {
     '2d': {
-      imageUrl: '/assets/sxau-campus-plan.jpeg',
+      imageUrl: '/assets/campus-plan.jpeg',
       imageWidth: 1080,
       imageHeight: 514,
       sourceUrl: 'https://www.sohu.com/a/423304539_702284',
-      sourceLabel: '山西农业大学校园平面图',
+      sourceLabel: '本校区校园平面图',
     },
     '3d': {
-      modelUrl: '/assets/sxau-campus-extracted.glb',
+      modelUrl: '/assets/campus-extracted.glb',
       modelSource: '公开 Unity 三维场景提取的 GLB',
-      modelSourceUrl: 'https://guodont.github.io/one-3d/sxauWeb3D/sxauWeb3D.html',
+      modelSourceUrl: 'https://guodont.github.io/one-3d/campusWeb3D/campusWeb3D.html',
       modelSize: '40.0 MB',
     },
   },
@@ -79,9 +79,9 @@ export const teamCampusMap = Object.freeze({
 Run:
 
 ```powershell
-Test-Path 'public/assets/sxau-campus-plan.jpeg'
-Test-Path 'public/assets/sxau-campus-extracted.glb'
-rg -n "defaultScene|sxau-campus-plan|sxau-campus-extracted" src/data/campusMap.js
+Test-Path 'public/assets/campus-plan.jpeg'
+Test-Path 'public/assets/campus-extracted.glb'
+rg -n "defaultScene|campus-plan|campus-extracted" src/data/campusMap.js
 ```
 
 Expected: 两个资源路径都返回 `True`，配置中不存在旧的 `山河大学` 文案。
@@ -435,13 +435,13 @@ export function createMetadataAnchor(location) {
 
 - [ ] **Step 3: 保留旧 GLB 文件作为可回退资源**
 
-不要删除 `public/assets/campus.glb`。如果新模型加载失败，错误面板提供“切回 2D”按钮，不自动静默切回旧模型，避免用户误以为看到的是山西农大模型。
+不要删除 `public/assets/campus.glb`。如果新模型加载失败，错误面板提供“切回 2D”按钮，不自动静默切回旧模型，避免用户误以为看到的是本校区模型。
 
 - [ ] **Step 4: 验证新 GLB 可被应用加载**
 
 Run: `npm run build`
 
-Expected: Vite 构建成功，并在构建产物中存在 `sxau-campus-extracted.glb` 的静态资源引用。
+Expected: Vite 构建成功，并在构建产物中存在 `campus-extracted.glb` 的静态资源引用。
 
 ### Task 7: 完善响应式样式和地图文案
 
@@ -460,7 +460,7 @@ Expected: Vite 构建成功，并在构建产物中存在 `sxau-campus-extracted
 
 - [ ] **Step 3: 更新页面文案**
 
-把 `App.jsx` 顶部状态从“本地 GLB 地图”改为“2D / 3D 双场景地图”，把 `MapWorkspace` 的 aria-label 改为“山西农业大学校园地图工作区”，并根据当前场景显示“官方平面图”或“3D 校园模型”。
+把 `App.jsx` 顶部状态从“本地 GLB 地图”改为“2D / 3D 双场景地图”，把 `MapWorkspace` 的 aria-label 改为“本校区校园地图工作区”，并根据当前场景显示“官方平面图”或“3D 校园模型”。
 
 ### Task 8: 完整验证
 
@@ -486,7 +486,7 @@ Run: `npm run dev -- --host 127.0.0.1`
 
 验收清单：
 
-1. 首屏显示 2D 山西农业大学平面图；
+1. 首屏显示 2D 本校区平面图；
 2. 左上角可以切换到 3D；
 3. 切换后搜索关键字、选中地点、路线、模拟位置和管理员状态不丢失；
 4. 点击图书馆等标记可以打开现有详情面板；

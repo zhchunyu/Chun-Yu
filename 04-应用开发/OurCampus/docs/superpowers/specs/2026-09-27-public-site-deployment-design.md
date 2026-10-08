@@ -21,9 +21,9 @@ Cloudflare GitHub App 只授权访问 `zhchunyu/Chun-Yu`。部署流水线在 Cl
 
 ## 大文件处理
 
-`public/assets/sxau-campus-extracted.glb` 约 40 MB；当前地图配置实际加载的是 `public/assets/campus.glb`，没有引用该大文件。Cloudflare Pages 单个站点资源的上限是 25 MiB。
+`public/assets/campus-extracted.glb` 约 40 MB；当前地图配置实际加载的是 `public/assets/campus.glb`，没有引用该大文件。Cloudflare Pages 单个站点资源的上限是 25 MiB。
 
-因此，Pages 专用构建步骤会在 `vite build` 后从 `dist/assets/` 移除 `sxau-campus-extracted.glb`。Git 仓库中的原始模型保留，队友仍可下载和修改整个项目；该模型不进入公网部署产物。
+因此，Pages 专用构建步骤会在 `vite build` 后从 `dist/assets/` 移除 `campus-extracted.glb`。Git 仓库中的原始模型保留，队友仍可下载和修改整个项目；该模型不进入公网部署产物。
 
 ## 访问范围和数据边界
 
