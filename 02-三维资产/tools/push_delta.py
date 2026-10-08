@@ -20,6 +20,13 @@
     # 正式推送（提交信息自动取本地 HEAD）
     python push_delta.py
 
+    # ★ 推送到指定分支（分支不存在时自动从 --base 建；默认 base=main）
+    python push_delta.py --branch feat/我的改动 --dry-run
+    python push_delta.py --branch feat/我的改动
+
+    # 以别的分支为基线建新分支
+    python push_delta.py --branch feat/x --base feat/y
+
     # 把 .blend 也纳入 tree（默认排除 —— 本项目 .blend 走 Release）
     python push_delta.py --with-blend
 
@@ -35,6 +42,9 @@
    读磁盘算出的 sha 与 `git ls-tree` 给的对不上 ⇒ 校验必然失败。
 2. ★ **删除项靠 `sha: null`**。Git Data API 的 tree 里把某个 path 的 sha 设为 null
    即表示删除，不需要额外的删除接口。
+3. ★ 走 Git Data API 推出来的 commit 是**远端新建的对象**，SHA 与本地的不同
+   （同样的内容、不同的提交对象）。所以本地分支与远端分支的 SHA 不会相等，
+   这是正常现象；核对内容一致请比较 `git ls-tree HEAD` 与远端 tree。
 """
 import argparse
 import base64
@@ -109,8 +119,11 @@ def blob_bytes(sha):
     return q.stdout
 
 
-def remote_state():
-    head = api('GET', '/repos/%s/git/ref/heads/%s' % (REPO, BRANCH)).json()
+def remote_state(branch):
+    r = SESSION.get(API + '/repos/%s/git/ref/heads/%s' % (REPO, branch), timeout=60)
+    if r.status_code == 404:
+        return None
+    head = api('GET', '/repos/%s/git/ref/heads/%s' % (REPO, branch)).json()
     commit_sha = head['object']['sha']
     commit = api('GET', '/repos/%s/git/commits/%s' % (REPO, commit_sha)).json()
     tree_sha = commit['tree']['sha']
@@ -127,14 +140,29 @@ def main():
     ap.add_argument('--with-blend', action='store_true',
                     help='把 .blend 也纳入 tree（默认排除，本项目 .blend 走 Release）')
     ap.add_argument('--message-file', help='提交信息取自该文件（默认取本地 HEAD）')
+    ap.add_argument('--branch', default=BRANCH,
+                    help='目标分支（默认 %s）；分支不存在时自动从 --base 创建' % BRANCH)
+    ap.add_argument('--base', default=None,
+                    help='新分支的基线分支（默认取 main）')
     a = ap.parse_args()
 
     SESSION.headers['Authorization'] = 'token ' + get_token()
 
-    log('仓库 %s ｜ 分支 %s' % (REPO, BRANCH))
-    r_commit, r_tree, r_files, r_msg = remote_state()
-    log('远端 head = %s  （%s）' % (r_commit[:8], r_msg))
-    log('远端 %d 个文件' % len(r_files))
+    target = a.branch
+    log('仓库 %s ｜ 目标分支 %s' % (REPO, target))
+    state = remote_state(target)
+    if state is None:
+        base = a.base or BRANCH
+        log('分支 %s 不存在 → 从 %s 创建' % (target, base))
+        state = remote_state(base)
+        if state is None:
+            raise SystemExit('基线分支 %s 也不存在' % base)
+        creating = True
+    else:
+        creating = False
+    r_commit, r_tree, r_files, r_msg = state
+    log('基线 head = %s  （%s）' % (r_commit[:8], r_msg))
+    log('基线 %d 个文件' % len(r_files))
 
     loc = local_tree()
     log('本地 %d 个文件' % len(loc))
@@ -209,10 +237,16 @@ def main():
     log('新 commit = %s' % new_commit)
     log('   信息首行 = %s' % msg.splitlines()[0])
 
-    out = api('PATCH', '/repos/%s/git/refs/heads/%s' % (REPO, BRANCH),
-              json={'sha': new_commit}).json()
-    log('refs/heads/%s 已更新 -> %s' % (BRANCH, out['object']['sha'][:8]))
-    log('\n✅ 推送完成。验收：再跑一次 `--dry-run`，三组应全为 0（.blend 除外）。')
+    out = None
+    if creating:
+        out = api('POST', '/repos/%s/git/refs' % REPO,
+                  json={'ref': 'refs/heads/%s' % target, 'sha': new_commit}).json()
+        log('已创建 refs/heads/%s -> %s' % (target, out['object']['sha'][:8]))
+    else:
+        out = api('PATCH', '/repos/%s/git/refs/heads/%s' % (REPO, target),
+                  json={'sha': new_commit}).json()
+        log('refs/heads/%s 已更新 -> %s' % (target, out['object']['sha'][:8]))
+    log('\n✅ 推送完成。验收：再跑一次 `--dry-run --branch %s`，三组应全为 0（.blend 除外）。' % target)
 
 
 if __name__ == '__main__':
