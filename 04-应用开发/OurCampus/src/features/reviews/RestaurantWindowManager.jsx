@@ -21,7 +21,7 @@ export function RestaurantWindowManager({ restaurant, deletingWindow, onClose, o
       <div className="review-composer__handle" aria-hidden="true" />
       <header className="review-composer__header"><div><span>{restaurant.name} · 管理员</span><h2 id="window-manager-title">{deletingWindow ? '删除这个窗口？' : '添加餐厅窗口'}</h2></div><button ref={closeRef} disabled={busy} onClick={onClose} aria-label="关闭窗口管理"><X size={19} /></button></header>
       <form id="restaurant-window-manager-form" onSubmit={submit}>
-        {deletingWindow ? <p className="window-manager-warning">将移除 {deletingWindow.number} 号「{deletingWindow.name}」，所有同学都将看不到该窗口。已保存的本机评价不会被清除。</p> : <>
+        {deletingWindow ? <p className="window-manager-warning">将移除「{deletingWindow.name}」，所有同学都将看不到该窗口，其云端评价也会一并删除。已保存的本机评价不会被清除。</p> : <>
           <label className="review-composer__field">窗口编号<input required maxLength={12} placeholder="例如：一层 01" {...field('number')} /></label>
           <label className="review-composer__field">窗口名称<input required maxLength={40} placeholder="填写真实窗口名称" {...field('name')} /></label>
           <label className="review-composer__field">分类<select {...field('category')}>{STALL_CATEGORIES.map((category) => <option key={category}>{category}</option>)}</select></label>

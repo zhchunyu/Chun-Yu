@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { MapPin, Send, ShieldCheck, X } from 'lucide-react'
+import { informationError, newReportId } from '../../data/campusInformation.js'
 import {
   PLACE_FEEDBACK_DESCRIPTION_MAX_LENGTH,
   PLACE_FEEDBACK_TYPE_LABELS,
@@ -28,6 +29,10 @@ export function PlaceFeedbackSheet({ location, onClose, onSubmitFeedback }) {
   const [reportedEndAt, setReportedEndAt] = useState(() => toLocalDateTime(Date.now() + 4 * 60 * 60 * 1000))
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [syncToCloud, setSyncToCloud] = useState(true)
+  const [submittedCloud, setSubmittedCloud] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const clientId = useRef(newReportId())
   const dialogRef = useRef(null)
 
   useEffect(() => {
@@ -46,8 +51,9 @@ export function PlaceFeedbackSheet({ location, onClose, onSubmitFeedback }) {
     }
   }, [onClose])
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    if (submitting) return
     const input = {
       locationId: location.id,
       type,
@@ -57,6 +63,8 @@ export function PlaceFeedbackSheet({ location, onClose, onSubmitFeedback }) {
       openStatus,
       repairCategory,
       reportedEndAt,
+      syncToCloud,
+      clientId: clientId.current,
     }
     const validationError = validatePlaceFeedbackInput(input)
     if (validationError) {
@@ -64,9 +72,12 @@ export function PlaceFeedbackSheet({ location, onClose, onSubmitFeedback }) {
       return
     }
 
-    onSubmitFeedback(input)
-    setError('')
-    setSubmitted(true)
+    setSubmitting(true)
+    try {
+      const result = await onSubmitFeedback(input)
+      setSubmittedCloud(Boolean(result?.cloud)); setError(''); setSubmitted(true)
+    } catch (e) { setError(informationError(e)) }
+    finally { setSubmitting(false) }
   }
 
   return createPortal(
@@ -97,7 +108,7 @@ export function PlaceFeedbackSheet({ location, onClose, onSubmitFeedback }) {
           <div className="place-feedback-success" role="status">
             <span><ShieldCheck size={23} /></span>
             <strong>{type === PLACE_FEEDBACK_TYPES.REPAIR ? '报修已提交，等待处理' : '已提交，等待管理员审核'}</strong>
-            <p>{type === PLACE_FEEDBACK_TYPES.REPAIR ? '报修状态会在“我的”页面显示，只保存在当前设备的演示数据中。' : '反馈只保存在当前设备的演示数据中，审核通过后才会更新地点状态或校园动态。'}</p>
+            <p>{submittedCloud ? '已保存到云端，可在“消息中心 → 我的上报”查看分析与审核状态。施工等公共提醒由管理员核实后全员通知。' : '仅保存在当前设备，可在“我的”查看本机模拟审核状态。'}</p>
             <button type="button" onClick={onClose}>返回地点</button>
           </div>
         ) : (
@@ -180,8 +191,9 @@ export function PlaceFeedbackSheet({ location, onClose, onSubmitFeedback }) {
             )}
 
             {error && <p className="place-feedback-error" role="alert">{error}</p>}
-            <p className="place-feedback-local-note">反馈由管理员模拟审核，仅保存在本机，不会发送给学校或其他设备。</p>
-            <button className="place-feedback-submit" type="submit"><Send size={15} /> 提交审核</button>
+            <label className="information-consent"><input type="checkbox" checked={syncToCloud} disabled={submitting} onChange={(e) => setSyncToCloud(e.target.checked)} />同步到云端，由 AI 分析并交给管理员确认</label>
+            <p className="place-feedback-local-note">关闭云端同步后，仅保存在本机供模拟审核。</p>
+            <button className="place-feedback-submit" type="submit" disabled={submitting}><Send size={15} /> {submitting ? '提交中…' : '提交审核'}</button>
           </form>
         )}
       </section>

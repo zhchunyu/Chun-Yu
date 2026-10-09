@@ -1,6 +1,6 @@
 import { campusDisplayText } from '../../data/campusPresentation.js'
 import { useState } from 'react'
-import { Bookmark, CalendarDays, ChevronDown, ChevronRight, Layers3, LogIn, LogOut, MapPin, Pencil, Route as RouteIcon, Settings2, Star, Trash2, UserRound } from 'lucide-react'
+import { Bell, Bookmark, CalendarDays, ChevronDown, ChevronRight, Layers3, LogIn, LogOut, MapPin, Pencil, Route as RouteIcon, Settings2, Star, Trash2, UserRound } from 'lucide-react'
 import { EventComposer } from '../events/EventComposer.jsx'
 import { RoleSwitcher } from '../roles/RoleSwitcher.jsx'
 import { describeServerError } from '../../data/supabaseClient.js'
@@ -45,6 +45,9 @@ export function MePanel({
   auth,
   onOpenLogin,
   onOpenTimetable,
+  onOpenInformation,
+  unreadCount = 0,
+  onBeforeLogout,
 }) {
   const [showEventComposer, setShowEventComposer] = useState(false)
   const [showFeedbackReview, setShowFeedbackReview] = useState(false)
@@ -67,7 +70,7 @@ export function MePanel({
     if (accountBusy) return
     setAccountBusy(true)
     setAccountNotice('')
-    try { await auth.logout(); setEditingNickname(false) }
+    try { await onBeforeLogout?.(); await auth.logout(); setEditingNickname(false) }
     catch (error) { setAccountNotice(describeServerError(error, '退出失败，请重试')) }
     finally { setAccountBusy(false) }
   }
@@ -99,7 +102,8 @@ export function MePanel({
       {(accountNotice || auth.error) && <p className="mobile-login-notice" role="status">{accountNotice || auth.error}{auth.error && <button className="mobile-account-retry" type="button" onClick={() => auth.refreshProfile().catch(() => setAccountNotice('资料加载失败，请稍后重试'))}>重试</button>}</p>}
 
       <section className="mobile-my-collections" aria-label="教务与学习"><div className="mobile-panel-section__heading"><h3>教务与学习</h3><span>个人课表</span></div><button className="community-my-entry" type="button" onClick={onOpenTimetable}><CalendarDays size={19} /><span><strong>我的课表</strong><small>导入教务课表 · 按周查看 · AI 规划</small></span><ChevronRight size={18} /></button></section>
-      <section className="mobile-my-collections" aria-label="我的校园发布"><div className="mobile-panel-section__heading"><h3>我的发布</h3><span>保存在本机</span></div><button className="community-my-entry" type="button" onClick={onOpenMyLostFound}><MapPin size={18} /><span><strong>失物招领</strong><small>编辑信息、更新认领状态</small></span><b>{lostFoundCount} 条</b></button></section>
+      <button type="button" className="campus-notifications-entry" onClick={onOpenInformation}><Bell size={20} /><span><strong>消息中心</strong><small>通知 · 发布 · 订阅 · 系统推送设置</small></span>{unreadCount > 0 && <b>{unreadCount}</b>}<ChevronRight size={18} /></button>
+      <section className="mobile-my-collections" aria-label="我的校园发布"><div className="mobile-panel-section__heading"><h3>我的发布</h3><span>本机与云端</span></div><button className="community-my-entry" type="button" onClick={onOpenMyLostFound}><MapPin size={18} /><span><strong>失物招领</strong><small>查看信息、更新认领状态</small></span><b>{lostFoundCount} 条</b></button></section>
 
       <FacilityReportsPanel
         reports={facilityReports}

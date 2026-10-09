@@ -1,6 +1,6 @@
 import { campusDisplayText } from '../../data/campusPresentation.js'
 import { useEffect, useRef, useState } from 'react'
-import { ChevronRight, LogIn, MessageCircle, Send, Sparkles } from 'lucide-react'
+import { Bell, ChevronRight, LogIn, MessageCircle, Send, Sparkles } from 'lucide-react'
 import { describeServerError } from '../../data/supabaseClient.js'
 import { CAMPUS_HALL_REGIONS } from '../../data/campusHall.js'
 import { CampusHotspotsPanel } from './CampusHotspotsPanel.jsx'
@@ -10,7 +10,7 @@ import { RestaurantHallSection } from './RestaurantHallSection.jsx'
 const COMPOSER_REGIONS = CAMPUS_HALL_REGIONS.filter((region) => region.id !== 'all')
 const REGION_LABELS = new Map(COMPOSER_REGIONS.map((region) => [region.id, region.label]))
 
-export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMessage, activeSection, onSectionChange, locations, hotspots, posts, lostFoundFilter, onLostFoundFilterChange, onSubmitPost, onPostStatusChange, onDeletePost, onSelectLocation, onPlanRouteToLocation, onOpenRestaurantReviews, showLostFound, onLostFoundMapChange, auth, chat, onOpenLogin, onOpenAuv }) {
+export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMessage, activeSection, onSectionChange, locations, hotspots, posts, lostFoundFilter, onLostFoundFilterChange, onSubmitPost, onPostStatusChange, onDeletePost, onSelectLocation, onPlanRouteToLocation, onOpenRestaurantReviews, showLostFound, onLostFoundMapChange, auth, chat, onOpenLogin, onOpenAuv, information, onOpenInformation, onPublishInformation, onSubmitAsInformation }) {
   const [draft, setDraft] = useState('')
   const [composerRegionId, setComposerRegionId] = useState('living')
   const [sending, setSending] = useState(false)
@@ -72,11 +72,12 @@ export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMe
         <h2>校园大厅</h2>
         <div className="mobile-hall-demo-note">
           <MessageCircle size={15} aria-hidden="true" />
-          <span>{activeSection === 'chat' ? chatLabel : activeSection === 'restaurants' ? '窗口名单由管理员维护，评价暂存本机。' : '当前为本机原型，发布与修改尚未同步到其他设备。'}</span>
+          <span>{activeSection === 'chat' ? chatLabel : activeSection === 'restaurants' ? '窗口名单由管理员维护，评价暂存本机。' : '云端校园信息与本机资料，按地区查看。'}</span>
         </div>
       </header>
 
       <button type="button" className="hall-auv-entry" onClick={onOpenAuv}><span><Sparkles size={20} aria-hidden="true" /></span><span><strong>AUV 校园助手</strong><small>问校园 · 分析事件</small></span><ChevronRight size={18} aria-hidden="true" /></button>
+      <button type="button" className="campus-notifications-entry" onClick={onOpenInformation}><Bell size={20} /><span><strong>校园消息</strong><small>公共通知 · 我的上报 · 地点订阅</small></span>{information.unread > 0 && <b>{information.unread > 99 ? '99+' : information.unread}</b>}<ChevronRight size={18} /></button>
 
       <div className="community-tabs" role="group" aria-label="大厅功能">
         {[{ id: 'chat', label: '聊天' }, { id: 'hotspots', label: '校园热点' }, { id: 'lost-found', label: '失物招领' }, { id: 'restaurants', label: '餐厅评价' }].map((tab) => <button type="button" key={tab.id} className={activeSection === tab.id ? 'is-active' : ''} aria-pressed={activeSection === tab.id} onClick={() => onSectionChange(tab.id)}>{tab.label}</button>)}
@@ -97,10 +98,10 @@ export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMe
       </div>}
 
       <div className="community-scroll" hidden={activeSection !== 'hotspots'}>
-        <CampusHotspotsPanel events={hotspots} locations={locations} regionId={selectedRegionId} onSelectLocation={onSelectLocation} onPlanRouteToLocation={onPlanRouteToLocation} />
+        <CampusHotspotsPanel events={hotspots} locations={locations} regionId={selectedRegionId} onSelectLocation={onSelectLocation} onPlanRouteToLocation={onPlanRouteToLocation} onPublishInformation={onPublishInformation} />
       </div>
       <div className="community-scroll" hidden={activeSection !== 'lost-found'}>
-        <LostFoundPanel posts={posts} locations={locations} regionId={selectedRegionId} filter={lostFoundFilter} onFilterChange={onLostFoundFilterChange} onRegionChange={onRegionChange} onSubmitPost={onSubmitPost} onStatusChange={onPostStatusChange} onDeletePost={onDeletePost} onSelectLocation={onSelectLocation} onPlanRouteToLocation={onPlanRouteToLocation} showMapMarkers={showLostFound} onMapMarkersChange={onLostFoundMapChange} />
+        <LostFoundPanel posts={posts} locations={locations} regionId={selectedRegionId} filter={lostFoundFilter} onFilterChange={onLostFoundFilterChange} onRegionChange={onRegionChange} onSubmitPost={onSubmitPost} onStatusChange={onPostStatusChange} onDeletePost={onDeletePost} onSelectLocation={onSelectLocation} onPlanRouteToLocation={onPlanRouteToLocation} showMapMarkers={showLostFound} onMapMarkersChange={onLostFoundMapChange} currentUserId={auth.user?.id} cloudReady={information.status === 'ready'} />
       </div>
       {activeSection === 'restaurants' && <div className="community-scroll"><RestaurantHallSection locations={locations} onOpenReviews={onOpenRestaurantReviews} /></div>}
 
@@ -130,6 +131,7 @@ export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMe
                     <time dateTime={message.createdAt}>{message.time}</time>
                   </header>
                   <p>{campusDisplayText(message.content)}</p>
+                  {message.authorId === auth.user.id && <button className="mobile-chat-report" type="button" onClick={() => onSubmitAsInformation(message)}>提交为动态</button>}
                   {message.authorId === auth.user.id && <button className="mobile-chat-retract" type="button" disabled={Boolean(retractingId)} onClick={() => retract(message.id)}>{retractingId === message.id ? '撤回中…' : '撤回'}</button>}
                 </article>
               </li>

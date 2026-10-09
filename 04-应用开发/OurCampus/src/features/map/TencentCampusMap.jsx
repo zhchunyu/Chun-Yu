@@ -3,6 +3,8 @@ import { LocateFixed, Minus, Navigation, Plus, RotateCcw } from 'lucide-react'
 import {
   getTencentCampusPosition,
   TENCENT_CAMPUS_CENTER,
+  TENCENT_CAMPUS_MIN_ZOOM,
+  TENCENT_CAMPUS_MAX_ZOOM,
   TENCENT_CAMPUS_ZOOM,
 } from '../../data/tencentCampusGeo.js'
 import { loadTencentMapSdk, requestTencentWalkingRoute } from '../../data/tencentMapApi.js'
@@ -189,6 +191,8 @@ export function TencentCampusMap({
         map = new TMap.Map(containerRef.current, {
           center: new TMap.LatLng(TENCENT_CAMPUS_CENTER.lat, TENCENT_CAMPUS_CENTER.lng),
           zoom: TENCENT_CAMPUS_ZOOM,
+          minZoom: TENCENT_CAMPUS_MIN_ZOOM,
+          maxZoom: TENCENT_CAMPUS_MAX_ZOOM,
           pitch: 0,
           rotation: 0,
           viewMode: '3D',
@@ -498,7 +502,9 @@ export function TencentCampusMap({
         <div className="tencent-campus-map__state tencent-campus-map__state--error">
           <strong>腾讯地图暂时无法加载</strong>
           <span>{loadError}</span>
-          <button type="button" onClick={onUseCampusMap}>切回校园引导图</button>
+          {onUseCampusMap
+            ? <button type="button" onClick={onUseCampusMap}>切回校园引导图</button>
+            : <span>请检查网络后重试。</span>}
         </div>
       )}
       {loadState === 'ready' && (
@@ -509,9 +515,9 @@ export function TencentCampusMap({
             </button>
           </div>
           <div className="tencent-campus-map__controls" aria-label="腾讯地图操作">
-            <button type="button" aria-label="放大地图" title="放大" onClick={() => mapRef.current?.zoomTo(Math.min(mapRef.current.getZoom() + 1, 20), { duration: 180 })}><Plus size={15} /></button>
+            <button type="button" aria-label="放大地图" title="放大" onClick={() => mapRef.current?.zoomTo(Math.min(mapRef.current.getZoom() + 1, TENCENT_CAMPUS_MAX_ZOOM), { duration: 180 })}><Plus size={15} /></button>
             <span>{zoomLevel.toFixed(1)}级</span>
-            <button type="button" aria-label="缩小地图" title="缩小" onClick={() => mapRef.current?.zoomTo(Math.max(mapRef.current.getZoom() - 1, 12), { duration: 180 })}><Minus size={15} /></button>
+            <button type="button" aria-label="缩小地图" title="缩小" onClick={() => mapRef.current?.zoomTo(Math.max(mapRef.current.getZoom() - 1, TENCENT_CAMPUS_MIN_ZOOM), { duration: 180 })}><Minus size={15} /></button>
             <button type="button" aria-label="回到本校区" title="回到校区" onClick={() => {
               mapRef.current?.panTo(new window.TMap.LatLng(TENCENT_CAMPUS_CENTER.lat, TENCENT_CAMPUS_CENTER.lng), { duration: 260 })
               mapRef.current?.zoomTo(TENCENT_CAMPUS_ZOOM, { duration: 260 })

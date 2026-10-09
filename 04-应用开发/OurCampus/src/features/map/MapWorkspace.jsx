@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MapPin } from 'lucide-react'
 import { EmptyState } from '../../components/EmptyState.jsx'
 import { teamCampusMap } from '../../data/campusMap.js'
+import { COMPETITION_PRESENTATION } from '../../data/campusPresentation.js'
 import { Campus2DViewer } from './Campus2DViewer.jsx'
 import { TencentCampusMap } from './TencentCampusMap.jsx'
 import { MapSearchOverlay } from './MapSearchOverlay.jsx'
@@ -151,8 +152,13 @@ export function MapWorkspace({
             onPlanRouteToLocation={onPlanRouteToLocation}
             onOpenFeedback={onOpenFeedback}
             onRouteStateChange={onRouteStateChange}
-            onUseCampusMap={() => setMapProvider('campus')}
+            onUseCampusMap={COMPETITION_PRESENTATION ? undefined : () => setMapProvider('campus')}
           />
+        ) : COMPETITION_PRESENTATION ? (
+          <div className="map-unavailable-note" role="status">
+            <MapPin size={16} /><strong>地图资源暂不可用</strong>
+            <span>请检查网络及地图配置后重试。</span>
+          </div>
         ) : (
           <>
             <Campus2DViewer

@@ -1,3 +1,5 @@
+import { GUYUAN_WINDOWS } from './guyuanWindows.js'
+
 const STORAGE_KEY = 'campus-twin-restaurant-reviews-v1'
 export const REVIEW_TAGS = ['口味好', '分量足', '性价比高', '出餐快', '排队久', '偏油', '偏咸']
 export const WINDOW_CATEGORIES = ['全部', '面食', '米饭', '轻食', '小吃', '饮品', '其他']
@@ -29,7 +31,8 @@ export function isRestaurantLocation(location) {
   return location?.category === 'dining' && /餐厅|食堂/.test(location.name ?? '')
 }
 
-export function getRestaurantWindows() {
+export function getRestaurantWindows(restaurantId) {
+  if (restaurantId === 'canteen') return GUYUAN_WINDOWS.map((window) => ({ ...window }))
   return WINDOW_TEMPLATES.map((window) => ({ ...window, isExample: true }))
 }
 

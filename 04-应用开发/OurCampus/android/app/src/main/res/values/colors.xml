@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="app_background">#F7F7F1</color>
+    <color name="startup_background">#0E1316</color>
 </resources>

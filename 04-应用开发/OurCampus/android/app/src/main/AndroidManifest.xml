@@ -7,7 +7,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
+
+        <meta-data android:name="OURCAMPUS_PUSH_APP_ID" android:value="${GETUI_APPID}" />
+        <service android:name=".CampusPushService" android:exported="false" />
+        <service android:name=".CampusPushTransportService" android:exported="false" android:process=":pushservice" />
 
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
@@ -38,6 +43,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <queries><intent><action android:name="com.getui.sdk.action" /></intent></queries>
 </manifest>

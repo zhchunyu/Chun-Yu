@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowUp, ChevronRight, LogIn, MapPin, Navigation, RotateCcw,
 import { requestAuv } from '../../data/auvClient.js'
 
 const typeLabels = { safety: '安全隐患', congestion: '人流拥挤', service: '设施与服务', notice: '校园通知' }
-const prompts = { chat: ['图书馆开放时间知道吗？', '谷园餐厅有哪些服务信息？', '怎么查校园办事入口？'], extract: ['谷园餐厅现在排队很久', '崇学楼门前正在施工', '9号公寓楼下路灯坏了'] }
+const prompts = { chat: ['图书馆开放时间知道吗？', '谷园餐厅有哪些服务信息？', '怎么查校园办事入口？'].map(campusDisplayText), extract: ['谷园餐厅现在排队很久', '崇学楼门前正在施工', '9号公寓楼下路灯坏了'].map(campusDisplayText) }
 
 export function AuvAssistantPage({ auth, locations, initialDraft = '', onClose, onOpenLogin, onSelectLocation, onPlanRouteToLocation }) {
   const [mode, setMode] = useState('chat')

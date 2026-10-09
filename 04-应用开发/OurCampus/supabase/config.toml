@@ -1,2 +1,6 @@
 [functions.auv-assistant]
 verify_jwt = true
+
+# 后台调度使用独立服务器令牌；函数内验证 x-campus-worker-token。
+[functions.campus-information-worker]
+verify_jwt = false

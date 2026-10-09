@@ -4,49 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0e1a20" />
-    <title>Campus Twin · 校园状态中枢</title>
+    <title>OurCampus</title>
+    <link rel="icon" type="image/png" href="/assets/brand/ourcampus-icon-32.png" />
     <style>
       /* Present before the application bundle, so loading starts on black. */
-      html, body { margin: 0; background: #050505; }
+      html, body { margin: 0; background: #0e1316; }
       .app-startup {
         position: fixed; inset: 0; z-index: 2147483647;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        overflow: hidden; background: #050505; opacity: 1;
-        transition: opacity 750ms ease;
+        overflow: hidden; background: #0e1316; opacity: 1;
+        transition: opacity 550ms ease;
       }
-      .app-startup__wordmark {
-        display: block; margin: 0; padding: .15em .2em;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(42px, 12vw, 62px); font-weight: 400;
-        line-height: 1.2; letter-spacing: .055em;
-        color: #fff5da;
-        background: linear-gradient(115deg, #f4eddd 0%, #ffffff 28%, #f5e6bc 53%, #fffefb 76%, #fffbec 100%);
-        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 20px rgba(255, 244, 214, .24), 0 0 44px rgba(255, 233, 176, .14);
-        animation: ourcampus-reveal 2200ms cubic-bezier(.2, .65, .25, 1) both;
-      }
+      .app-startup__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; }
+      .app-startup__fallback { display: grid; justify-items: center; gap: 22px; visibility: hidden; color: #f6f8fa; font: 500 27px/1.2 Georgia, serif; }
+      .app-startup__fallback img { width: 116px; height: 116px; border-radius: 26px; }
+      .app-startup.is-playing .app-startup__video { opacity: 1; }
+      .app-startup.is-static .app-startup__fallback { visibility: visible; }
+      .app-startup.is-playing .app-startup__fallback { visibility: hidden; }
       .app-startup__status {
-        position: absolute; top: calc(50% + 72px); margin: 0;
-        color: #a09b8e; font: 11px/1.5 "Microsoft YaHei", sans-serif;
+        position: absolute; bottom: max(11%, calc(env(safe-area-inset-bottom) + 28px)); margin: 0;
+        color: #a3b1b4; font: 11px/1.5 "Microsoft YaHei", sans-serif;
         letter-spacing: .12em; opacity: 0; transition: opacity 500ms ease;
       }
       .app-startup.is-waiting .app-startup__status { opacity: 1; }
       .app-startup.is-leaving { opacity: 0; pointer-events: none; }
-      @keyframes ourcampus-reveal {
-        0% { opacity: 0; filter: blur(7px); transform: translateY(7px) scale(.975); }
-        18% { opacity: .12; }
-        100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
-      }
       @media (prefers-reduced-motion: reduce) {
         .app-startup { transition-duration: 150ms; }
-        .app-startup__wordmark { animation: none; }
+        .app-startup__video { display: none; }
+        .app-startup__fallback { visibility: visible; }
         .app-startup__status { transition: none; }
       }
     </style>
   </head>
   <body>
-    <div id="app-startup" class="app-startup" role="status" aria-label="ourcampus 正在启动">
-      <span class="app-startup__wordmark" aria-hidden="true">ourcampus</span>
+    <div id="app-startup" class="app-startup" role="status" aria-label="OurCampus 正在启动">
+      <video class="app-startup__video" src="/assets/brand/ourcampus-startup.mp4" autoplay muted playsinline preload="auto" disablepictureinpicture aria-hidden="true"></video>
+      <div class="app-startup__fallback" aria-hidden="true"><img src="/assets/brand/ourcampus-icon-192.png" alt="" /><span>OurCampus</span></div>
       <p class="app-startup__status" aria-hidden="true">正在加载校园…</p>
       <noscript>请启用 JavaScript 后打开校园软件。</noscript>
     </div>

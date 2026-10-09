@@ -1,4 +1,5 @@
 import { describeServerError, requireSupabase } from './supabaseClient.js'
+import { enrichGuyuanWindow } from './guyuanWindows.js'
 
 export const RESTAURANT_IDS = ['canteen', 'employee-canteen', 'yixinyuan-canteen', 'bitaoyuan-canteen']
 export const STALL_CATEGORIES = ['面食', '米饭', '轻食', '小吃', '饮品', '其他']
@@ -14,7 +15,7 @@ export function validateWindowDraft(restaurantId, draft) {
 }
 
 export function mapRestaurantWindow(row) {
-  return { id: row.id, number: row.number, name: row.name, category: row.category, dish: row.dish || '招牌菜待补充', description: row.description || '吃过这个窗口？分享你的用餐体验。', icon: row.category === '面食' ? 'noodles' : row.category === '轻食' ? 'salad' : row.category === '小吃' ? 'snack' : 'rice', tone: row.category === '面食' ? 'wheat' : row.category === '轻食' ? 'sage' : 'green', isExample: false }
+  return { id: row.id, number: row.number, name: row.name, category: row.category, dish: row.dish || '招牌菜待补充', description: row.description || '吃过这个窗口？分享你的用餐体验。', icon: row.category === '面食' ? 'noodles' : row.category === '轻食' ? 'salad' : row.category === '小吃' ? 'snack' : 'rice', tone: row.category === '面食' ? 'wheat' : row.category === '轻食' ? 'sage' : 'green', isExample: false, menu: row.menu, floor: row.floor, numberVerified: row.number_verified }
 }
 
 function checkResult(error) {
@@ -27,7 +28,7 @@ function checkResult(error) {
 export async function loadRestaurantWindows(restaurantId) {
   const { data, error } = await requireSupabase().from('restaurant_windows').select('*').eq('restaurant_id', restaurantId).order('number')
   checkResult(error)
-  return data.map(mapRestaurantWindow).sort((a, b) => a.number.localeCompare(b.number, 'zh-CN', { numeric: true }))
+  return data.map(mapRestaurantWindow).map((window) => restaurantId === 'canteen' ? enrichGuyuanWindow(window) : { ...window, cloudStored: true }).sort((a, b) => a.number.localeCompare(b.number, 'zh-CN', { numeric: true }))
 }
 
 async function requireManager() {

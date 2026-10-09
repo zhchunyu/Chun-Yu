@@ -1,0 +1,258 @@
+{
+  "restaurantId": "canteen",
+  "restaurantName": "谷园餐厅",
+  "source": "用户提供现场照片，2026-10-08录入",
+  "notes": "用户确认六个窗口在一层；资料序号不是现场窗口号。开放时间、未辨认菜单待补充。价格以现场为准。",
+  "windows": [
+    {
+      "key": "dieyiwan",
+      "name": "咥一碗饸饹面",
+      "category": "面食",
+      "dish": "招牌臊子肉面 · 牛肉面",
+      "description": "现场招牌：咥一碗饸饹面。早餐、面食及配料以当天窗口供应为准。",
+      "menu": [
+        [
+          "葱油面",
+          4
+        ],
+        [
+          "鸡汁饸饹面",
+          7
+        ],
+        [
+          "招牌臊子肉面",
+          12
+        ],
+        [
+          "肉丁炸酱",
+          10
+        ],
+        [
+          "酸菜肉丝面",
+          9
+        ],
+        [
+          "西红柿鸡蛋面",
+          8
+        ]
+      ],
+      "id": "b126e080-1008-4000-8000-000000000001",
+      "number": "资料1",
+      "floor": "一层",
+      "numberVerified": false,
+      "icon": "noodles",
+      "tone": "wheat",
+      "source": "用户现场照片 · 2026-10-08录入",
+      "isExample": false,
+      "isPhotoRecord": true,
+      "cloudStored": false
+    },
+    {
+      "key": "gorice",
+      "name": "GO-RICE 歌米快餐",
+      "category": "米饭",
+      "dish": "现炒盖饭 · 木耳炒肉盖饭",
+      "description": "现场招牌：GO-RICE 歌米快餐，现炒现卖。照片被遮挡的菜单与价格待核对。",
+      "menu": [
+        [
+          "木耳炒肉盖饭",
+          13
+        ],
+        [
+          "水煮肉片盖饭",
+          13
+        ],
+        [
+          "鱼香肉丝盖饭",
+          12
+        ]
+      ],
+      "id": "b126e080-1008-4000-8000-000000000002",
+      "number": "资料2",
+      "floor": "一层",
+      "numberVerified": false,
+      "icon": "rice",
+      "tone": "green",
+      "source": "用户现场照片 · 2026-10-08录入",
+      "isExample": false,
+      "isPhotoRecord": true,
+      "cloudStored": false
+    },
+    {
+      "key": "shancheng",
+      "name": "山城挑挑重庆面馆",
+      "category": "面食",
+      "dish": "重庆小面 / 米线 · 酸辣面",
+      "description": "现场招牌：山城挑挑重庆面馆。支持小面、米线及酸辣粉等选择。",
+      "menu": [
+        [
+          "重庆小面 / 米线",
+          9
+        ],
+        [
+          "山城拌面",
+          8
+        ],
+        [
+          "金牌酸辣粉",
+          8
+        ],
+        [
+          "杂酱小面 / 米线（干 / 汤）",
+          12
+        ],
+        [
+          "豌豆小面 / 米线（干 / 汤）",
+          10
+        ]
+      ],
+      "id": "b126e080-1008-4000-8000-000000000003",
+      "number": "资料3",
+      "floor": "一层",
+      "numberVerified": false,
+      "icon": "noodles",
+      "tone": "wheat",
+      "source": "用户现场照片 · 2026-10-08录入",
+      "isExample": false,
+      "isPhotoRecord": true,
+      "cloudStored": false
+    },
+    {
+      "key": "pangjie",
+      "name": "胖姐特色营养粥·五谷渔粉",
+      "category": "面食",
+      "dish": "五谷渔粉 · 营养粥",
+      "description": "现场招牌：胖姐特色营养粥、五谷渔粉。粥、豆浆和渔粉按窗口当天供应。",
+      "menu": [
+        [
+          "八宝粥",
+          2
+        ],
+        [
+          "黑米粥",
+          2
+        ],
+        [
+          "现磨豆浆",
+          2
+        ],
+        [
+          "皮蛋瘦肉粥",
+          2
+        ],
+        [
+          "绿豆小米粥",
+          1.5
+        ],
+        [
+          "招牌渔粉",
+          12
+        ],
+        [
+          "原味渔粉",
+          8
+        ],
+        [
+          "酸辣渔粉",
+          9
+        ],
+        [
+          "麻辣渔粉",
+          10
+        ],
+        [
+          "茄汁鱼丸渔粉",
+          10
+        ],
+        [
+          "茄汁玉米渔粉",
+          11
+        ]
+      ],
+      "id": "b126e080-1008-4000-8000-000000000004",
+      "number": "资料4",
+      "floor": "一层",
+      "numberVerified": false,
+      "icon": "noodles",
+      "tone": "wheat",
+      "source": "用户现场照片 · 2026-10-08录入",
+      "isExample": false,
+      "isPhotoRecord": true,
+      "cloudStored": false
+    },
+    {
+      "key": "diaozhabing",
+      "name": "掉渣饼",
+      "category": "小吃",
+      "dish": "原味掉渣饼 · 鸡蛋 / 烤肠加料",
+      "description": "现场招牌：掉渣饼。价格为照片所示，组合与加料价格以现场为准。",
+      "menu": [
+        [
+          "原味掉渣饼",
+          3.5
+        ],
+        [
+          "掉渣饼 + 鸡蛋",
+          4.5
+        ],
+        [
+          "掉渣饼 + 烤肠",
+          4.5
+        ],
+        [
+          "掉渣饼 + 土豆",
+          4.5
+        ]
+      ],
+      "id": "b126e080-1008-4000-8000-000000000005",
+      "number": "资料5",
+      "floor": "一层",
+      "numberVerified": false,
+      "icon": "snack",
+      "tone": "peach",
+      "source": "用户现场照片 · 2026-10-08录入",
+      "isExample": false,
+      "isPhotoRecord": true,
+      "cloudStored": false
+    },
+    {
+      "key": "jiumingjia",
+      "name": "玖铭家炸鸡腿",
+      "category": "小吃",
+      "dish": "炸鸡腿 · 韩式炸鸡 · 火鸡面套餐",
+      "description": "现场招牌：玖铭家炸鸡腿。套餐和促销为拍摄时标价，不保证持续有效。",
+      "menu": [
+        [
+          "爆汁大鸡腿（1个）",
+          6
+        ],
+        [
+          "爆汁大鸡腿（2个）",
+          9.9
+        ],
+        [
+          "半斤随心桶",
+          9.9
+        ],
+        [
+          "火鸡面套餐",
+          9.9
+        ],
+        [
+          "可乐（杯）",
+          3
+        ]
+      ],
+      "id": "b126e080-1008-4000-8000-000000000006",
+      "number": "资料6",
+      "floor": "一层",
+      "numberVerified": false,
+      "icon": "snack",
+      "tone": "peach",
+      "source": "用户现场照片 · 2026-10-08录入",
+      "isExample": false,
+      "isPhotoRecord": true,
+      "cloudStored": false
+    }
+  ]
+}

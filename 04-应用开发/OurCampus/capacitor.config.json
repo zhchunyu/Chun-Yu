@@ -1,6 +1,6 @@
 {
   "appId": "cn.edu.sxau.campustwin",
-  "appName": "数字校园孪生",
+  "appName": "OurCampus",
   "webDir": "dist",
   "plugins": {
     "SystemBars": {

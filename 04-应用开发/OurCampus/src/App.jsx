@@ -8,7 +8,12 @@ import { eventRepository } from './data/events.js'
 import { campusServices } from './data/campusServices.js'
 import { describeLocationError, getDeviceLocation } from './data/deviceGeolocation.js'
 import { wgs84ToGcj02 } from './data/tencentCampusGeo.js'
-import { createFacilityContribution, createLostFoundPost, loadCommunityState, LOCAL_AUTHOR_ID, reviewFacilityContribution, saveCommunityState, updateLostFoundStatus } from './data/campusCommunity.js'
+import { createFacilityContribution, createLostFoundPost, getCampusRegionId, loadCommunityState, LOCAL_AUTHOR_ID, MAX_LOCAL_POSTS, reviewFacilityContribution, saveCommunityState, updateLostFoundStatus } from './data/campusCommunity.js'
+import { setReportStatus, submitCampusReport } from './data/campusInformation.js'
+import { disablePushDevice } from './data/campusPush.js'
+import { useCampusInformation } from './features/notifications/useCampusInformation.js'
+import { useCampusPush } from './features/notifications/useCampusPush.js'
+import { NotificationCenter } from './features/notifications/NotificationCenter.jsx'
 import { locationRepository } from './data/locations.js'
 import { listActiveHotspots, filterLocations, ROLE_LABELS } from './domain/campus.js'
 import { createPlaceFeedback } from './domain/placeFeedback.js'
@@ -47,14 +52,34 @@ function App() {
     [initialSnapshot],
   )
   const [storedState, dispatch] = useReducer(campusReducer, initialState)
+  const auth = useCampusAuth()
+  const information = useCampusInformation(auth.user?.id)
   const displayLocations = useMemo(() => storedState.locations.map(campusDisplayRecord), [storedState.locations])
-  const displayEvents = useMemo(() => storedState.events.map(campusDisplayRecord), [storedState.events])
+  const displayEvents = useMemo(() => [...storedState.events, ...information.events].map(campusDisplayRecord), [storedState.events, information.events])
   const state = { ...storedState, locations: displayLocations, events: displayEvents }
   const [activeTab, setActiveTab] = useState('map')
   const [hallRegionId, setHallRegionId] = useState('all')
   const [hallSection, setHallSection] = useState('chat')
   const [hallLostFoundFilter, setHallLostFoundFilter] = useState('all')
   const [communityState, setCommunityState] = useState(loadCommunityState)
+  const [informationOpen, setInformationOpen] = useState(false)
+  const [informationSeed, setInformationSeed] = useState(null)
+  const [noticeId, setNoticeId] = useState(null)
+  const openInformation = useCallback((seed = null) => { setInformationSeed(seed); setNoticeId(null); setInformationOpen(true) }, [])
+  const closeInformation = useCallback(() => { setInformationOpen(false); setNoticeId(null); setInformationSeed(null) }, [])
+  const openNotice = useCallback((id) => { setInformationSeed(null); setNoticeId(id); setInformationOpen(true) }, [])
+  const push = useCampusPush(auth.user?.id, openNotice)
+  const communityPosts = useMemo(() => {
+    const cloud = information.reports.filter((r) => ['lost', 'found'].includes(r.kind) && !['withdrawn', 'rejected'].includes(r.status)).map((r) => ({
+      id: r.id, cloudReportId: r.id, isCloud: true, authorId: r.author_id, type: r.kind,
+      title: r.details?.item_name || r.title, description: r.body, contact: r.details?.contact || '',
+      locationId: r.location_id, locationDetail: r.details?.location_detail || '',
+      regionId: getCampusRegionId(storedState.locations.find((l) => l.id === r.location_id)),
+      occurredAt: r.details?.occurred_at || r.created_at, createdAt: r.created_at, updatedAt: r.updated_at,
+      status: r.status === 'resolved' ? 'resolved' : 'active', image: communityState.posts.find((p) => p.cloudReportId === r.id)?.image || '',
+    }))
+    return [...cloud, ...communityState.posts.filter((p) => !p.cloudReportId)]
+  }, [information.reports, communityState.posts, storedState.locations, auth.user?.id])
   const [tencentRouteState, setTencentRouteState] = useState(null)
   const [feedbackLocationId, setFeedbackLocationId] = useState(null)
   const [reviewLocationId, setReviewLocationId] = useState(null)
@@ -68,7 +93,6 @@ function App() {
   const [deviceLocationStatus, setDeviceLocationStatus] = useState('idle')
   const [deviceLocationMessage, setDeviceLocationMessage] = useState('')
   const [devicePositionFocusToken, setDevicePositionFocusToken] = useState(0)
-  const auth = useCampusAuth()
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => markStartupReady('interface'))
     return () => window.cancelAnimationFrame(frame)
@@ -81,6 +105,7 @@ function App() {
   const [loginMode, setLoginMode] = useState(null)
   const openLogin = useCallback(() => setLoginMode('login'), [])
   const closeLogin = useCallback(() => setLoginMode(null), [])
+  useEffect(() => { if (auth.user && noticeId) setInformationOpen(true) }, [auth.user?.id, noticeId])
 
   useEffect(() => {
     if (state.role !== auth.role) dispatch({ type: 'SET_ROLE', role: auth.role })
@@ -197,15 +222,39 @@ function App() {
     saveCommunityState(next)
     setCommunityState(next)
   }
-  const handleSubmitLostFound = (input, editingId) => {
+  const handleSubmitLostFound = async (input, editingId) => {
     const previous = editingId ? communityState.posts.find((post) => post.id === editingId) : null
     if (editingId && !previous) throw new Error('这条发布已不存在')
+    if (previous?.cloudReportId) throw new Error('云端信息请先撤回，再重新发布')
+    if (!previous && communityState.posts.length >= MAX_LOCAL_POSTS) throw new Error('请先删除一些本机发布，再添加新信息')
     const post = createLostFoundPost(input, state.locations, previous)
-    updateCommunity({ ...communityState, posts: previous ? communityState.posts.map((item) => item.id === post.id ? post : item) : [post, ...communityState.posts] })
+    if (input.syncToCloud) {
+      if (!auth.user) { openLogin(); throw new Error('请先登录，登录后可继续发布') }
+      post.cloudReportId = await submitCampusReport({ clientId: input.clientId, kind: post.type, title: post.title,
+        body: post.description, locationId: post.locationId, details: { item_name: post.title, contact: post.contact,
+          location_detail: post.locationDetail, occurred_at: post.occurredAt } })
+      post.cloudOwnerId = auth.user.id
+    }
+    let warning = ''
+    try { updateCommunity({ ...communityState, posts: previous ? communityState.posts.map((item) => item.id === post.id ? post : item) : [post, ...communityState.posts] }) }
+    catch (error) { if (!post.cloudReportId) throw error; warning = '云端发布成功，但本机照片未能保存。' }
+    if (post.cloudReportId) await information.refresh()
+    return { cloud: Boolean(post.cloudReportId), warning }
   }
-  const handleDeleteLostFound = (id) => {
-    if (!communityState.posts.some((post) => post.id === id && post.authorId === LOCAL_AUTHOR_ID)) throw new Error('只能删除当前设备发布的信息')
-    updateCommunity({ ...communityState, posts: communityState.posts.filter((post) => post.id !== id) })
+  const handleDeleteLostFound = async (id) => {
+    const post = communityPosts.find((p) => p.id === id)
+    if (!post || ![LOCAL_AUTHOR_ID, auth.user?.id].includes(post.authorId)) throw new Error('只能撤回自己发布的信息')
+    if (post.cloudReportId) { await setReportStatus(post.cloudReportId, 'withdrawn'); await information.refresh() }
+    updateCommunity({ ...communityState, posts: communityState.posts.filter((p) => p.id !== id && (!post.cloudReportId || p.cloudReportId !== post.cloudReportId)) })
+  }
+  const handleLostFoundStatus = async (id, status) => {
+    const post = communityPosts.find((p) => p.id === id)
+    if (post?.cloudReportId) {
+      if (status !== 'resolved') throw new Error('已完成的云端信息不能重新开启，请重新发布')
+      await setReportStatus(post.cloudReportId, status)
+      updateCommunity({ ...communityState, posts: communityState.posts.map((p) => p.cloudReportId === post.cloudReportId ? { ...p, status } : p) })
+      await information.refresh()
+    } else updateCommunity({ ...communityState, posts: updateLostFoundStatus(communityState.posts, id, status) })
   }
   const handleSubmitFacility = (input) => {
     const facility = createFacilityContribution(input, state.locations)
@@ -219,8 +268,18 @@ function App() {
     dispatch({ type: 'CLEAR_SELECTED_LOCATION' })
   }
 
-  const handleSubmitPlaceFeedback = (input) => {
+  const handleSubmitPlaceFeedback = async (input) => {
+    if (input.syncToCloud) {
+      if (!auth.user) { openLogin(); throw new Error('请先登录，再提交云端反馈') }
+      const kind = ['construction', 'closure', 'crowd'].includes(input.type) ? input.type : input.type === 'facility-repair' ? 'repair' : 'feedback'
+      await submitCampusReport({ clientId: input.clientId, kind, title: input.title || `${state.locations.find((l) => l.id === input.locationId)?.name || '校园地点'}反馈`,
+        body: input.description, locationId: input.locationId, details: { repair_category: input.repairCategory || '', reported_end_at: input.reportedEndAt || null,
+          crowd_status: input.crowdStatus || '', open_status: input.openStatus || '', suggested_description: input.suggestedDescription || '' } })
+      await information.refresh()
+      return { cloud: true }
+    }
     dispatch({ type: 'SUBMIT_PLACE_FEEDBACK', feedback: createPlaceFeedback(input) })
+    return { cloud: false }
   }
 
   useEffect(() => {
@@ -301,7 +360,7 @@ function App() {
           onSelectLocation={(locationId) => dispatch({ type: 'SELECT_LOCATION', locationId })}
           onPlanRouteToLocation={handlePlanRouteToLocation}
           onOpenFeedback={setFeedbackLocationId}
-          lostFoundPosts={communityState.posts}
+          lostFoundPosts={communityPosts}
           onOpenHall={handleOpenHall}
           onRouteStateChange={setTencentRouteState}
           onQueryChange={(query) => dispatch({ type: 'SET_QUERY', query })}
@@ -345,16 +404,20 @@ function App() {
             chat={chat}
             auth={auth}
             onOpenLogin={openLogin}
+            information={information}
+            onOpenInformation={() => openInformation()}
+            onPublishInformation={() => openInformation({ kind: 'notice' })}
+            onSubmitAsInformation={(message) => openInformation({ kind: 'notice', title: message.content.slice(0, 60), body: message.content, sourceMessageId: message.id })}
             activeSection={hallSection}
             onOpenAuv={() => setAuvOpen(true)}
             onSectionChange={setHallSection}
             locations={state.locations}
             hotspots={activeHotspots}
-            posts={communityState.posts}
+            posts={communityPosts}
             lostFoundFilter={hallLostFoundFilter}
             onLostFoundFilterChange={setHallLostFoundFilter}
             onSubmitPost={handleSubmitLostFound}
-            onPostStatusChange={(id, status) => updateCommunity({ ...communityState, posts: updateLostFoundStatus(communityState.posts, id, status) })}
+            onPostStatusChange={handleLostFoundStatus}
             onDeletePost={handleDeleteLostFound}
             onSelectLocation={handleExploreLocation}
             onPlanRouteToLocation={handlePlanRouteToLocation}
@@ -381,6 +444,9 @@ function App() {
         {activeTab === 'me' && (
           <MePanel
             onOpenTimetable={() => setTimetableOpen(true)}
+            onOpenInformation={() => openInformation()}
+            unreadCount={information.unread}
+            onBeforeLogout={disablePushDevice}
             role={state.role}
             settings={state.settings}
             locations={state.locations}
@@ -407,7 +473,7 @@ function App() {
             onUpdateFacilityReport={(feedbackId, status) => dispatch({ type: 'SET_FACILITY_REPORT_STATUS', feedbackId, status })}
             favoriteLocationIds={state.favoriteLocationIds}
             savedRoutes={state.savedRoutes}
-            lostFoundCount={communityState.posts.length}
+            lostFoundCount={communityPosts.filter((p) => p.authorId === LOCAL_AUTHOR_ID || p.authorId === auth.user?.id).length}
             onOpenMyLostFound={() => handleOpenHall('lost-found', true)}
             onSelectLocation={handleExploreLocation}
             onToggleFavorite={(locationId) => dispatch({ type: 'TOGGLE_FAVORITE_LOCATION', locationId })}
@@ -423,7 +489,7 @@ function App() {
           <LocationDetail
             location={selectedLocation}
             events={activeHotspots.filter((event) => event.locationId === selectedLocation.id)}
-            lostFoundPosts={communityState.posts.filter((post) => post.locationId === selectedLocation.id && post.status === 'active')}
+            lostFoundPosts={communityPosts.filter((post) => post.locationId === selectedLocation.id && post.status === 'active')}
             onOpenLostFound={() => handleOpenHall('lost-found')}
             onOpenReviews={() => setReviewLocationId(selectedLocation.id)}
             role={state.role}
@@ -460,7 +526,8 @@ function App() {
         <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
       </main>
       {loginMode && <LoginSheet key={loginMode} auth={auth} initialMode={loginMode} onClose={closeLogin} />}
-      {reviewLocation && <RestaurantReviewsPage key={reviewLocation.id} restaurant={reviewLocation} authorName={auth.profile?.nickname ?? '我'} role={auth.role} onClose={closeRestaurantReviews} />}
+      {informationOpen && <NotificationCenter key={auth.user?.id ?? 'guest'} auth={auth} information={information} push={push} locations={state.locations} initialDraft={informationSeed} noticeId={noticeId} onClose={closeInformation} onOpenLogin={() => { setInformationOpen(false); openLogin() }} onSelectLocation={(id) => { closeInformation(); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { closeInformation(); handlePlanRouteToLocation(id) }} />}
+      {reviewLocation && <RestaurantReviewsPage key={`${reviewLocation.id}:${auth.user?.id ?? 'guest'}`} restaurant={reviewLocation} authorName={auth.profile?.nickname ?? '我'} role={auth.role} userId={auth.user?.id} onOpenLogin={openLogin} onClose={closeRestaurantReviews} />}
       {timetableOpen && <TimetablePage key={auth.user?.id ?? 'guest'} userId={auth.user?.id} onClose={closeTimetable} onAskAi={(prompt) => { setTimetableOpen(false); setAuvSeed({ userId: auth.user?.id ?? null, prompt }); setAuvOpen(true) }} />}
       {auvOpen && <AuvAssistantPage initialDraft={auvSeed?.userId === (auth.user?.id ?? null) ? auvSeed?.prompt ?? '' : ''} auth={auth} locations={state.locations} onClose={closeAuv} onOpenLogin={() => { setAuvOpen(false); openLogin() }} onSelectLocation={(id) => { setAuvOpen(false); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { setAuvOpen(false); handlePlanRouteToLocation(id) }} />}
     </div>

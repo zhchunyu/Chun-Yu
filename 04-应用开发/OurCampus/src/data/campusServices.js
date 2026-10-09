@@ -1,4 +1,6 @@
-export const campusServices = Object.freeze([
+import { campusDisplayService } from './campusPresentation.js'
+
+const rawCampusServices = Object.freeze([
   {
     id: 'library-service',
     title: '图书馆',
@@ -46,3 +48,5 @@ export const campusServices = Object.freeze([
     keywords: ['办事大厅', '服务大厅', '校务', '线上办理', '事务办理'],
   },
 ])
+
+export const campusServices = Object.freeze(rawCampusServices.map(campusDisplayService))

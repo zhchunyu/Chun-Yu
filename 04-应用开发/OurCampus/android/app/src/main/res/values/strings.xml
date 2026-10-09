@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">数字校园孪生</string>
-    <string name="title_activity_main">数字校园孪生</string>
+    <string name="app_name">OurCampus</string>
+    <string name="title_activity_main">OurCampus</string>
     <string name="package_name">cn.edu.sxau.campustwin</string>
     <string name="custom_url_scheme">cn.edu.sxau.campustwin</string>
 </resources>

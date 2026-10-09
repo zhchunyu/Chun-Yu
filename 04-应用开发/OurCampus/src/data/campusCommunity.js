@@ -60,10 +60,10 @@ export function isSavedLostFoundPost(post) {
     && isLocalPhoto(post.image)
 }
 
-export function filterLostFoundPosts(posts, { regionId = 'all', type = 'all', status = 'active', query = '' } = {}) {
+export function filterLostFoundPosts(posts, { regionId = 'all', type = 'all', status = 'active', query = '', authorId = LOCAL_AUTHOR_ID } = {}) {
   const term = query.trim().toLowerCase()
   return posts.filter((post) => (regionId === 'all' || post.regionId === regionId)
-    && (type === 'all' || (type === 'mine' ? post.authorId === LOCAL_AUTHOR_ID : post.type === type))
+    && (type === 'all' || (type === 'mine' ? post.authorId === LOCAL_AUTHOR_ID || post.authorId === authorId : post.type === type))
     && (status === 'all' || post.status === status)
     && [post.title, post.description, post.locationDetail].join(' ').toLowerCase().includes(term))
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
