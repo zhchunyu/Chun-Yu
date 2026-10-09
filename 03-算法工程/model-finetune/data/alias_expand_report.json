@@ -1,0 +1,168 @@
+{
+ "auto_added": {
+  "east-gate": [],
+  "library": [],
+  "teaching-a": [],
+  "canteen": [],
+  "gymnasium": [],
+  "sports-ground": [],
+  "ball-court": [],
+  "swimming-pool": [],
+  "employee-canteen": [],
+  "lab-building": [],
+  "hospital": [],
+  "old-north-gate": [],
+  "new-north-gate": [],
+  "paifang": [],
+  "botanical-garden": [],
+  "main-teaching-building": [],
+  "chongwen-building": [],
+  "family-compound": [],
+  "guest-house": [],
+  "qinxue-building": [],
+  "resource-environment-college": [],
+  "veterinary-center": [],
+  "life-sciences-building": [],
+  "agricultural-engineering-building": [],
+  "chongshi-building": [],
+  "workshop-west-1": [],
+  "workshop-west-2": [],
+  "hanshi-building": [],
+  "tianshi-building": [],
+  "physical-chemistry-building": [],
+  "chongxin-building": [],
+  "animal-science-building": [],
+  "teaching-management-building": [],
+  "graduate-dormitory": [],
+  "kangxinyuan": [],
+  "smart-greenhouse": [],
+  "food-laboratory": [],
+  "yixinyuan-canteen": [],
+  "dining-center": [],
+  "heat-exchange-station": [],
+  "sports-department": [],
+  "ruizhi-sports-center": [],
+  "bitaoyuan-canteen": [],
+  "apartment-1": [
+   "一公寓",
+   "一号公寓",
+   "一号公寓楼"
+  ],
+  "apartment-2": [
+   "二公寓",
+   "二号公寓",
+   "二号公寓楼"
+  ],
+  "apartment-3": [
+   "三公寓",
+   "三号公寓",
+   "三号公寓楼"
+  ],
+  "apartment-4": [
+   "四公寓",
+   "四号公寓",
+   "四号公寓楼"
+  ],
+  "apartment-5": [
+   "五公寓",
+   "五号公寓",
+   "五号公寓楼"
+  ],
+  "apartment-6": [
+   "六公寓",
+   "六号公寓",
+   "六号公寓楼"
+  ],
+  "apartment-7": [
+   "七公寓",
+   "七号公寓",
+   "七号公寓楼"
+  ],
+  "apartment-8": [
+   "八公寓",
+   "八号公寓",
+   "八号公寓楼"
+  ],
+  "apartment-9": [
+   "九公寓",
+   "九号公寓",
+   "九号公寓楼"
+  ],
+  "apartment-10": [
+   "十公寓",
+   "十号公寓",
+   "十号公寓楼"
+  ],
+  "apartment-11": [
+   "十一公寓",
+   "十一号公寓",
+   "十一号公寓楼"
+  ],
+  "apartment-12": [
+   "十二公寓",
+   "十二号公寓",
+   "十二号公寓楼"
+  ],
+  "apartment-13": [
+   "十三公寓",
+   "十三号公寓",
+   "十三号公寓楼"
+  ],
+  "apartment-14": [
+   "十四公寓",
+   "十四号公寓",
+   "十四号公寓楼"
+  ],
+  "apartment-15": [
+   "十五公寓",
+   "十五号公寓",
+   "十五号公寓楼"
+  ],
+  "apartment-16": [
+   "十六公寓",
+   "十六号公寓",
+   "十六号公寓楼"
+  ],
+  "apartment-17": [
+   "十七公寓",
+   "十七号公寓",
+   "十七号公寓楼"
+  ],
+  "apartment-18": [
+   "十八公寓",
+   "十八号公寓",
+   "十八号公寓楼"
+  ],
+  "apartment-19": [
+   "十九公寓",
+   "十九号公寓",
+   "十九号公寓楼"
+  ],
+  "apartment-20": [
+   "二十公寓",
+   "二十号公寓",
+   "二十号公寓楼"
+  ],
+  "apartment-21": [
+   "二十一公寓",
+   "二十一号公寓",
+   "二十一号公寓楼"
+  ],
+  "apartment-22": [
+   "二十二公寓",
+   "二十二号公寓",
+   "二十二号公寓楼"
+  ],
+  "apartment-23": [
+   "二十三公寓",
+   "二十三号公寓",
+   "二十三号公寓楼"
+  ]
+ },
+ "conflicts": {
+  "操场": [
+   "体育场",
+   "运动场"
+  ]
+ }
+}

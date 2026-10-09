@@ -1,0 +1,84 @@
+# LLaMA-Factory 训练配置 V10 — Qwen2.5-14B QLoRA
+# 事件结构化提取 LoRA（校园事件 JSON 抽取）
+#
+# ★ 这是「两个独立适配器」中的第一个：提取 LoRA
+#   第二个（人设化回应）见 v7_train.yaml。
+#   部署时用 vLLM 的 --enable-lora 同时挂载，按请求选。
+#
+# ★★ V10 相对 V9 的改动（依据 2026-10-04「地点体系切换」）：
+#   1. **地点全面切换到「校园地点权威表」**（data/campus_locations.json，66 地点）
+#      —— V9 的 building_name / building_id 都是旧校区那套，与权威表完全不是一套
+#   2. **A/B 组 11 个名字改名换 ID**（第一食堂→谷园餐厅、体育馆→睿智文体馆 …）
+#   3. **C 组 5 个名字拍板落定**（A教学楼→崇学楼、B教学楼→教学主楼、C实验楼→实验大楼、
+#      学术报告厅→崇文楼、行政楼→教学管理楼）
+#   4. **D 组 20 个旧建筑删除** —— 权威表里没有这些楼，句子整句丢弃
+#      （不改成 null：句子本身指涉假楼，改 null 会污染 null 语义）
+#   5. instruction 里 building_id 说明与 building_name 对齐（"与building_name同步，没有则为null"）
+#   6. **去标识**：全流程不得出现校名，地点只用中性楼名
+#
+# ★ V10 数据规模：训练 ~419 + 评估 ~120
+#   ★★ 数据量从 1103 降到 539 是**覆盖率问题的必然结果** ——
+#      V9 只覆盖 66 地点的 4 个，映射后覆盖 16 个，其余全被丢弃。
+#      提高覆盖率的正解 = 按权威表重造数据（方案 C），或补录缺失地点。
+#
+# ★ 提取任务的特殊性（决定了超参与回应任务不同）：
+#   1. 输出是严格 JSON ⇒ learning_rate 取 1.0e-4，epoch 只跑 2
+#   2. 样本短（输入 ~30 字，输出 ~200 字）⇒ cutoff_len 512 足够
+#   3. 评估指标看「JSON 可解析率」而非 loss ⇒ do_eval 必开
+#
+# ★ 地点字段说明：**后端必须以权威表为准，不能直接采信模型输出的 building_name**
+#   （见 地点字段处理约定.md）。模型职责 = 只搬运文本里明确写的地点，抽不到就 null。
+#
+# 上传位置：/root/autodl-tmp/v10_extract.yaml
+# 数据集位置：/root/autodl-tmp/data/v10_extract_train.json + v10_extract_eval.json
+
+### 模型
+model_name_or_path: /root/autodl-tmp/models/models/qwen--Qwen2.5-14B-Instruct/snapshots/master
+
+### 训练方法
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 128
+lora_alpha: 256
+lora_dropout: 0.05
+lora_target: all
+
+### 量化
+quantization_bit: 4
+quantization_type: nf4
+double_quantization: true
+
+### 数据集
+dataset: auv_v10_extract
+eval_dataset: auv_v10_extract_eval
+dataset_dir: /root/autodl-tmp/data
+template: qwen
+cutoff_len: 512
+max_samples: 100000
+overwrite_cache: true
+preprocessing_num_workers: 8
+
+### 输出
+output_dir: /root/autodl-tmp/output/qwen25-14b-auv-v10-extract
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 4
+learning_rate: 1.0e-4
+num_train_epochs: 2.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+
+### 评估与日志
+do_eval: true
+eval_strategy: steps
+eval_steps: 100
+logging_steps: 10
+save_strategy: epoch
+save_total_limit: 2
+
+### 其他
+fp16: true
+gradient_checkpointing: true
+ddp_timeout: 180000000
+report_to: none

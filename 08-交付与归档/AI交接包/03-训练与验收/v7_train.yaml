@@ -1,0 +1,63 @@
+# LLaMA-Factory 训练配置 V7 — Qwen2.5-14B QLoRA
+# 人设化回应 LoRA（校园实时态势助手 AUV）
+#
+# ★ 相对 V6 的关键修正：
+#   1. learning_rate: 2e-4 → 1e-4（V6 的 2e-4 对 14B+rank128 过高，易发散/遗忘）
+#   2. lora_alpha/lora_rank 保持 2.0（128/256），这是有效配置
+#   3. 数据集换成 v7_train.json（已去重、去思考链、去书名）
+#   4. 恢复 do_eval + 评估集，否则无法判断是否过拟合
+#   5. 加 cutoff_len 到 1024（V7 样本都很短，2048 是浪费显存）
+#
+# 上传位置：/root/autodl-tmp/v7_train.yaml
+# 数据集位置：/root/autodl-tmp/data/v7_train.json
+
+### 模型
+model_name_or_path: /root/autodl-tmp/models/models/qwen--Qwen2.5-14B-Instruct/snapshots/master
+
+### 训练方法
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 128
+lora_alpha: 256
+lora_dropout: 0.05
+lora_target: all
+
+### 量化
+quantization_bit: 4
+quantization_type: nf4
+double_quantization: true
+
+### 数据集
+dataset: auv_v7
+eval_dataset: auv_v7_eval
+dataset_dir: /root/autodl-tmp/data
+template: qwen
+cutoff_len: 1024
+max_samples: 100000
+overwrite_cache: true
+preprocessing_num_workers: 8
+
+### 输出
+output_dir: /root/autodl-tmp/output/qwen25-14b-auv-v7
+per_device_train_batch_size: 2
+per_device_eval_batch_size: 2
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 3.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+
+### 评估与日志
+do_eval: true
+eval_strategy: steps
+eval_steps: 100
+logging_steps: 10
+save_strategy: epoch
+save_total_limit: 2
+
+### 其他
+fp16: true
+gradient_checkpointing: true
+ddp_timeout: 180000000
+report_to: none

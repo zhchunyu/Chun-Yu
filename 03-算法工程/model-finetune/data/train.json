@@ -1,0 +1,152 @@
+[
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "一食堂二楼排长队，大概要等20分钟，今天中午别去了",
+    "output": "{\"type\":\"congestion\",\"building_id\":\"BLD_Canteen_A\",\"building_name\":\"第一食堂\",\"floor\":\"2F\",\"severity\":\"high\",\"description\":\"第一食堂二楼午餐时段排长队\",\"estimated_wait_min\":20,\"time_window\":\"noon\",\"advice\":\"建议错峰就餐或选择第二食堂、生活超市\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "中轴路北段被施工围挡围起来了，过不去，要绕路",
+    "output": "{\"type\":\"safety\",\"building_id\":\"ROAD_Central_Axis_N\",\"building_name\":\"中轴路北段\",\"floor\":null,\"severity\":\"high\",\"description\":\"中轴路北段施工围挡，道路封闭\",\"estimated_wait_min\":null,\"time_window\":\"unknown\",\"advice\":\"建议绕行暖廊或东侧外环道路\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "图书馆三楼今天下午两点有个人工智能讲座，听说嘉宾很厉害，想去的早点去占座",
+    "output": "{\"type\":\"notice\",\"building_id\":\"BLD_Library\",\"building_name\":\"图书馆\",\"floor\":\"3F\",\"severity\":\"low\",\"description\":\"图书馆三楼下午举办人工智能讲座\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"感兴趣的同学可提前到场，建议14:00前到达\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "有人在B教学楼门口丢了一个黑色双肩包，里面有笔记本电脑，捡到的请联系我，重金酬谢",
+    "output": "{\"type\":\"mutual\",\"building_id\":\"BLD_Teaching_B\",\"building_name\":\"B教学楼\",\"floor\":null,\"severity\":\"medium\",\"description\":\"B教学楼门口遗失黑色双肩包，内含笔记本电脑\",\"estimated_wait_min\":null,\"time_window\":\"unknown\",\"advice\":\"请捡到者联系失主，也可将物品交至保卫处\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "澡堂今天晚上维修，6点之后就不能用了，要洗澡的早点去",
+    "output": "{\"type\":\"service\",\"building_id\":\"BLD_Bathhouse\",\"building_name\":\"公共浴室\",\"floor\":null,\"severity\":\"medium\",\"description\":\"公共浴室今晚维修，18:00后停止开放\",\"estimated_wait_min\":null,\"time_window\":\"evening\",\"advice\":\"需要洗澡的同学请在18:00前去，或使用宿舍独立卫浴\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "快递站今天快递特别多，排队排到门外了，取个快递得等快半小时",
+    "output": "{\"type\":\"congestion\",\"building_id\":\"BLD_Express_Center\",\"building_name\":\"快递服务中心\",\"floor\":\"1F\",\"severity\":\"high\",\"description\":\"快递服务中心取件排队严重，等待时间约30分钟\",\"estimated_wait_min\":30,\"time_window\":\"afternoon\",\"advice\":\"建议错峰取件，或使用快递柜自助取件\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "下雨了，知行楼门口台阶特别滑，刚才有人差点摔了，大家走路小心点",
+    "output": "{\"type\":\"safety\",\"building_id\":\"BLD_ZhiXing\",\"building_name\":\"知行楼\",\"floor\":null,\"severity\":\"medium\",\"description\":\"知行楼门口台阶因下雨湿滑，存在滑倒风险\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"雨天路滑，请减速慢行，注意台阶，可绕行坡道\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "明天下午三点体育馆有校运会开幕式，有兴趣的可以去看",
+    "output": "{\"type\":\"notice\",\"building_id\":\"BLD_Gym\",\"building_name\":\"体育馆\",\"floor\":null,\"severity\":\"low\",\"description\":\"体育馆明天下午三点举办校运会开幕式\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"感兴趣的同学可前往观看，建议提前15分钟入场\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "求一个明天早上一起去图书馆占座的学习搭子，六点半起床那种",
+    "output": "{\"type\":\"mutual\",\"building_id\":\"BLD_Library\",\"building_name\":\"图书馆\",\"floor\":null,\"severity\":\"low\",\"description\":\"寻找早起图书馆占座的学习搭子，早上6:30起床\",\"estimated_wait_min\":null,\"time_window\":\"morning\",\"advice\":\"可在评论区留言联系，注意个人信息安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "打印店今天机器坏了，打印不了，要打印的得等明天",
+    "output": "{\"type\":\"service\",\"building_id\":\"BLD_Print_Shop\",\"building_name\":\"校园打印店\",\"floor\":\"1F\",\"severity\":\"medium\",\"description\":\"打印店设备故障，今日无法提供打印服务\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"急需打印的同学可前往图书馆自助打印区或其他打印店\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "二食堂新开了个麻辣香锅窗口，排队的人巨多，想吃的早点去",
+    "output": "{\"type\":\"congestion\",\"building_id\":\"BLD_Canteen_B\",\"building_name\":\"第二食堂\",\"floor\":\"1F\",\"severity\":\"high\",\"description\":\"第二食堂新开麻辣香锅窗口，排队人数众多\",\"estimated_wait_min\":25,\"time_window\":\"noon\",\"advice\":\"建议错峰就餐，或选择其他窗口\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "A教学楼5楼电梯坏了，只能爬楼梯，有课的早点去",
+    "output": "{\"type\":\"service\",\"building_id\":\"BLD_Teaching_A\",\"building_name\":\"A教学楼\",\"floor\":\"5F\",\"severity\":\"medium\",\"description\":\"A教学楼5楼电梯故障停运，需步行上下楼\",\"estimated_wait_min\":null,\"time_window\":\"morning\",\"advice\":\"有课的同学请提前出发，预留爬楼时间；高层教室可选择走楼梯\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "奖学金申请通知出来了，截止到下周五，要申请的赶紧准备材料",
+    "output": "{\"type\":\"notice\",\"building_id\":\"BLD_Admin\",\"building_name\":\"行政楼\",\"floor\":null,\"severity\":\"medium\",\"description\":\"奖学金申请通知已发布，截止日期为下周五\",\"estimated_wait_min\":null,\"time_window\":\"unknown\",\"advice\":\"有意向申请的同学请尽快准备材料，注意截止时间\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "校园超市货架都空了，据说下午补货，要囤货的等补完再去",
+    "output": "{\"type\":\"service\",\"building_id\":\"BLD_Supermarket\",\"building_name\":\"校园超市\",\"floor\":\"1F\",\"severity\":\"low\",\"description\":\"校园超市货架空置，预计下午补货\",\"estimated_wait_min\":null,\"time_window\":\"morning\",\"advice\":\"建议下午补货后再前往采购\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "晚上有没有人一起拼车去高铁站，我八点的车",
+    "output": "{\"type\":\"mutual\",\"building_id\":\"GATE_Main\",\"building_name\":\"主校门\",\"floor\":null,\"severity\":\"low\",\"description\":\"寻找一起拼车去高铁站的同学，晚上8点的车\",\"estimated_wait_min\":null,\"time_window\":\"evening\",\"advice\":\"可在评论区联系同行者，注意核实身份和安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "宿舍区今天下午四点到六点停水，记得提前接点水",
+    "output": "{\"type\":\"service\",\"building_id\":\"BLD_Dorm_N\",\"building_name\":\"北区宿舍\",\"floor\":null,\"severity\":\"high\",\"description\":\"北区宿舍今日16:00-18:00停水\",\"estimated_wait_min\":120,\"time_window\":\"afternoon\",\"advice\":\"请提前储备生活用水，停水期间减少用水\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "图书馆一楼考研自习室全满了，找了半天没位置，二楼还有几个",
+    "output": "{\"type\":\"congestion\",\"building_id\":\"BLD_Library\",\"building_name\":\"图书馆\",\"floor\":\"1F\",\"severity\":\"medium\",\"description\":\"图书馆一楼考研自习室满座，二楼仍有空位\",\"estimated_wait_min\":null,\"time_window\":\"evening\",\"advice\":\"需要自习的同学可前往二楼或其他楼层寻找座位\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "暖廊今天好漂亮啊，阳光照进来特别舒服，适合去散步",
+    "output": "{\"type\":\"notice\",\"building_id\":\"BLD_Warm_Corridor\",\"building_name\":\"暖廊\",\"floor\":null,\"severity\":\"low\",\"description\":\"暖廊今日阳光充足，适合散步休憩\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"天气好的时候可以去暖廊散步、学习、拍照\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "谁捡到了一张校园卡，名字叫张三，捡到了麻烦送到宿舍5号楼302，谢谢",
+    "output": "{\"type\":\"mutual\",\"building_id\":\"BLD_Dorm_5\",\"building_name\":\"5号宿舍楼\",\"floor\":\"3F\",\"severity\":\"low\",\"description\":\"寻找遗失的校园卡，失主姓名张三，宿舍在5号楼302\",\"estimated_wait_min\":null,\"time_window\":\"unknown\",\"advice\":\"捡到者可送至5号楼302，或交至校园卡服务中心\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "今天下午下大暴雨，体育馆门口积水很深，大家绕着走",
+    "output": "{\"type\":\"safety\",\"building_id\":\"BLD_Gym\",\"building_name\":\"体育馆\",\"floor\":null,\"severity\":\"high\",\"description\":\"暴雨导致体育馆门口严重积水，无法正常通行\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"请绕行避免积水路段，注意安全，尽量减少外出\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "学生活动中心今晚有社团招新晚会，七点开始，想去的可以来看看",
+    "output": "{\"type\":\"notice\",\"building_id\":\"BLD_Student_Center\",\"building_name\":\"学生活动中心\",\"floor\":null,\"severity\":\"low\",\"description\":\"学生活动中心今晚19:00举办社团招新晚会\",\"estimated_wait_min\":null,\"time_window\":\"evening\",\"advice\":\"感兴趣的同学可前往观看，建议提前10分钟入场\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "食堂早餐窗口排到门口了，要迟到了还没吃上饭",
+    "output": "{\"type\":\"congestion\",\"building_id\":\"BLD_Canteen_A\",\"building_name\":\"第一食堂\",\"floor\":\"1F\",\"severity\":\"high\",\"description\":\"第一食堂早餐时段排队严重\",\"estimated_wait_min\":20,\"time_window\":\"morning\",\"advice\":\"建议错峰就餐，或选择面包店、超市等其他早餐选项\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "行政楼财务处今天人特别多，报销要等好久，下午可能人少点",
+    "output": "{\"type\":\"congestion\",\"building_id\":\"BLD_Admin\",\"building_name\":\"行政楼\",\"floor\":\"2F\",\"severity\":\"medium\",\"description\":\"行政楼财务处报销排队人数较多，等待时间长\",\"estimated_wait_min\":40,\"time_window\":\"morning\",\"advice\":\"建议下午错峰前往办理，或提前预约\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "求代取快递，到宿舍门口给五块钱小费，快递太大了我搬不动",
+    "output": "{\"type\":\"mutual\",\"building_id\":\"BLD_Express_Center\",\"building_name\":\"快递服务中心\",\"floor\":null,\"severity\":\"low\",\"description\":\"寻求代取快递帮助，包裹较大，酬金5元送到宿舍门口\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"可在互助群或评论区寻找帮助，注意核实对方身份\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "报告厅今晚有电影放映，免费的，七点开始，片名是流浪地球2",
+    "output": "{\"type\":\"notice\",\"building_id\":\"BLD_Lecture_Hall\",\"building_name\":\"学术报告厅\",\"floor\":null,\"severity\":\"low\",\"description\":\"学术报告厅今晚19:00免费放映电影《流浪地球2》\",\"estimated_wait_min\":null,\"time_window\":\"evening\",\"advice\":\"感兴趣的同学可前往观看，建议提前15分钟入场选座\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "实验楼C区3楼化学实验室今天下午有个实验出了点小事故，正在处理，大家暂时别过去",
+    "output": "{\"type\":\"safety\",\"building_id\":\"BLD_Lab_C\",\"building_name\":\"C实验楼\",\"floor\":\"3F\",\"severity\":\"high\",\"description\":\"C实验楼3楼化学实验室发生实验事故，正在处理中\",\"estimated_wait_min\":null,\"time_window\":\"afternoon\",\"advice\":\"请暂时远离事发区域，等待官方通知，注意安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "北门那边新开了一家奶茶店，今天买一送一，人巨多",
+    "output": "{\"type\":\"congestion\",\"building_id\":\"GATE_North\",\"building_name\":\"北校门\",\"floor\":null,\"severity\":\"medium\",\"description\":\"北校门新开奶茶店开业促销（买一送一），排队人数多\",\"estimated_wait_min\":30,\"time_window\":\"afternoon\",\"advice\":\"想尝鲜的同学建议错峰前往，或选择外卖配送\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "图书馆系统升级，今天借不了书，要借书的等明天",
+    "output": "{\"type\":\"service\",\"building_id\":\"BLD_Library\",\"building_name\":\"图书馆\",\"floor\":null,\"severity\":\"medium\",\"description\":\"图书馆系统升级，今日暂停借阅服务\",\"estimated_wait_min\":null,\"time_window\":\"unknown\",\"advice\":\"需要借书的同学请明日再来，或使用电子书资源\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "有没有人周末一起去爬南山，早上八点出发，自带水和食物",
+    "output": "{\"type\":\"mutual\",\"building_id\":\"GATE_South\",\"building_name\":\"南校门\",\"floor\":null,\"severity\":\"low\",\"description\":\"招募周末一起爬南山的同伴，早上8点从南校门出发\",\"estimated_wait_min\":null,\"time_window\":\"morning\",\"advice\":\"感兴趣的可在评论区报名，注意安全，做好防晒和补给准备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice/mutual)、building_id(建筑ID)、building_name(建筑名称)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)",
+    "input": "食堂今天的菜特别咸，大家打饭的时候记得跟阿姨说少放盐",
+    "output": "{\"type\":\"service\",\"building_id\":\"BLD_Canteen_A\",\"building_name\":\"第一食堂\",\"floor\":\"1F\",\"severity\":\"low\",\"description\":\"第一食堂今日菜品偏咸\",\"estimated_wait_min\":null,\"time_window\":\"noon\",\"advice\":\"打饭时可告知阿姨少放盐，或自备饮用水\"}"
+  }
+]

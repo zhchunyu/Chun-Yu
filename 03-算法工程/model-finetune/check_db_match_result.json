@@ -1,0 +1,215 @@
+{
+  "total": 21,
+  "results": [
+    {
+      "text": "谷园餐厅排队太长了，等好久",
+      "tag": "正式名",
+      "hit": true,
+      "location": "谷园餐厅",
+      "location_id": "canteen",
+      "matched_key": "谷园餐厅",
+      "via": "「谷园餐厅」",
+      "note": null
+    },
+    {
+      "text": "图书馆三楼空调外机看着要掉",
+      "tag": "正式名",
+      "hit": true,
+      "location": "图书馆",
+      "location_id": "library",
+      "matched_key": "图书馆",
+      "via": "「图书馆」",
+      "note": null
+    },
+    {
+      "text": "崇学楼三楼热水器不出水",
+      "tag": "正式名",
+      "hit": true,
+      "location": "崇学楼",
+      "location_id": "teaching-a",
+      "matched_key": "崇学楼",
+      "via": "「崇学楼」",
+      "note": null
+    },
+    {
+      "text": "西门那边快递堆成山了，找半天才找到",
+      "tag": "别名:西门",
+      "hit": true,
+      "location": "西校门",
+      "location_id": "east-gate",
+      "matched_key": "西门",
+      "via": "「西门」",
+      "note": null
+    },
+    {
+      "text": "三号楼洗衣机全是坏的",
+      "tag": "别名:三号楼",
+      "hit": true,
+      "location": "3号公寓楼",
+      "location_id": "apartment-3",
+      "matched_key": null,
+      "via": "上下文消歧",
+      "note": "「三号楼」+ 线索词(living) → 判定为 3号公寓楼"
+    },
+    {
+      "text": "三号公寓洗衣机全是坏的",
+      "tag": "别名:三号公寓",
+      "hit": true,
+      "location": "3号公寓楼",
+      "location_id": "apartment-3",
+      "matched_key": "三号公寓",
+      "via": "「三号公寓」",
+      "note": null
+    },
+    {
+      "text": "一食堂今天人爆满，队排到门外了",
+      "tag": "别名:一食堂",
+      "hit": false,
+      "location": null,
+      "location_id": null,
+      "matched_key": null,
+      "via": "",
+      "note": null
+    },
+    {
+      "text": "老图书馆那排自习座位全满了",
+      "tag": "别名:老图书馆?",
+      "hit": true,
+      "location": "图书馆",
+      "location_id": "library",
+      "matched_key": "图书馆",
+      "via": "「图书馆」",
+      "note": null
+    },
+    {
+      "text": "宿舍楼下有人乱停车，把路都堵了",
+      "tag": "模糊:宿舍楼下",
+      "hit": false,
+      "location": null,
+      "location_id": null,
+      "matched_key": null,
+      "via": "",
+      "note": null
+    },
+    {
+      "text": "食堂那边在装修，吵得要死",
+      "tag": "模糊:食堂那边",
+      "hit": false,
+      "location": null,
+      "location_id": null,
+      "matched_key": null,
+      "via": "",
+      "note": null
+    },
+    {
+      "text": "教学楼门口有人在发传单，有点堵路",
+      "tag": "模糊:教学楼门口",
+      "hit": true,
+      "location": "崇学楼",
+      "location_id": "teaching-a",
+      "matched_key": "教学楼",
+      "via": "「教学楼」",
+      "note": null
+    },
+    {
+      "text": "有人晕倒了，快来人",
+      "tag": "无地点",
+      "hit": false,
+      "location": null,
+      "location_id": null,
+      "matched_key": null,
+      "via": "",
+      "note": null
+    },
+    {
+      "text": "英语角开始报名了，截止到周日",
+      "tag": "无地点",
+      "hit": false,
+      "location": null,
+      "location_id": null,
+      "matched_key": null,
+      "via": "",
+      "note": null
+    },
+    {
+      "text": "今晚羽毛球馆有没有人约球",
+      "tag": "无地点(馆未命名)",
+      "hit": false,
+      "location": null,
+      "location_id": null,
+      "matched_key": null,
+      "via": "",
+      "note": null
+    },
+    {
+      "text": "有没有人丢了饭卡，在操场捡到的",
+      "tag": "无地点",
+      "hit": true,
+      "location": "体育场",
+      "location_id": "gymnasium",
+      "matched_key": "操场",
+      "via": "「操场」",
+      "note": null
+    },
+    {
+      "text": "谷园2楼新开的窗口超好吃但排队40分钟",
+      "tag": "正式名+数字混合",
+      "hit": true,
+      "location": "谷园餐厅",
+      "location_id": "canteen",
+      "matched_key": "谷园",
+      "via": "「谷园」",
+      "note": null
+    },
+    {
+      "text": "校医院开的药好贵啊",
+      "tag": "正式名",
+      "hit": true,
+      "location": "校医院",
+      "location_id": "hospital",
+      "matched_key": "校医院",
+      "via": "「校医院」",
+      "note": null
+    },
+    {
+      "text": "睿智文体馆羽毛球场地约满了",
+      "tag": "正式名(长)",
+      "hit": true,
+      "location": "睿智文体馆",
+      "location_id": "ruizhi-sports-center",
+      "matched_key": "睿智文体馆",
+      "via": "「睿智文体馆」",
+      "note": null
+    },
+    {
+      "text": "新北门附近路灯坏了俩",
+      "tag": "正式名",
+      "hit": true,
+      "location": "新北门",
+      "location_id": "new-north-gate",
+      "matched_key": "新北门",
+      "via": "「新北门」",
+      "note": null
+    },
+    {
+      "text": "西校门这边堵车堵到怀疑人生",
+      "tag": "正式名",
+      "hit": true,
+      "location": "西校门",
+      "location_id": "east-gate",
+      "matched_key": "西校门",
+      "via": "「西校门」",
+      "note": null
+    },
+    {
+      "text": "康馨苑门口小卖部涨价了",
+      "tag": "正式名",
+      "hit": true,
+      "location": "康馨苑",
+      "location_id": "kangxinyuan",
+      "matched_key": "康馨苑",
+      "via": "「康馨苑」",
+      "note": null
+    }
+  ]
+}

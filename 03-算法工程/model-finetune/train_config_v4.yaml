@@ -1,0 +1,48 @@
+# LLaMA-Factory 训练配置 V4 — Qwen2.5-14B QLoRA 第四轮
+# AUV 人设 + 人情化提醒
+# 基于 V3 事件提取 LoRA 继续训练，让模型学会从结构化事件生成温暖提醒
+
+### 模型
+model_name_or_path: /root/autodl-tmp/models/models/qwen--Qwen2.5-14B-Instruct/snapshots/master
+# 从事件提取模型继续训，这样 AUV 既会提取又会说话
+adapter_name_or_path: /root/autodl-tmp/output/qwen25-14b-event-v3/checkpoint-576
+
+### 训练方法
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 64
+lora_alpha: 128
+lora_dropout: 0.05
+lora_target: all
+
+### 量化
+quantization_bit: 4
+quantization_type: nf4
+
+### 数据集
+dataset: auv_persona
+dataset_dir: /root/autodl-tmp/data
+template: qwen
+
+### 输出
+output_dir: /root/autodl-tmp/output/qwen25-14b-auv-v1
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 4
+learning_rate: 5.0e-5
+num_train_epochs: 3.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+
+### 日志 & 保存
+logging_steps: 10
+save_steps: 200
+save_total_limit: 3
+
+### 其他
+fp16: true
+gradient_checkpointing: true
+ddp_timeout: 180000000
+
+### 评估（关闭）
+do_eval: false

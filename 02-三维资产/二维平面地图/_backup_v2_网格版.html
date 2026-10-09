@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>校园总平面图 · 2D 平面版</title>
+<style>
+  :root{
+    --ui-bg: rgba(24,25,28,.86);
+    --ui-bd: rgba(255,255,255,.10);
+    --ui-fg: #ECEAE4;
+    --ui-fg2: #9C9A93;
+    --ui-acc: #E0A458;
+    --ui-hover: rgba(255,255,255,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:#111214;color:var(--ui-fg);
+    font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    overflow:hidden;
+  }
+  #app{position:fixed;inset:0}
+
+  /* ============ 画布 ============ */
+  #stage{position:absolute;inset:0;overflow:hidden;background:var(--m-bg);cursor:grab}
+  #stage.dragging{cursor:grabbing}
+  #map{width:100%;height:100%;display:block;touch-action:none}
+
+  /* ============ 图元样式（由主题变量驱动） ============ */
+  .bl{stroke-width:1.25;stroke-linejoin:round}
+  .bl > *{fill:inherit;stroke:inherit}                 /* 组合形体：子元素继承本建筑配色 */
+  .bl > .anx{opacity:.82}                              /* 附楼 / 裙房：略浅，形成体量层次 */
+  .bl > .rooflayer{opacity:1}
+
+  /* 屋顶构件（stroke 继承建筑描边色，仅控制粗细与浓度） */
+  .rf-eave   {fill:none;stroke-width:.85;opacity:.48}
+  .rf-ridge  {fill:none;stroke-width:2.2;opacity:.62;stroke-linecap:round}
+  .rf-raf    {fill:none;stroke-width:.7;opacity:.28}
+  .rf-parapet{fill:none;stroke-width:1.05;opacity:.52}
+  .rf-strip  {fill:none;stroke-width:1.6;opacity:.36;stroke-linecap:round}
+  .rf-unit   {opacity:.46}
+  .rf-court  {fill:none;stroke-width:1.1;opacity:.5}
+
+  .wall{fill:none;stroke:var(--m-wall);stroke-width:3.2;stroke-dasharray:9 6;opacity:.6;stroke-linecap:round}
+  .plz{fill:var(--m-plaza);stroke:var(--m-plazaEdge);stroke-width:1.2}
+  .rd{stroke:var(--m-road)}
+  .rd-case{stroke:var(--m-roadCase)}
+  .pt{stroke:var(--m-path);stroke-dasharray:10 8}
+
+  /* 文字 */
+  .lb,.lb-sm,.lb-lg,.lb-gate,.lb-n,.lb-road,.zl{font-family:inherit;paint-order:stroke;stroke-linejoin:round;pointer-events:none;user-select:none}
+  .lb{font-size:13px;font-weight:600;fill:var(--m-label);stroke:var(--m-halo);stroke-width:3.6}
+  .lb-sm{font-size:11px;font-weight:500;fill:var(--m-sub);stroke:var(--m-halo);stroke-width:3}
+  .lb-lg{font-size:15px;font-weight:700;fill:var(--m-label);stroke:var(--m-halo);stroke-width:4;letter-spacing:.06em}
+  .lb-gate{font-size:12.5px;font-weight:700;fill:var(--m-label);stroke:var(--m-halo);stroke-width:3.6}
+  .lb-n{font-size:15px;font-weight:700;fill:var(--m-label);stroke:none}
+  .lb-road{font-size:12px;font-weight:600;fill:var(--m-sub);stroke:var(--m-halo);stroke-width:3;letter-spacing:.16em;opacity:.9}
+  .zl{font-size:23px;font-weight:800;letter-spacing:.24em;fill:var(--m-label);opacity:.10;stroke:none}
+
+  /* 交互态 */
+  #vp [data-id]{transition:opacity .15s ease}
+  #vp .hov{filter:url(#shH);stroke-width:2.6}
+  #vp .hit{stroke:var(--ui-acc);stroke-width:3.2}
+  #vp .dim{opacity:.18}
+
+  /* ============ 浮动面板通用 ============ */
+  .panel{
+    position:absolute;background:var(--ui-bg);border:1px solid var(--ui-bd);
+    border-radius:12px;backdrop-filter:blur(14px) saturate(1.4);
+    -webkit-backdrop-filter:blur(14px) saturate(1.4);
+    box-shadow:0 10px 34px rgba(0,0,0,.42);
+  }
+  .panel h2{margin:0;font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--ui-fg2);text-transform:uppercase}
+
+  #brand{left:20px;top:20px;padding:14px 18px 13px;min-width:236px}
+  #brand .t{font-size:19px;font-weight:650;letter-spacing:.02em;line-height:1.2}
+  #brand .s{font-size:11.5px;color:var(--ui-fg2);margin-top:5px;letter-spacing:.04em}
+  #brand .k{font-size:11px;color:var(--ui-acc);margin-top:8px;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+
+  #tools{right:20px;top:20px;padding:12px;display:flex;flex-direction:column;gap:10px;width:236px}
+  .row{display:flex;gap:6px;flex-wrap:wrap}
+  .btn{
+    flex:1 1 auto;min-width:44px;padding:7px 9px;border-radius:8px;border:1px solid var(--ui-bd);
+    background:rgba(255,255,255,.045);color:var(--ui-fg);font-size:12px;cursor:pointer;
+    transition:.15s;font-family:inherit;text-align:center;white-space:nowrap
+  }
+  .btn:hover{background:var(--ui-hover);border-color:rgba(255,255,255,.22)}
+  .btn.on{background:var(--ui-acc);color:#20160A;border-color:var(--ui-acc);font-weight:600}
+  #q{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--ui-bd);
+     background:rgba(0,0,0,.28);color:var(--ui-fg);font-size:12.5px;font-family:inherit;outline:none}
+  #q:focus{border-color:var(--ui-acc)}
+  #q::placeholder{color:#6C6A64}
+
+  #legend{left:20px;bottom:20px;padding:13px 16px;max-width:290px}
+  #legend .lg{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:10px}
+  #legend .it{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#D6D4CE}
+  #legend .sw{width:13px;height:13px;border-radius:3px;flex:none;border:1px solid rgba(0,0,0,.28)}
+  #legend .bar{display:flex;align-items:center;gap:9px;margin-top:11px;padding-top:10px;border-top:1px solid var(--ui-bd)}
+  #scalebar{height:7px;flex:none;border:1px solid #C9C7C1;border-radius:2px;
+    background-image:linear-gradient(90deg,#C9C7C1 50%,transparent 50%);background-size:12px 100%}
+  #scaletxt{font-size:10.5px;color:#9C9A93;white-space:nowrap}
+
+  #drawer{
+    right:20px;bottom:20px;width:300px;padding:0;overflow:hidden;
+    opacity:0;transform:translateY(14px);pointer-events:none;transition:.22s cubic-bezier(.2,.8,.3,1)
+  }
+  #drawer.show{opacity:1;transform:none;pointer-events:auto}
+  #drawer .hd{padding:14px 16px 12px;border-bottom:1px solid var(--ui-bd);display:flex;align-items:flex-start;gap:10px}
+  #drawer .nm{font-size:15.5px;font-weight:640;line-height:1.3;flex:1}
+  #drawer .x{cursor:pointer;color:var(--ui-fg2);font-size:17px;line-height:1;padding:2px 4px;border-radius:6px}
+  #drawer .x:hover{background:var(--ui-hover);color:#fff}
+  #drawer .bd{padding:12px 16px 16px;font-size:12.5px;line-height:1.75;color:#C9C7C1}
+  #drawer .kv{display:flex;gap:10px;margin-bottom:5px}
+  #drawer .kv i{font-style:normal;color:var(--ui-fg2);width:62px;flex:none}
+  #drawer .kv b{font-weight:500;color:#E8E6E0}
+  #drawer .tag{display:inline-block;padding:2.5px 9px;border-radius:20px;font-size:11px;margin-top:9px}
+
+  #tip{
+    position:absolute;pointer-events:none;padding:5px 10px;border-radius:7px;
+    background:rgba(20,21,24,.92);border:1px solid var(--ui-bd);color:#F0EEE8;
+    font-size:12px;white-space:nowrap;opacity:0;transition:opacity .1s;z-index:20
+  }
+
+  #hint{
+    position:absolute;left:50%;transform:translateX(-50%);bottom:18px;
+    font-size:11.5px;color:var(--ui-fg2);background:rgba(24,25,28,.72);
+    padding:6px 14px;border-radius:20px;border:1px solid var(--ui-bd);
+    backdrop-filter:blur(10px);transition:.4s;white-space:nowrap
+  }
+  #hint.off{opacity:0;transform:translateX(-50%) translateY(8px)}
+
+  @media (max-width:900px){
+    #legend{display:none}
+    #brand .s{display:none}
+    #tools{width:180px}
+    #drawer{width:calc(100% - 40px)}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage"><svg id="map" viewBox="0 0 2400 1500" preserveAspectRatio="xMidYMid meet"></svg></div>
+
+  <div class="panel" id="brand">
+    <div class="t">校园总平面图</div>
+    <div class="s">CAMPUS MASTER PLAN · 2D FLAT</div>
+    <div class="k" id="stat">— 栋建筑 · — 个功能分区</div>
+  </div>
+
+  <div class="panel" id="tools">
+    <input id="q" placeholder="搜索建筑 / 功能区…" autocomplete="off">
+    <div class="row">
+      <button class="btn" data-act="in">＋</button>
+      <button class="btn" data-act="out">－</button>
+      <button class="btn" data-act="reset">复位</button>
+      <button class="btn" data-act="png">存图</button>
+    </div>
+    <div class="row" id="layers"></div>
+    <div class="row" id="themes"></div>
+  </div>
+
+  <div class="panel" id="legend">
+    <h2>图例</h2>
+    <div class="lg" id="lgbody"></div>
+    <div class="bar">
+      <span id="scalebar"></span>
+      <span id="scaletxt">100 m</span>
+    </div>
+  </div>
+
+  <div class="panel" id="drawer">
+    <div class="hd"><div class="nm" id="d-nm"></div><div class="x" id="d-x">×</div></div>
+    <div class="bd" id="d-bd"></div>
+  </div>
+
+  <div id="tip"></div>
+  <div id="hint">滚轮缩放 · 拖拽平移 · 点击建筑查看详情</div>
+</div>
+
+<script>
+/* =========================================================================
+   校园总平面图 · 2D 扁平风格
+   viewBox 2400 × 1500，1 绘图单位 = 0.4 m（校园约 864 m × 504 m）
+   本图为重新绘制的原创矢量平面图，非任何既有地图的翻版
+   ========================================================================= */
+
+/* ---------- 0. 主题 ---------- */
+const THEMES = {
+  paper:{
+    label:'纸白',
+    bg:'#E3E0D5', land:'#F7F5EF', landEdge:'#CFC9B8', out:'#DEDBD0', outRoad:'#CCC6B8',
+    lawn:'#D4E3C5', lawnEdge:'#BCD1AA',
+    tree:'#AFCB9C', treeEdge:'#8FB37B', tree3:'#C4DBB4',
+    water:'#B6D8E8', water2:'#96C5DA', waterEdge:'#7CAFC8',
+    road:'#FFFFFF', roadCase:'#DCD6C6', path:'#E9E4D7',
+    plaza:'#E6E1D4', plazaEdge:'#D0C9B7', wall:'#B9AE97',
+    court:{bball:'#8FB0D2',volley:'#9CC6A6',tennis:'#D2A184',football:'#A8C79A',track:'#CE8C6C',field:'#9CC48B'},
+    label:'#3A3833', sub:'#6E6A61', halo:'#FBF9F3',
+    zones:{hist:'#D6A78B',teach:'#EBD8B4',lake:'#9CC5DA',sport:'#9FBEDD',life:'#A9BED6',lab:'#A9C6A7',serv:'#EFC894',back:'#CFC6B6'},
+    types:{
+      teach:['#EBD8B4','#B79A66'], lab:['#C6D8C4','#89AC87'], dorm:['#C8D6E6','#88A5C6'],
+      serv:['#F0CDA2','#CD9C60'], sport:['#B4CDE4','#82A5C9'], hist:['#D6A78B','#AC7A5B'],
+      admin:['#D8CFC0','#B0A28A'], med:['#E9C5C5','#C19393'], cult:['#D5C3DE','#A78DAF'],
+      gh:['#CFE0D2','#98BC9F']
+    }
+  },
+  blueprint:{
+    label:'蓝图',
+    bg:'#0A1D2B', land:'#0F2B3F', landEdge:'#1D4E6B', out:'#081724', outRoad:'#123549',
+    lawn:'#123A4C', lawnEdge:'#1A5570',
+    tree:'#1B5A70', treeEdge:'#2B7E96', tree3:'#164A5D',
+    water:'#0A3550', water2:'#0E4C6C', waterEdge:'#2C86A8',
+    road:'#174863', roadCase:'#0B2839', path:'#123C54',
+    plaza:'#123D56', plazaEdge:'#1C5877', wall:'#2E6C8E',
+    court:{bball:'#14526F',volley:'#155F5E',tennis:'#5A4A3E',football:'#144A4E',track:'#5E4136',field:'#14504A'},
+    label:'#CFE9F5', sub:'#7FA9C0', halo:'#0A1D2B',
+    zones:{hist:'#7E5A44',teach:'#8A7048',lake:'#2C6E8E',sport:'#2A5F86',life:'#35526F',lab:'#3A6B54',serv:'#8A6534',back:'#4A5A66'},
+    types:{
+      teach:['#143A55','#4FA8CE'], lab:['#12453F','#4FC2A6'], dorm:['#16324F','#4E8FC4'],
+      serv:['#4A3A1C','#D8A85A'], sport:['#123C5C','#4E9CD8'], hist:['#4A2C22','#C77F55'],
+      admin:['#2A3440','#8FA3B5'], med:['#4A2430','#D98A9C'], cult:['#33284A','#A98BD8'],
+      gh:['#123A38','#4FB39B']
+    }
+  },
+  night:{
+    label:'夜航',
+    bg:'#0E1014', land:'#171A20', landEdge:'#2A2F38', out:'#0A0C0F', outRoad:'#1E232B',
+    lawn:'#1B2419', lawnEdge:'#2A3626',
+    tree:'#243322', treeEdge:'#37503A', tree3:'#1D2A1C',
+    water:'#0F2436', water2:'#15354C', waterEdge:'#2E6383',
+    road:'#2A2F38', roadCase:'#161A20', path:'#23272E',
+    plaza:'#22262D', plazaEdge:'#31363F', wall:'#4A5058',
+    court:{bball:'#1E3A56',volley:'#1E4038',tennis:'#4A3328',football:'#1E3A28',track:'#4E2F26',field:'#1E3A28'},
+    label:'#E6E4DE', sub:'#8B8A84', halo:'#0E1014',
+    zones:{hist:'#7A5038',teach:'#7E6636',lake:'#20516F',sport:'#24507A',life:'#3A4E6A',lab:'#33614A',serv:'#7E5C2E',back:'#4A5058'},
+    types:{
+      teach:['#4A4234','#E8B865'], lab:['#2E4234','#7FD3A0'], dorm:['#2E3A4E','#7FAAD8'],
+      serv:['#4A3A20','#F0B85E'], sport:['#2A3E58','#79AEE0'], hist:['#4A3024','#E09A6A'],
+      admin:['#34383E','#A8B0B8'], med:['#4A2E34','#E09098'], cult:['#3A3048','#BFA0E8'],
+      gh:['#244034','#7FD3A0']
+    }
+  }
+};
+let TH = THEMES.paper;
+
+/* 尺度：1 绘图单位 = 0.4 m */
+const UNIT_M  = 0.4;
+const AREA_M2 = UNIT_M * UNIT_M;
+const BAR_M   = 100;
+
+/* ---------- 1. 建筑类型 ---------- */
+const TYPE_LABEL = {
+  teach:'教学', lab:'科研实验', dorm:'学生公寓', serv:'生活服务', sport:'体育设施',
+  hist:'历史建筑', admin:'后勤办公', med:'医疗健康', cult:'文化礼堂', gh:'温室苗圃'
+};
+
+/* ---------- 2. 形体生成器 ---------- */
+const RC = (x,y,w,h)=>[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+/* L 形：w×h 包围盒缺掉一角（nw×nh），c = 缺角位置 */
+function LG(x,y,w,h,nw,nh,c){
+  if(c==='se') return [[x,y],[x+w,y],[x+w,y+h-nh],[x+w-nw,y+h-nh],[x+w-nw,y+h],[x,y+h]];
+  if(c==='sw') return [[x,y],[x+w,y],[x+w,y+h],[x+nw,y+h],[x+nw,y+h-nh],[x,y+h-nh]];
+  if(c==='nw') return [[x,y+nh],[x+nw,y+nh],[x+nw,y],[x+w,y],[x+w,y+h],[x,y+h]];
+  return [[x,y],[x+w-nw,y],[x+w-nw,y+nh],[x+w,y+nh],[x+w,y+h],[x,y+h]];
+}
+/* 凹形（三面围合），s = 开口方向 */
+function UG(x,y,w,h,nw,nh,s){
+  if(s==='s'){ const t=(w-nw)/2; return [[x,y],[x+w,y],[x+w,y+h],[x+w-t,y+h],[x+w-t,y+h-nh],[x+t,y+h-nh],[x+t,y+h],[x,y+h]]; }
+  if(s==='n'){ const t=(w-nw)/2; return [[x,y+nh],[x+t,y+nh],[x+t,y],[x+w-t,y],[x+w-t,y+nh],[x+w,y+nh],[x+w,y+h],[x,y+h]]; }
+  const u=(h-nh)/2;
+  if(s==='w') return [[x+nh,y],[x+w,y],[x+w,y+h],[x+nh,y+h],[x+nh,y+u+nh],[x,y+u+nh],[x,y+u],[x+nh,y+u]];
+  return [[x,y],[x+w-nh,y],[x+w-nh,y+u],[x+w,y+u],[x+w,y+u+nh],[x+w-nh,y+u+nh],[x+w-nh,y+h],[x,y+h]];
+}
+/* T 形：主体 + 一侧居中凸出（附楼），t = 凸出方向 */
+function TG(x,y,w,h,aw,ah,t){
+  if(t==='n'){ const o=x+(w-aw)/2; return [[x,y+ah],[o,y+ah],[o,y],[o+aw,y],[o+aw,y+ah],[x+w,y+ah],[x+w,y+h],[x,y+h]]; }
+  if(t==='s'){ const o=x+(w-aw)/2; return [[x,y],[x+w,y],[x+w,y+h-ah],[o+aw,y+h-ah],[o+aw,y+h],[o,y+h],[o,y+h-ah],[x,y+h-ah]]; }
+  if(t==='w'){ const o=y+(h-ah)/2; return [[x+aw,y],[x+w,y],[x+w,y+h],[x+aw,y+h],[x+aw,y+o+ah],[x,y+o+ah],[x,y+o],[x+aw,y+o]]; }
+  const o=y+(h-ah)/2; return [[x,y],[x+w-aw,y],[x+w-aw,y+o],[x+w,y+o],[x+w,y+o+ah],[x+w-aw,y+o+ah],[x+w-aw,y+h],[x,y+h]];
+}
+function OCT(cx,cy,r){ const p=[]; for(let i=0;i<8;i++){ const a=Math.PI/4*i-Math.PI/8; p.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]); } return p; }
+function CIR(cx,cy,r,n){ n=n||26; const p=[]; for(let i=0;i<n;i++){ const a=2*Math.PI*i/n; p.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]); } return p; }
+/* 板式宿舍：主体长条 + n 个北侧楼梯间凸出 */
+function DORM(x,y,w,h,n){
+  const ps=[RC(x,y,w,h)], tw=26, th=13, st=w/(n+1);
+  for(let i=1;i<=n;i++) ps.push(RC(x+st*i-tw/2, y-th+4, tw, th));
+  return ps;
+}
+
+/* ---------- 3. 校园数据 ---------- */
+const BUILDINGS = [];
+
+/* ===== 西区 · 老校区传统院落（坡屋顶合院） ===== */
+const HIST = [
+  {n:'明德堂', x:190,y:196,w:150,h:56, f:2, lb:1,
+   ps:[RC(190,196,150,56), RC(245,174,42,22), RC(245,252,42,22)],
+   d:'老校区现存最早的主体厅堂，前后抱厦、青砖灰瓦，现为校史展陈使用。'},
+  {n:'东院正房', x:368,y:196,w:118,h:50, f:1, ps:[RC(368,196,118,50), RC(380,246,94,11)], d:'东跨院正房，硬山双坡顶，前出廊，合院格局组成部分。'},
+  {n:'老图书馆', x:512,y:196,w:116,h:56, f:2, lb:1,
+   ps:[RC(512,196,116,56), RC(550,252,40,22)],
+   d:'砖木结构、坡屋顶，现为特藏与古籍阅览室。'},
+  {n:'西厢房', x:190,y:278,w:66,h:50, f:1, ps:[RC(190,278,66,50), RC(198,328,50,10)], d:'院落西侧配房，带前廊。'},
+  {n:'中厢房', x:266,y:278,w:66,h:50, f:1, ps:[RC(266,278,66,50), RC(274,328,50,10)], d:'院落中段配房，带前廊。'},
+  {n:'东厢房', x:368,y:278,w:62,h:50, f:1, ps:[RC(368,278,62,50), RC(376,328,46,10)], d:'院落东侧配房，带前廊。'},
+  {n:'格物楼', x:512,y:278,w:116,h:50, f:2, lb:1,
+   ps:[RC(512,278,116,50), RC(550,328,40,20)],
+   d:'与老图书馆同期同套建筑语汇，坡屋顶带南抱厦。'},
+  {n:'过厅', x:190,y:356,w:112,h:46, f:1, ps:[RC(190,356,112,46), RC(200,402,92,10)], d:'前后院之间的穿堂过厅，南北贯通。'},
+  {n:'东院南房', x:368,y:356,w:118,h:46, f:1, ps:[RC(368,356,118,46), RC(380,402,94,10)], d:'东跨院南侧倒座房，带前廊。'},
+  {n:'致知楼', x:512,y:356,w:116,h:46, f:2, lb:1,
+   ps:[RC(512,356,116,46), RC(550,402,40,20)],
+   d:'原科学楼，坡屋顶砖木结构，现为院系办公。'},
+  {n:'四牌门', x:196,y:414,w:40,h:14, f:1, flat:1, d:'院落南入口牌门。'},
+  {n:'八角彩亭', x:432,y:408,w:40,h:40, f:1, p:OCT(452,428,20), d:'中式八角攒尖顶彩亭，老校区景观节点。'},
+  {n:'花厅', x:500,y:412,w:128,h:42, f:1, ps:[RC(500,412,128,42), RC(516,454,96,13)], d:'会客花厅，带前廊。'},
+];
+for(const b of HIST) BUILDINGS.push({t:'hist', ...b});
+
+/* ===== 西区 · 老校区广场 ===== */
+BUILDINGS.push(
+  {n:'校史陈列馆', t:'cult', x:190,y:490,w:152,h:54, f:2, lb:1,
+   p:LG(190,490,152,54,44,22,'se'),
+   d:'由老建筑改造，展陈办学沿革与学科脉络。'},
+  {n:'通识楼', t:'teach', x:380,y:496,w:142,h:160, f:5, lb:1,
+   p:LG(380,496,142,160,72,104,'sw'),
+   d:'1990 年代教学楼，砖红外墙，L 形平面带转角连廊，现为通识课程教室。'},
+  {n:'东斋', t:'hist', x:538,y:496,w:96,h:48, f:2, lb:1,
+   ps:[RC(538,496,96,48), RC(568,544,36,18)],
+   d:'青瓦屋顶、砖木结构、带抱厦。'},
+  {n:'西斋', t:'hist', x:538,y:556,w:96,h:48, f:2,
+   ps:[RC(538,556,96,48), RC(568,604,36,18)], d:'由韩氏家族捐建，与东斋同期。'},
+  {n:'老年活动中心', t:'admin', x:538,y:618,w:96,h:52, f:2, p:TG(538,618,96,52,40,34,'s'), d:'离退休教职工活动与阅览用房，南向入口厅。'},
+  {n:'牌楼', t:'hist', x:266,y:682,w:62,h:16, f:1, lb:1, flat:1, d:'西门内中轴牌坊，石构三间四柱。'},
+  {n:'中心纪念广场', t:'plaza', x:258,y:554,w:104,h:104, f:0, lb:1, p:CIR(310,606,52),
+   d:'老校区中心圆形广场，中置孔子立像，是校园人文轴线起点。'}
+);
+
+/* ===== 西区 · 球场群 ===== */
+for(let j=0;j<2;j++) for(let i=0;i<3;i++){
+  const k=j*3+i+1;
+  BUILDINGS.push({n:`篮球场（${'一二三四五六'[k-1]}）`, t:'court', k:'bball',
+    x:190+i*98, y:846+j*70, w:88, h:58, f:0});
+}
+BUILDINGS.push(
+  {n:'排球场（一）', t:'court', k:'volley', x:190,y:986,w:88,h:58,f:0},
+  {n:'排球场（二）', t:'court', k:'volley', x:288,y:986,w:88,h:58,f:0},
+  {n:'网球场',       t:'court', k:'tennis', x:386,y:986,w:88,h:58,f:0},
+  {n:'五人制足球场', t:'court', k:'football', x:190,y:1058,w:284,h:66, f:0, lb:1},
+  {n:'体育器材室',   t:'sport', x:486,y:1058,w:118,h:66, f:1, p:TG(486,1058,118,66,44,34,'s'),
+   d:'体育教学器材存放与值班管理。'}
+);
+
+/* ===== 西区 · 南端实训 ===== */
+BUILDINGS.push(
+  {n:'工程实训中心', t:'lab', x:190,y:1186,w:200,h:120, f:3, lb:1,
+   p:TG(190,1186,200,120,86,74,'e'), rf:'saw',
+   d:'金工、电工电子与工程训练平台，主体带东侧附楼。'},
+  {n:'停车场', t:'park', x:410,y:1186,w:200,h:104, f:0, lb:1, d:'地面停车场，约 60 个车位。'}
+);
+
+/* ===== 中央教学区 ===== */
+BUILDINGS.push(
+  {n:'图书馆', t:'teach', x:690,y:496,w:320,h:158, f:6, lb:1,
+   p:RC(690,496,320,158), hl:[RC(744,544,212,66)],
+   d:'全校文献信息中心，回字形平面、中庭采光。藏书约 120 万册，设自习区、研讨间与数字阅览区。'},
+  {n:'图书馆门厅', t:'teach', x:820,y:654,w:60,h:26, f:2, p:TG(820,654,60,26,34,16,'n'), d:'南向主入口门厅，通高两层。'},
+  {n:'馆前广场', t:'plaza', x:690,y:700,w:320,h:72, f:0, lb:1,
+   d:'图书馆前硬质广场，中央设圆形水景，是校园主要集会与活动场地。'}
+);
+
+/* ===== 中央教学区 · 实验楼群 ===== */
+BUILDINGS.push(
+  {n:'资环楼',       t:'lab', x:690, y:846, w:164, h:62, f:5, lb:1, p:TG(690,846,164,62,58,44,'e'),
+   d:'资源环境学院教学科研楼，含土壤、气象与遥感实验室。'},
+  {n:'动医楼',       t:'lab', x:872, y:846, w:164, h:62, f:5, lb:1, p:LG(872,846,164,62,56,30,'se'),
+   d:'动物医学学院，L 形平面带动物房附楼。'},
+  {n:'城建实验室',   t:'lab', x:1054,y:846, w:106, h:62, f:3, p:TG(1054,846,106,62,46,40,'n'),
+   d:'城乡建设学院实验用房，含材料与结构试验。'},
+  {n:'生科楼',       t:'lab', x:690, y:926, w:164, h:62, f:5, lb:1, p:TG(690,926,164,62,62,40,'s'),
+   d:'生命科学学院，含分子生物学与细胞培养平台。'},
+  {n:'农业工程学院', t:'lab', x:872, y:926, w:164, h:62, f:5, lb:1, p:LG(872,926,164,62,56,30,'sw'),
+   d:'农业工程学院主楼，含农机与农业电气化实验区。'},
+  {n:'农工院实训实验室', t:'lab', x:1054,y:926,w:106,h:62, f:3, rf:'saw',
+   d:'农机拆装与田间作业机械实训厂房。'},
+  {n:'实验大楼',     t:'lab', x:690, y:1006,w:344,h:80, f:6, lb:1,
+   ps:[RC(690,1006,344,80), CIR(1060,1046,42)],
+   d:'校级大型仪器共享平台，主体带圆形报告厅，含分析测试中心。'}
+);
+
+/* ===== 中央教学区北 · 植物园 / 医疗 ===== */
+BUILDINGS.push(
+  {n:'植物园', t:'green', x:690, y:190, w:330, h:238, f:0, lb:1,
+   d:'教学植物园，收集木本与药用植物，含苗圃、曲径与荷花池。'},
+  {n:'校医院', t:'med', x:1040, y:190, w:116, h:72, f:3, lb:1, p:LG(1040,190,116,72,44,28,'se'),
+   d:'门诊、输液、药房与公共卫生科。'},
+  {n:'智能温室', t:'gh', x:1040, y:282, w:116, h:68, f:1, lb:1, rf:'saw',
+   d:'人工气候温室，用于育种与栽培试验。'},
+  {n:'药用植物圃', t:'green', x:1040, y:366, w:116, h:66, f:0, d:'药用植物引种与教学圃地。'}
+);
+
+/* ===== 中央教学区南 · 实训基地 ===== */
+BUILDINGS.push(
+  {n:'作物表型平台',   t:'lab', x:690, y:1186, w:204, h:66, f:2, lb:1, rf:'saw',
+   d:'高通量作物表型采集，含移动龙门与成像舱。'},
+  {n:'园艺工艺实验室', t:'lab', x:912, y:1186, w:164, h:66, f:3, lb:1, p:TG(912,1186,164,66,58,40,'n'),
+   d:'园艺产品加工与工艺实验。'},
+  {n:'连栋温室',       t:'gh', x:690, y:1268, w:386, h:54, f:1, lb:1, rf:'saw',
+   d:'连栋玻璃温室，用于设施园艺教学与生产。'}
+);
+
+/* ===== 中东区 · 北（教学实验区） ===== */
+BUILDINGS.push(
+  {n:'食用菌楼', t:'lab', x:1226,y:190,w:158,h:150, f:3, lb:1, p:LG(1226,190,158,150,64,84,'sw'),
+   d:'食用菌育种与栽培中试车间，L 形厂房。'},
+  {n:'食品实验室', t:'lab', x:1404,y:190,w:158,h:64, f:3, lb:1, p:TG(1404,190,158,64,56,38,'e'),
+   d:'食品科学与工程实验教学中心。'},
+  {n:'食品中试车间', t:'serv', x:1404,y:272,w:158,h:64, f:2, p:TG(1404,272,158,64,52,36,'s'),
+   d:'乳品与果蔬加工中试线。'},
+  {n:'学生公寓 19 号楼', t:'dorm', x:1226,y:362,w:158,h:58, f:5, ps:DORM(1226,362,158,58,2)},
+  {n:'学生公寓 20 号楼', t:'dorm', x:1404,y:362,w:158,h:58, f:5, ps:DORM(1404,362,158,58,2)}
+);
+
+/* ===== 中东区 · 湖滨景观区 ===== */
+BUILDINGS.push(
+  {n:'水保楼', t:'lab', x:1560,y:496,w:132,h:64, f:4, lb:1, p:LG(1560,496,132,64,50,30,'se'),
+   d:'水土保持科学研究所，含径流泥沙与土壤侵蚀实验室。'},
+  {n:'2 号供热站', t:'admin', x:1560,y:580,w:102,h:56, f:1, lb:1, p:TG(1560,580,102,56,40,32,'s'),
+   d:'东部片区供热设施。'},
+  {n:'观景亭', t:'hist', x:1368,y:544,w:44,h:44, f:1, p:OCT(1390,566,22), d:'湖心岛观景亭，八角攒尖顶。'}
+);
+
+/* ===== 中东区 · 南院四合院群（4×4） ===== */
+const NY_Y = [848, 940, 1032, 1186];
+for(let j=0;j<4;j++) for(let i=0;i<4;i++){
+  const k = j*4+i+1;
+  const x = 1226+i*112, y = NY_Y[j];
+  BUILDINGS.push({n:`南院 ${k} 号楼`, t:'dorm', x, y, w:92, h:74, f:3,
+    p:RC(x,y,92,74), hl:[RC(x+14,y+14,64,46)],
+    lb: k===1?1:0,
+    d: k===1 ? '老南院教工住宅，四合院式围合，中留天井。' : undefined});
+}
+BUILDINGS.push(
+  {n:'后勤用房', t:'admin', x:1226,y:1280,w:182,h:46, f:2, p:TG(1226,1280,182,46,66,30,'e'), d:'环卫、绿化与维修班组用房。'},
+  {n:'变电所',   t:'admin', x:1428,y:1280,w:102,h:46, f:1, p:TG(1428,1280,102,46,38,30,'e'), d:'10kV 变电所。'}
+);
+
+/* ===== 东区 · 教学主楼区 ===== */
+BUILDINGS.push(
+  {n:'教学主楼', t:'teach', x:1770,y:520,w:236,h:172, f:6, lb:1, p:UG(1770,520,236,172,130,82,'n'),
+   d:'校园标志性建筑，石材立面、竖向壁柱节奏，三面围合呈凹字形，北向设弧形门厅与报告厅。'},
+  {n:'教学主楼门厅', t:'teach', x:1850,y:500,w:76,h:102, f:2,
+   ps:[RC(1850,538,76,64), CIR(1888,538,38)],
+   d:'北向弧形门厅，通高两层，内含报告厅。'},
+  {n:'理化楼',   t:'teach', x:1770,y:706,w:200,h:70, f:5, lb:1, p:LG(1770,706,200,70,66,36,'se'),
+   d:'基础化学与物理实验教学中心，L 形平面。'},
+  {n:'崇信楼',   t:'teach', x:1990,y:706,w:200,h:70, f:5, lb:1, p:LG(1990,706,200,70,66,36,'sw'),
+   d:'信息与电气类教学科研楼，含计算中心。'},
+  {n:'劲科楼',   t:'lab', x:2030,y:496,w:196,h:80, f:4, lb:1, p:TG(2030,496,196,80,72,52,'e'),
+   d:'农业机械与工程训练综合楼。'},
+  {n:'教辅办公用房', t:'admin', x:2030,y:592,w:196,h:80, f:4, p:LG(2030,592,196,80,70,44,'se'),
+   d:'教务、学工与教学辅助办公。'}
+);
+
+/* ===== 东区 · 体育运动区 ===== */
+BUILDINGS.push(
+  {n:'体育场', t:'court', k:'track', x:1745,y:838,w:306,h:200, f:0, lb:1,
+   d:'标准 400 m 八道塑胶田径场，内含天然草足球场，西侧设看台。'},
+  {n:'体育中心', t:'sport', x:2065,y:838,w:162,h:128, f:3, lb:1, p:LG(2065,838,162,128,66,56,'sw'),
+   d:'篮球、羽毛球、乒乓球室内场馆，兼体育教学部办公。'},
+  {n:'球类运动场', t:'court', k:'bball', x:2065,y:984,w:162,h:70, f:0, lb:1},
+  {n:'篮球场', t:'court', k:'bball', x:2065,y:1064,w:162,h:62, f:0},
+  {n:'饮食中心', t:'serv', x:1745,y:1056,w:200,h:70, f:3, lb:1, p:LG(1745,1056,200,70,70,34,'se'),
+   d:'学生饮食中心，含大众餐、风味档口与清真餐厅。'},
+  {n:'乒乓球台', t:'court', k:'volley', x:1955,y:1056,w:90,h:70, f:0, lb:1}
+);
+
+/* ===== 东区 · 学生生活区（公寓 11~18） ===== */
+for(let j=0;j<2;j++) for(let i=0;i<4;i++){
+  const k = 11 + j*4 + i;
+  BUILDINGS.push({n:`学生公寓 ${k} 号楼`, t:'dorm', x:1760+i*116, y:200+j*86, w:106, h:48, f:6,
+    ps:DORM(1760+i*116, 200+j*86, 106, 48, 2)});
+}
+BUILDINGS.push(
+  {n:'禾园餐厅', t:'serv', x:1760,y:368,w:200,h:52, f:3, lb:1, p:LG(1760,368,200,52,70,30,'se'),
+   d:'学生第二食堂，含屋顶光伏与集中加工区。'},
+  {n:'学生公寓 21 号楼', t:'dorm', x:1990,y:368,w:110,h:52, f:6,
+   p:RC(1990,368,110,52), hl:[RC(2006,384,78,22)], d:'围合式公寓，内设庭院。'},
+  {n:'学生公寓 22 号楼', t:'dorm', x:2110,y:368,w:110,h:52, f:6,
+   p:RC(2110,368,110,52), hl:[RC(2126,384,78,22)]}
+);
+
+/* ===== 东区 · 南端 ===== */
+BUILDINGS.push(
+  {n:'游泳馆', t:'sport', x:1750,y:1176,w:186,h:80, f:2, lb:1, rf:'saw',
+   p:TG(1750,1176,186,80,64,44,'n'),
+   d:'标准泳池 8 道，北向入口厅，含更衣淋浴与看台。'},
+  {n:'东阶梯教室', t:'teach', x:1950,y:1176,w:88,h:80, f:3, p:TG(1950,1176,88,80,40,44,'n'), d:'阶梯大教室，可容纳 300 人。'},
+  {n:'西阶梯教室', t:'teach', x:2048,y:1176,w:88,h:80, f:3, p:TG(2048,1176,88,80,40,44,'n'), d:'阶梯大教室，可容纳 300 人。'},
+  {n:'一站式学生服务中心', t:'serv', x:2148,y:1176,w:82,h:80, f:3, lb:1, p:LG(2148,1176,82,80,50,34,'se'),
+   d:'超市、理发、洗衣与一站式服务大厅。'},
+  {n:'学生公寓 9 号楼',  t:'dorm', x:1750,y:1268,w:186,h:46, f:6, ps:DORM(1750,1268,186,46,3)},
+  {n:'学生公寓 10 号楼', t:'dorm', x:1950,y:1268,w:186,h:46, f:6, ps:DORM(1950,1268,186,46,3)},
+  {n:'快递驿站', t:'serv', x:2148,y:1268,w:82,h:46, f:1, d:'校园快递集中收发点。'}
+);
+
+/* 校门 */
+const GATES = [
+  {n:'西门',   x:150,  y:690,  dir:'W', lb:1},
+  {n:'西三门', x:150,  y:1250, dir:'W', lb:1},
+  {n:'新北门', x:1900, y:150,  dir:'N', lb:1},
+  {n:'旧北门', x:1480, y:150,  dir:'N', lb:1},
+  {n:'南门',   x:1480, y:1350, dir:'S', lb:1},
+  {n:'东门',   x:2250, y:800,  dir:'E', lb:1},
+];
+
+/* 环形交叉（西门内） */
+const ROUNDABOUTS = [{x:212, y:690, r:44, ir:18}];
+
+/* 道路（中心线；w = 宽度） */
+const ROADS = [
+  {p:[[150,150],[2250,150],[2250,1350],[150,1350],[150,150]], w:36, main:1},   /* 外环路 */
+  {p:[[150,800],[2250,800]], w:42, main:1},                    /* 中轴大道 */
+  {p:[[1180,150],[1180,1350]], w:30, main:1},                  /* 学府路 */
+  {p:[[1720,150],[1720,1350]], w:30, main:1},                  /* 致远路 */
+  {p:[[660,150],[660,1350]], w:28},                            /* 崇文路 */
+  {p:[[150,470],[1180,470]], w:24},                            /* 北横路（西段） */
+  {p:[[1720,470],[2250,470]], w:24},                           /* 北横路（东段） */
+  {p:[[150,1150],[2250,1150]], w:26},                          /* 南横路 */
+];
+
+/* 步道 */
+const PATHS = [
+  {p:[[256,690],[380,690]], w:16},
+  {p:[[690,428],[1020,428]], w:10},
+  {p:[[690,190],[690,428]], w:9},
+  {p:[[1020,190],[1020,428]], w:9},
+  {p:[[690,772],[690,846]], w:12},
+  {p:[[1010,772],[1010,846]], w:12},
+  {p:[[1195,612],[1220,612]], w:12},
+  {p:[[1532,612],[1720,612]], w:12},
+  {p:[[1226,1112],[1654,1112]], w:11},
+  {p:[[380,660],[380,700]], w:12},
+  {p:[[1750,1137],[1750,1176]], w:12},
+  {p:[[2065,1137],[2065,1176]], w:12},
+  {p:[[1745,1040],[1745,1056]], w:10},
+  {p:[[420,1137],[420,1186]], w:10},
+  {p:[[880,1137],[880,1186]], w:10},
+  {p:[[690,1104],[1034,1104]], w:10},
+];
+
+/* 水系 */
+const WATER = [
+  {n:'明镜湖', d:'M 1215 620 C 1205 540 1275 490 1372 488 C 1470 486 1530 530 1532 606 C 1534 682 1470 726 1370 724 C 1272 722 1224 686 1215 620 Z'},
+  {n:'荷花池', d:'M 776 300 C 800 272 856 270 882 296 C 906 320 894 354 856 362 C 818 370 782 352 776 326 Z'},
+];
+
+/* 老校区院墙 */
+const WALLS = [
+  {p:[[184,190],[638,190],[638,460],[184,460],[184,190]]},
+  {p:[[184,486],[650,486],[650,772],[184,772],[184,486]]},
+];
+
+/* 分区 */
+const ZONES = [
+  {n:'历史风貌区',   z:'hist',  x:168,  y:168,  w:478, h:290},
+  {n:'老校区广场区', z:'hist',  x:168,  y:482,  w:478, h:297},
+  {n:'体育运动区',   z:'sport', x:168,  y:821,  w:478, h:316},
+  {n:'实训基地',     z:'lab',   x:168,  y:1163, w:478, h:169},
+  {n:'植物园 · 医疗区', z:'lab', x:674, y:168,  w:491, h:290},
+  {n:'中央教学区',   z:'teach', x:674,  y:482,  w:491, h:655},
+  {n:'实验楼群',     z:'lab',   x:674,  y:821,  w:491, h:316},
+  {n:'实训基地',     z:'lab',   x:674,  y:1163, w:491, h:169},
+  {n:'教学实验区',   z:'lab',   x:1195, y:168,  w:510, h:290},
+  {n:'湖滨景观区',   z:'lake',  x:1195, y:482,  w:510, h:297},
+  {n:'南院生活区',   z:'life',  x:1195, y:821,  w:510, h:316},
+  {n:'南院生活区',   z:'life',  x:1195, y:1163, w:510, h:169},
+  {n:'学生生活区',   z:'life',  x:1735, y:168,  w:497, h:290},
+  {n:'教学主楼区',   z:'teach', x:1735, y:482,  w:497, h:297},
+  {n:'体育运动区',   z:'sport', x:1735, y:821,  w:497, h:316},
+  {n:'学生生活区',   z:'life',  x:1735, y:1163, w:497, h:169},
+];
+
+/* 绿地（树木散布区） */
+const GROVES = [
+  {x:674,  y:168,  w:491, h:290, n:104},
+  {x:168,  y:168,  w:478, h:290, n:36},
+  {x:168,  y:482,  w:478, h:297, n:34},
+  {x:168,  y:821,  w:478, h:316, n:18},
+  {x:168,  y:1163, w:478, h:169, n:14},
+  {x:674,  y:482,  w:491, h:297, n:24},
+  {x:674,  y:821,  w:491, h:316, n:18},
+  {x:674,  y:1163, w:491, h:169, n:12},
+  {x:1195, y:168,  w:510, h:290, n:24},
+  {x:1195, y:482,  w:510, h:297, n:78},
+  {x:1195, y:821,  w:510, h:316, n:34},
+  {x:1195, y:1163, w:510, h:169, n:14},
+  {x:1735, y:168,  w:497, h:290, n:44},
+  {x:1735, y:482,  w:497, h:297, n:22},
+  {x:1735, y:821,  w:497, h:316, n:16},
+  {x:1735, y:1163, w:497, h:169, n:12},
+];
+
+/* ---------- 4. 工具 ---------- */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry32(20261001);
+const fx = v => (+v).toFixed(1);
+const poly = pts => pts.map(p=>fx(p[0])+','+fx(p[1])).join(' ');
+
+/* 颜色明度微调：amt>0 提亮，<0 压暗 */
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16);
+  const f = v => Math.max(0, Math.min(255, Math.round(v + 255*amt)));
+  const r=f((n>>16)&255), g=f((n>>8)&255), b=f(n&255);
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+/* 同类型建筑三档色差 —— 避免整片校园只有两三种颜色 */
+function injectBuildRules(t){
+  let css = '';
+  for(const k in t.types){
+    const f0 = t.types[k][0], s0 = t.types[k][1];
+    for(let v=0;v<3;v++){
+      css += `.b-${k}.v${v}{fill:${shade(f0,(v-1)*0.055)};stroke:${s0}}`;
+    }
+  }
+  let el = document.getElementById('dynbuild');
+  if(!el){ el=document.createElement('style'); el.id='dynbuild'; document.head.appendChild(el); }
+  el.textContent = css;
+}
+
+/* 建筑矩形（用于树木避让） */
+const AVOID = BUILDINGS.map(b=>{
+  const m = 4;
+  return {x:b.x-m, y:b.y-m, w:b.w+2*m, h:b.h+2*m};
+});
+function inAvoid(x,y){
+  for(const a of AVOID){ if(x>a.x&&x<a.x+a.w&&y>a.y&&y<a.y+a.h) return true; }
+  return false;
+}
+function inWater(x,y){
+  return (x>1208&&x<1542&&y>482&&y<730) || (x>772&&x<908&&y>266&&y<372);
+}
+
+/* ---------- 5. 渲染 ---------- */
+let LAYERS = {build:1, green:1, water:1, road:1, label:1, zone:0, tree:1};
+let THEME_KEY = 'paper';
+
+function themeVars(t){
+  const v = {
+    'm-bg':t.bg, 'm-land':t.land, 'm-landEdge':t.landEdge, 'm-out':t.out, 'm-outRoad':t.outRoad,
+    'm-lawn':t.lawn, 'm-lawnEdge':t.lawnEdge, 'm-tree':t.tree, 'm-treeEdge':t.treeEdge, 'm-tree3':t.tree3,
+    'm-water':t.water, 'm-water2':t.water2, 'm-waterEdge':t.waterEdge,
+    'm-road':t.road, 'm-roadCase':t.roadCase, 'm-path':t.path,
+    'm-plaza':t.plaza, 'm-plazaEdge':t.plazaEdge, 'm-wall':t.wall,
+    'm-label':t.label, 'm-sub':t.sub, 'm-halo':t.halo,
+    'm-bball':t.court.bball, 'm-volley':t.court.volley, 'm-tennis':t.court.tennis,
+    'm-football':t.court.football, 'm-track':t.court.track, 'm-field':t.court.field
+  };
+  for(const k in t.types){ v['b-'+k+'-f']=t.types[k][0]; v['b-'+k+'-s']=t.types[k][1]; }
+  for(const k in t.zones){ v['z-'+k]=t.zones[k]; }
+  return v;
+}
+function applyTheme(key){
+  THEME_KEY = key; TH = THEMES[key];
+  const v = themeVars(TH);
+  for(const k in v) document.documentElement.style.setProperty('--'+k, v[k]);
+  injectBuildRules(TH);
+  document.querySelectorAll('#themes .btn').forEach(b=>b.classList.toggle('on', b.dataset.t===key));
+}
+
+/* 建筑真实形体（用于 clipPath 裁剪屋顶图案） */
+function clipGeom(b){
+  const tf = b.r ? ` transform="rotate(${b.r} ${b.x+b.w/2} ${b.y+b.h/2})"` : '';
+  if(b.ps) return b.ps.map(p=>`<polygon points="${poly(p)}"${tf}/>`).join('');
+  if(b.p && b.hl && b.hl.length){
+    const d = 'M ' + b.p.map(q=>fx(q[0])+' '+fx(q[1])).join(' L ') + ' Z '
+            + b.hl.map(hh=>'M ' + hh.map(q=>fx(q[0])+' '+fx(q[1])).join(' L ') + ' Z').join(' ');
+    return `<path d="${d}" clip-rule="evenodd"${tf}/>`;
+  }
+  if(b.p) return `<polygon points="${poly(b.p)}"${tf}/>`;
+  return `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="2.5"${tf}/>`;
+}
+
+/* 屋顶类型 */
+function roofType(b){
+  if(b.rf) return b.rf;
+  if(b.t==='hist'||b.t==='cult') return 'gable';   /* 坡屋顶：正脊 + 椽条 */
+  if(b.t==='lab'||b.t==='gh')    return 'saw';     /* 锯齿 / 条形天窗 */
+  return 'flat';                                   /* 平屋顶：女儿墙 + 设备 */
+}
+
+/* 屋顶构件（画在包围盒内，由 clipPath 裁到真实形体） */
+function roofPattern(b){
+  const {x,y,w,h} = b, t = roofType(b), P = 8;
+  const r = mulberry32(b.i*7919+13);
+  let s = '';
+  if(t==='gable'){
+    s += `<rect class="rf-eave" x="${fx(x+P*.7)}" y="${fx(y+P*.7)}" width="${fx(w-P*1.4)}" height="${fx(h-P*1.4)}" rx="1"/>`;
+    if(w >= h){
+      const cy = y+h/2;
+      s += `<line class="rf-ridge" x1="${fx(x+P)}" y1="${fx(cy)}" x2="${fx(x+w-P)}" y2="${fx(cy)}"/>`;
+      const n = Math.max(2, Math.round((w-2*P)/38));
+      for(let i=1;i<n;i++){
+        const px = x+P+(w-2*P)*i/n;
+        s += `<line class="rf-raf" x1="${fx(px)}" y1="${fx(y+P*.9)}" x2="${fx(px)}" y2="${fx(y+h-P*.9)}"/>`;
+      }
+    } else {
+      const cx = x+w/2;
+      s += `<line class="rf-ridge" x1="${fx(cx)}" y1="${fx(y+P)}" x2="${fx(cx)}" y2="${fx(y+h-P)}"/>`;
+      const n = Math.max(2, Math.round((h-2*P)/38));
+      for(let i=1;i<n;i++){
+        const py = y+P+(h-2*P)*i/n;
+        s += `<line class="rf-raf" x1="${fx(x+P*.9)}" y1="${fx(py)}" x2="${fx(x+w-P*.9)}" y2="${fx(py)}"/>`;
+      }
+    }
+  } else if(t==='saw'){
+    s += `<rect class="rf-parapet" x="${fx(x+P*.6)}" y="${fx(y+P*.6)}" width="${fx(w-P*1.2)}" height="${fx(h-P*1.2)}" rx="1"/>`;
+    if(w >= h){
+      const n = Math.max(2, Math.round((h-2*P)/26));
+      for(let i=1;i<n;i++){
+        const py = y+P+(h-2*P)*i/n;
+        s += `<line class="rf-strip" x1="${fx(x+P+3)}" y1="${fx(py)}" x2="${fx(x+w-P-3)}" y2="${fx(py)}"/>`;
+      }
+    } else {
+      const n = Math.max(2, Math.round((w-2*P)/26));
+      for(let i=1;i<n;i++){
+        const px = x+P+(w-2*P)*i/n;
+        s += `<line class="rf-strip" x1="${fx(px)}" y1="${fx(y+P+3)}" x2="${fx(px)}" y2="${fx(y+h-P-3)}"/>`;
+      }
+    }
+  } else {
+    s += `<rect class="rf-parapet" x="${fx(x+P*.6)}" y="${fx(y+P*.6)}" width="${fx(w-P*1.2)}" height="${fx(h-P*1.2)}" rx="1"/>`;
+    const nU = Math.max(1, Math.min(4, Math.round(w*h/11000)));
+    for(let i=0;i<nU;i++){
+      const uw = 14+r()*20, uh = 11+r()*14;
+      const ux = x+P+5 + r()*Math.max(1, w-2*P-uw-10);
+      const uy = y+P+5 + r()*Math.max(1, h-2*P-uh-10);
+      s += `<rect class="rf-unit" x="${fx(ux)}" y="${fx(uy)}" width="${fx(uw)}" height="${fx(uh)}" rx="1.5"/>`;
+    }
+  }
+  return s;
+}
+
+function buildingSVG(b){
+  if(b.t==='plaza') return plazaSVG(b);
+  if(b.t==='park')  return parkSVG(b);
+  const cls = 'bl b-'+b.t+' v'+(b.i%3);
+  const cx = b.x+b.w/2, cy = b.y+b.h/2;
+  const tf = b.r ? ` transform="rotate(${b.r} ${cx} ${cy})"` : '';
+  const lv = b.f>=5 ? 3 : (b.f>=3 ? 2 : 1);      /* 层数越高，落影越长 */
+  let body = '';
+  if(b.ps){
+    body = b.ps.map((pp,ix)=>`<polygon class="${ix?'anx':''}" points="${poly(pp)}"/>`).join('');
+  } else if(b.p){
+    if(b.hl && b.hl.length){
+      const d = 'M ' + b.p.map(q=>fx(q[0])+' '+fx(q[1])).join(' L ') + ' Z '
+              + b.hl.map(hh=>'M ' + hh.map(q=>fx(q[0])+' '+fx(q[1])).join(' L ') + ' Z').join(' ');
+      body = `<path d="${d}" fill-rule="evenodd"/>`;
+    } else body = `<polygon points="${poly(b.p)}"/>`;
+  } else {
+    body = `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="2.5"/>`;
+  }
+  const roof = b.flat ? '' :
+    `<g class="rooflayer" clip-path="url(#cp${b.i})" pointer-events="none">${roofPattern(b)}</g>`;
+  const mark = b.flat
+    ? `<line x1="${fx(b.x+4)}" y1="${fx(b.y+b.h/2)}" x2="${fx(b.x+b.w-4)}" y2="${fx(b.y+b.h/2)}" stroke-width="2.4" opacity=".55"/>`
+    : '';
+  return `<g class="${cls}" data-id="${b.i}" filter="url(#sh${lv})"${tf}>${body}${roof}${mark}</g>`;
+}
+function plazaSVG(b){
+  let s = `<rect class="plz" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="6" data-id="${b.i}"/>`;
+  if(b.n==='馆前广场'){
+    const cx=b.x+b.w/2, cy=b.y+b.h/2;
+    s += `<circle cx="${cx}" cy="${cy}" r="34" fill="var(--m-water)" stroke="var(--m-waterEdge)" stroke-width="1.2"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="14" fill="var(--m-plaza)" stroke="var(--m-plazaEdge)" stroke-width="1"/>`;
+  }
+  if(b.n==='中心纪念广场'){
+    const cx=b.x+b.w/2, cy=b.y+b.h/2;
+    for(const rr of [52,42,32]) s += `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="none" stroke="var(--m-plazaEdge)" stroke-width="1" opacity=".7"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="13" fill="var(--m-plaza)" stroke="var(--m-plazaEdge)" stroke-width="1.4"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="5" fill="var(--b-hist-f)" stroke="var(--b-hist-s)" stroke-width="1"/>`;
+  }
+  return s;
+}
+function parkSVG(b){
+  let s = `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="6" fill="var(--m-plaza)" stroke="var(--m-plazaEdge)" stroke-width="1" data-id="${b.i}"/>`;
+  const cols = Math.floor(b.w/34), rows = Math.floor(b.h/34);
+  for(let i=0;i<cols;i++) for(let j=0;j<rows;j++){
+    s += `<rect x="${fx(b.x+8+i*34)}" y="${fx(b.y+8+j*34)}" width="22" height="20" rx="2" fill="none" stroke="var(--m-plazaEdge)" stroke-width="1.4"/>`;
+  }
+  return s;
+}
+function courtSVG(b){
+  const {x,y,w,h} = b, k = b.k;
+  const col = 'var(--m-'+k+')';
+  const stroke = 'rgba(255,255,255,.78)';
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${k==='track'?h/2:3}" fill="${col}" data-id="${b.i}"/>`;
+  if(k==='track'){
+    s += `<rect x="${x+16}" y="${y+16}" width="${w-32}" height="${h-32}" rx="${(h-32)/2}" fill="none" stroke="${stroke}" stroke-width="1.4"/>`;
+    s += `<rect x="${x+34}" y="${y+34}" width="${w-68}" height="${h-68}" rx="${(h-68)/2}" fill="var(--m-field)" stroke="${stroke}" stroke-width="1.2"/>`;
+    s += `<line x1="${x+w/2}" y1="${y+34}" x2="${x+w/2}" y2="${y+h-34}" stroke="${stroke}" stroke-width="1.2"/>`;
+    s += `<circle cx="${x+w/2}" cy="${y+h/2}" r="26" fill="none" stroke="${stroke}" stroke-width="1.2"/>`;
+  } else if(k==='bball'||k==='volley'){
+    s += `<line x1="${x+w/2}" y1="${y+5}" x2="${x+w/2}" y2="${y+h-5}" stroke="${stroke}" stroke-width="1.2"/>`;
+    s += `<rect x="${x+7}" y="${y+h/2-16}" width="20" height="32" fill="none" stroke="${stroke}" stroke-width="1.1"/>`;
+    s += `<rect x="${x+w-27}" y="${y+h/2-16}" width="20" height="32" fill="none" stroke="${stroke}" stroke-width="1.1"/>`;
+    if(k==='bball') s += `<circle cx="${x+w/2}" cy="${y+h/2}" r="13" fill="none" stroke="${stroke}" stroke-width="1.1"/>`;
+  } else if(k==='tennis'){
+    s += `<line x1="${x+w/2}" y1="${y+5}" x2="${x+w/2}" y2="${y+h-5}" stroke="${stroke}" stroke-width="1.1"/>`;
+    s += `<rect x="${x+10}" y="${y+10}" width="${w-20}" height="${h-20}" fill="none" stroke="${stroke}" stroke-width="1.1"/>`;
+  } else if(k==='football'){
+    s += `<rect x="${x+12}" y="${y+10}" width="${w-24}" height="${h-20}" fill="none" stroke="${stroke}" stroke-width="1.2"/>`;
+    s += `<line x1="${x+w/2}" y1="${y+10}" x2="${x+w/2}" y2="${y+h-10}" stroke="${stroke}" stroke-width="1.1"/>`;
+    s += `<circle cx="${x+w/2}" cy="${y+h/2}" r="16" fill="none" stroke="${stroke}" stroke-width="1.1"/>`;
+  }
+  return s;
+}
+
+/* 树木散布 */
+function treesSVG(){
+  const out = [];
+  for(const g of GROVES){
+    for(let i=0;i<g.n;i++){
+      const x = g.x + 10 + rnd()*(g.w-20);
+      const y = g.y + 10 + rnd()*(g.h-20);
+      if(inAvoid(x,y) || inWater(x,y)) continue;
+      const r = 5 + rnd()*4.5;
+      const c = rnd()<0.34 ? 'var(--m-tree3)' : 'var(--m-tree)';
+      out.push(`<circle cx="${fx(x)}" cy="${fx(y)}" r="${fx(r)}" fill="${c}" stroke="var(--m-treeEdge)" stroke-width=".9"/>`);
+    }
+  }
+  const lines = [[150,150,2250,150],[2250,150,2250,1350],[2250,1350,150,1350],[150,1350,150,150],[150,800,2250,800]];
+  for(const L of lines){
+    const dx=L[2]-L[0], dy=L[3]-L[1], len=Math.hypot(dx,dy);
+    const steps = Math.floor(len/74);
+    const nx = -dy/len, ny = dx/len;
+    for(let i=1;i<steps;i++){
+      const t=i/steps, px=L[0]+dx*t, py=L[1]+dy*t;
+      for(const off of [-30,30]){
+        const x=px+nx*off, y=py+ny*off;
+        if(inAvoid(x,y)||inWater(x,y)) continue;
+        if(x<140||x>2260||y<140||y>1360) continue;
+        out.push(`<circle cx="${fx(x)}" cy="${fx(y)}" r="5.6" fill="var(--m-tree)" stroke="var(--m-treeEdge)" stroke-width=".9"/>`);
+      }
+    }
+  }
+  return out.join('');
+}
+
+/* 道路 */
+function roadsSVG(){
+  let s = '';
+  const mk = (r,cls,w)=>`<polyline class="${cls}" points="${poly(r.p)}" fill="none" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  for(const r of ROADS) s += mk(r, 'rd-case', r.w+7);
+  for(const r of ROADS){
+    s += mk(r, 'rd', r.w);
+    if(r.main) s += `<polyline points="${poly(r.p)}" fill="none" stroke="var(--m-roadCase)" stroke-width="1.1" stroke-dasharray="14 12" stroke-linecap="round" opacity=".55"/>`;
+  }
+  for(const p of PATHS) s += mk(p, 'pt', p.w);
+  for(const r of ROUNDABOUTS){
+    s += `<circle cx="${r.x}" cy="${r.y}" r="${r.r+5}" fill="var(--m-roadCase)"/>`;
+    s += `<circle cx="${r.x}" cy="${r.y}" r="${r.r}" fill="var(--m-road)"/>`;
+    s += `<circle cx="${r.x}" cy="${r.y}" r="${r.ir}" fill="var(--m-lawn)" stroke="var(--m-lawnEdge)" stroke-width="1.2"/>`;
+  }
+  return s;
+}
+
+/* 标注 */
+function labelsSVG(){
+  const out = [];
+  const put = (x,y,txt,cls,anchor,rot)=>{
+    out.push(`<text x="${fx(x)}" y="${fx(y)}" class="lb ${cls||''}" text-anchor="${anchor||'middle'}"${rot?` transform="rotate(${rot} ${fx(x)} ${fx(y)})"`:''}>${esc(txt)}</text>`);
+  };
+  /* 分区大字（低透明度底纹，置于各分区相对空旷处） */
+  const ZL = [
+    ['历史风貌区', 412, 452],    ['老校区广场区', 412, 760], ['体育运动区', 412, 976],
+    ['实训基地', 412, 1246],     ['植物园 · 医疗区', 919, 430], ['中央教学区', 919, 760],
+    ['实验楼群', 919, 976],      ['实训基地', 919, 1246],
+    ['教学实验区', 1450, 430],   ['湖滨景观区', 1450, 660], ['南院生活区', 1450, 976],
+    ['南院生活区', 1450, 1246],
+    ['学生生活区', 1983, 430],   ['教学主楼区', 1983, 660], ['体育运动区', 1983, 976],
+    ['学生生活区', 1983, 1246],
+  ];
+  for(const z of ZL) put(z[1], z[2], z[0], 'zl');
+  /* 路名 */
+  put(950, 822, '中 轴 大 道', 'lb-road');
+  put(500, 143, '环 校 北 路', 'lb-road');
+  put(660, 600, '崇文路', 'lb-road', 'middle', -90);
+  put(1180, 600, '学府路', 'lb-road', 'middle', -90);
+  put(1720, 600, '致远路', 'lb-road', 'middle', -90);
+  put(2282, 1060, '环 校 东 路', 'lb-road', 'middle', -90);
+  /* 建筑名 —— 一律置于建筑外侧上方，避免压住屋顶构件 */
+  for(const b of BUILDINGS){
+    if(!b.lb) continue;
+    const cx = b.x+b.w/2, cy = b.y+b.h/2;
+    if(b.t==='court' || b.t==='park'){ put(cx, cy+4, b.n, 'lb-sm'); continue; }
+    if(b.t==='green'){ put(cx, b.y+26, b.n, 'lb-lg'); continue; }
+    if(b.t==='plaza'){ put(cx, cy+4, b.n, 'lb-sm'); continue; }
+    const big = b.w>=190 && b.h>=96;
+    if(big) put(cx, cy+5, b.n, 'lb');
+    else put(cx, b.y-7, b.n, b.w<120 ? 'lb-sm' : 'lb');
+  }
+  /* 校门 */
+  for(const g of GATES){
+    if(g.dir==='W') put(g.x+16, g.y-14, g.n, 'lb-gate','start');
+    else if(g.dir==='E') put(g.x-16, g.y-14, g.n, 'lb-gate','end');
+    else if(g.dir==='N') put(g.x, g.y+30, g.n, 'lb-gate');
+    else put(g.x, g.y-16, g.n, 'lb-gate');
+  }
+  return out.join('');
+}
+
+function buildMap(){
+  const svg = document.getElementById('map');
+  BUILDINGS.forEach((b,i)=>b.i=i);
+
+  const bg = `<rect x="-200" y="-200" width="2800" height="1900" fill="var(--m-out)"/>`;
+  let ctx = '';
+  for(let i=-1;i<6;i++){
+    ctx += `<line x1="-200" y1="${-60+i*330}" x2="2600" y2="${-60+i*330}" stroke="var(--m-outRoad)" stroke-width="14" opacity=".8"/>`;
+    ctx += `<line x1="${-90+i*500}" y1="-200" x2="${-90+i*500}" y2="1700" stroke="var(--m-outRoad)" stroke-width="14" opacity=".8"/>`;
+  }
+  ctx += `<path d="M -200 1420 C 300 1380 500 1470 900 1440 C 1300 1410 1600 1478 2000 1445 C 2300 1420 2450 1460 2600 1440 L 2600 1700 L -200 1700 Z" fill="var(--m-water)" opacity=".55"/>`;
+
+  const land = `<rect x="120" y="120" width="2160" height="1260" rx="46" fill="var(--m-land)" stroke="var(--m-landEdge)" stroke-width="2.5"/>`;
+
+  let zone = '';
+  for(const z of ZONES) zone += `<rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="14" fill="var(--z-${z.z})" opacity=".13"/>`;
+
+  let green = '';
+  for(const g of GROVES) green += `<rect x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" rx="20" fill="var(--m-lawn)" opacity=".72"/>`;
+  for(const b of BUILDINGS) if(b.t==='green')
+    green += `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="22" fill="var(--m-lawn)" stroke="var(--m-lawnEdge)" stroke-width="1.4" stroke-dasharray="7 5"/>`;
+
+  let water = '';
+  for(const w of WATER) water += `<path d="${w.d}" fill="var(--m-water)" stroke="var(--m-waterEdge)" stroke-width="1.6"/>`;
+  water += `<path d="M 1298 600 C 1290 552 1328 512 1382 508 C 1436 504 1478 534 1484 584 C 1490 636 1452 672 1394 676 C 1336 680 1306 648 1298 600 Z" fill="var(--m-water2)" opacity=".5"/>`;
+  water += `<ellipse cx="1378" cy="562" rx="52" ry="34" fill="var(--m-lawn)" stroke="var(--m-lawnEdge)" stroke-width="1.2"/>`;
+  water += `<rect x="1354" y="596" width="44" height="11" rx="5" fill="var(--m-plaza)" stroke="var(--m-plazaEdge)" stroke-width="1"/>`;
+  water += `<path d="M 690 470 C 800 456 900 478 1000 464" fill="none" stroke="var(--m-water)" stroke-width="9" stroke-linecap="round" opacity=".8"/>`;
+  /* 荷花池荷叶点缀 */
+  for(const p of [[812,300],[846,318],[880,302],[828,342],[864,346]])
+    water += `<circle cx="${p[0]}" cy="${p[1]}" r="${5+((p[0]*7)%4)}" fill="var(--m-lawn)" opacity=".55"/>`;
+
+  /* 建筑：先建 clipPath 定义，再渲染 */
+  let defs = '', plazas = '', courts = '', builds = '';
+  for(const b of BUILDINGS){
+    if(b.t==='court'){ courts += courtSVG(b); continue; }
+    if(b.t==='green') continue;
+    if(b.t==='plaza'||b.t==='park'){ plazas += buildingSVG(b); continue; }
+    defs  += `<clipPath id="cp${b.i}">${clipGeom(b)}</clipPath>`;
+    builds += buildingSVG(b);
+  }
+
+  let gates = '';
+  for(const g of GATES){
+    const w = g.dir==='N'||g.dir==='S' ? 46 : 12, h = g.dir==='N'||g.dir==='S' ? 12 : 46;
+    gates += `<rect x="${fx(g.x-w/2)}" y="${fx(g.y-h/2)}" width="${w}" height="${h}" rx="3" fill="var(--b-admin-f)" stroke="var(--b-admin-s)" stroke-width="1.6"/>`;
+    gates += `<circle cx="${g.x}" cy="${g.y}" r="4" fill="#E0A458"/>`;
+  }
+
+  let walls = '';
+  for(const w of WALLS) walls += `<polyline class="wall" points="${poly(w.p)}"/>`;
+
+  svg.innerHTML =
+    `<defs>
+       <filter id="sh1" x="-45%" y="-45%" width="210%" height="210%">
+         <feDropShadow dx="-4" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.20"/>
+       </filter>
+       <filter id="sh2" x="-45%" y="-45%" width="210%" height="210%">
+         <feDropShadow dx="-6" dy="8" stdDeviation="5" flood-color="#000" flood-opacity="0.22"/>
+       </filter>
+       <filter id="sh3" x="-45%" y="-45%" width="210%" height="210%">
+         <feDropShadow dx="-8" dy="11" stdDeviation="6.5" flood-color="#000" flood-opacity="0.24"/>
+       </filter>
+       <filter id="shH" x="-45%" y="-45%" width="210%" height="210%">
+         <feDropShadow dx="-3" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.34"/>
+         <feDropShadow dx="-10" dy="14" stdDeviation="9" flood-color="#000" flood-opacity="0.20"/>
+       </filter>
+       ${defs}
+     </defs>
+     <g id="vp">
+       <g id="gCtx">${bg}${ctx}</g>
+       <g id="gLand">${land}</g>
+       <g id="gZone" style="display:none">${zone}</g>
+       <g id="gGreen">${green}</g>
+       <g id="gWater">${water}</g>
+       <g id="gRoad">${roadsSVG()}</g>
+       <g id="gWall">${walls}</g>
+       <g id="gPlaza">${plazas}</g>
+       <g id="gCourt">${courts}</g>
+       <g id="gTree">${treesSVG()}</g>
+       <g id="gBuild">${builds}</g>
+       <g id="gGate">${gates}</g>
+       <g id="gLabel">${labelsSVG()}</g>
+       <g id="gDecor">${decorSVG()}</g>
+     </g>`;
+
+  applyLayerStyles();
+  bindBuildings();
+  updateStat();
+}
+
+function decorSVG(){
+  return `
+  <g transform="translate(2262 1330)">
+    <circle r="40" fill="var(--m-land)" stroke="var(--m-landEdge)" stroke-width="2" opacity=".92"/>
+    <path d="M 0 -26 L 9 12 L 0 5 L -9 12 Z" fill="var(--m-label)"/>
+    <text y="30" text-anchor="middle" class="lb-n" style="font-size:15px">N</text>
+  </g>`;
+}
+
+function applyLayerStyles(){
+  const set=(id,on)=>{const e=document.getElementById(id); if(e) e.style.display = on?'':'none';};
+  set('gBuild', LAYERS.build);
+  set('gGreen', LAYERS.green);
+  set('gWater', LAYERS.water);
+  set('gRoad',  LAYERS.road);
+  set('gLabel', LAYERS.label);
+  set('gZone',  LAYERS.zone);
+  set('gTree',  LAYERS.green && LAYERS.tree);
+  set('gCourt', LAYERS.build);
+  set('gPlaza', LAYERS.build);
+  set('gGate',  LAYERS.build);
+  set('gWall',  LAYERS.build);
+}
+
+function updateStat(){
+  const n = BUILDINGS.filter(b=>b.t!=='court'&&b.t!=='plaza'&&b.t!=='park'&&b.t!=='green').length;
+  const z = new Set(ZONES.map(z=>z.n)).size;
+  document.getElementById('stat').textContent = `${n} 栋建筑 · ${z} 个功能分区 · 校园约 ${Math.round(2160*UNIT_M)} × ${Math.round(1260*UNIT_M)} m`;
+}
+
+/* ---------- 6. 交互 ---------- */
+let view = {k:1, tx:0, ty:0};
+const map = document.getElementById('map');
+const stage = document.getElementById('stage');
+const vp = () => document.getElementById('vp');
+
+function applyView(){
+  const v = vp(); if(!v) return;
+  v.setAttribute('transform', `translate(${view.tx} ${view.ty}) scale(${view.k})`);
+  const W = stage.clientWidth || 1;
+  const px = (BAR_M / UNIT_M) * (W / 2400) * view.k;
+  const bar = document.getElementById('scalebar');
+  if(bar) bar.style.width = Math.max(28, Math.min(px, W - 60)) + 'px';
+}
+function clientToSvg(ev){
+  const pt = map.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+  return pt.matrixTransform(map.getScreenCTM().inverse());
+}
+function zoomAt(sx, sy, factor){
+  const k2 = Math.max(0.55, Math.min(6, view.k*factor));
+  const ux = (sx - view.tx)/view.k, uy = (sy - view.ty)/view.k;
+  view.tx = sx - k2*ux; view.ty = sy - k2*uy; view.k = k2;
+  applyView();
+}
+function zoomCenter(factor){
+  const r = map.getBoundingClientRect();
+  const p = clientToSvg({clientX:r.left+r.width/2, clientY:r.top+r.height/2});
+  zoomAt(p.x, p.y, factor);
+}
+map.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const p = clientToSvg(e);
+  zoomAt(p.x, p.y, e.deltaY<0 ? 1.14 : 1/1.14);
+}, {passive:false});
+
+let drag = null, lastMoved = 0;
+stage.addEventListener('pointerdown', e=>{
+  if(e.target.closest('.panel')) return;
+  drag = {x:e.clientX, y:e.clientY, moved:0, cap:false, id:e.pointerId};
+  stage.classList.add('dragging');
+});
+window.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  const dx = e.clientX-drag.x, dy = e.clientY-drag.y;
+  drag.moved += Math.abs(dx)+Math.abs(dy);
+  drag.x = e.clientX; drag.y = e.clientY;
+  if(!drag.cap){
+    if(drag.moved <= 7) return;
+    drag.cap = true;
+    try{ stage.setPointerCapture(drag.id); }catch(_){}
+  }
+  const p1 = clientToSvg({clientX:e.clientX-dx, clientY:e.clientY-dy});
+  const p2 = clientToSvg(e);
+  view.tx += (p2.x-p1.x); view.ty += (p2.y-p1.y);
+  applyView();
+});
+const endDrag = ()=>{ lastMoved = drag ? drag.moved : 0; drag = null; stage.classList.remove('dragging'); };
+window.addEventListener('pointerup', endDrag);
+window.addEventListener('pointercancel', endDrag);
+
+const tip = document.getElementById('tip');
+const drawer = document.getElementById('drawer');
+function findB(id){ return BUILDINGS[+id]; }
+
+function bindBuildings(){
+  document.querySelectorAll('#vp [data-id]').forEach(el=>{
+    el.style.cursor = 'pointer';
+    el.addEventListener('pointerenter', ()=>{
+      const b = findB(el.dataset.id);
+      tip.textContent = b.n; tip.style.opacity = 1;
+      el.classList.add('hov');
+    });
+    el.addEventListener('pointermove', ev=>{
+      tip.style.left = (ev.clientX+14)+'px';
+      tip.style.top  = (ev.clientY-30)+'px';
+    });
+    el.addEventListener('pointerleave', ()=>{ tip.style.opacity=0; el.classList.remove('hov'); });
+    el.addEventListener('click', ()=>{
+      if(lastMoved > 7) return;
+      openCard(findB(el.dataset.id));
+    });
+  });
+}
+function openCard(b){
+  document.getElementById('d-nm').textContent = b.n;
+  const tp = b.t==='court' ? '运动场地' : (b.t==='plaza' ? '广场' : (b.t==='park' ? '停车场' : (TYPE_LABEL[b.t]||'其他')));
+  const isSite = b.t==='court'||b.t==='plaza'||b.t==='park'||b.t==='green';
+  const area = Math.round(b.w*b.h*AREA_M2);
+  let h = `<div class="kv"><i>功能</i><b>${tp}</b></div>`;
+  if(!isSite){
+    h += `<div class="kv"><i>层数</i><b>${b.f} 层</b></div>`;
+    h += `<div class="kv"><i>占地</i><b>${area.toLocaleString()} m²</b></div>`;
+    h += `<div class="kv"><i>建面</i><b>≈ ${(area*b.f).toLocaleString()} m²</b></div>`;
+  } else {
+    h += `<div class="kv"><i>占地</i><b>${area.toLocaleString()} m²</b></div>`;
+  }
+  if(b.d) h += `<div style="margin-top:9px;color:#B9B7B1">${esc(b.d)}</div>`;
+  h += `<span class="tag" style="background:var(--b-${b.t==='court'?'sport':b.t}-f);color:#2A2418;border:1px solid rgba(0,0,0,.15)">${tp}</span>`;
+  document.getElementById('d-bd').innerHTML = h;
+  drawer.classList.add('show');
+}
+document.getElementById('d-x').onclick = ()=> drawer.classList.remove('show');
+
+/* 导出 PNG：把当前主题的 CSS 变量与图元规则内联进 SVG 再光栅化 */
+function cssForExport(){
+  const cs = getComputedStyle(document.documentElement);
+  const keys = ['m-bg','m-land','m-landEdge','m-out','m-outRoad','m-lawn','m-lawnEdge','m-tree','m-treeEdge',
+    'm-tree3','m-water','m-water2','m-waterEdge','m-road','m-roadCase','m-path','m-plaza','m-plazaEdge','m-wall',
+    'm-label','m-sub','m-halo','m-bball','m-volley','m-tennis','m-football','m-track','m-field'];
+  for(const k in TYPE_LABEL) keys.push('b-'+k+'-f','b-'+k+'-s');
+  for(const k in TH.zones)   keys.push('z-'+k);
+  const vars = keys.map(k=>'--'+k+':'+cs.getPropertyValue('--'+k).trim()).join(';');
+  const font = 'font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+  let rules = '';
+  for(const sheet of document.styleSheets){
+    let list; try{ list = sheet.cssRules; }catch(_){ continue; }
+    for(const r of list){
+      const t = r.cssText || '';
+      if(/^\.(bl|b-[a-z]+|lb|zl|plz|rd|pt|rf-|wall|anx|rooflayer)/.test(t)) rules += t;
+    }
+  }
+  return `:root{${vars};${font}}${rules}`;
+}
+function exportPNG(){
+  const S = 1.6, W = 2400, H = 1500;
+  const clone = document.getElementById('map').cloneNode(true);
+  const g = clone.querySelector('#vp'); if(g) g.setAttribute('transform','translate(0 0) scale(1)');
+  clone.setAttribute('xmlns', SVGNS);
+  clone.setAttribute('width', W); clone.setAttribute('height', H);
+  const st = document.createElementNS(SVGNS,'style');
+  st.textContent = cssForExport();
+  clone.insertBefore(st, clone.firstChild);
+  const data = new XMLSerializer().serializeToString(clone);
+  const img = new Image();
+  img.onload = ()=>{
+    const cv = document.createElement('canvas');
+    cv.width = W*S; cv.height = H*S;
+    const cx = cv.getContext('2d');
+    cx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--m-bg').trim() || '#fff';
+    cx.fillRect(0,0,cv.width,cv.height);
+    cx.drawImage(img,0,0,cv.width,cv.height);
+    cv.toBlob(bl=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(bl);
+      a.download = '校园总平面图_' + THEME_KEY + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+    }, 'image/png');
+  };
+  img.onerror = ()=> console.error('SVG 光栅化失败');
+  img.src = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(data);
+}
+
+/* 搜索 */
+document.getElementById('q').addEventListener('input', e=>{
+  const q = e.target.value.trim();
+  document.querySelectorAll('#vp [data-id]').forEach(el=> el.classList.remove('hit','dim'));
+  if(!q) return;
+  let first = null;
+  BUILDINGS.forEach(b=>{
+    const hit = b.n.includes(q) || (TYPE_LABEL[b.t]||'').includes(q);
+    if(!hit) return;
+    const el = document.querySelector(`#vp [data-id="${b.i}"]`);
+    if(el){ el.classList.add('hit'); if(!first) first = b; }
+  });
+  if(first) openCard(first);
+});
+
+/* 按钮 */
+document.getElementById('tools').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  const a = b.dataset.act;
+  if(a==='in') zoomCenter(1.25);
+  else if(a==='out') zoomCenter(1/1.25);
+  else if(a==='reset'){ view={k:1,tx:0,ty:0}; applyView(); }
+  else if(a==='png') exportPNG();
+  else if(b.dataset.l){ LAYERS[b.dataset.l] = LAYERS[b.dataset.l]?0:1; b.classList.toggle('on'); applyLayerStyles(); }
+  else if(b.dataset.t){ applyTheme(b.dataset.t); }
+});
+
+/* ---------- 7. 初始化 UI ---------- */
+(function initUI(){
+  const ly = [['build','建筑'],['green','绿地'],['water','水系'],['road','道路'],['label','标注'],['zone','分区']];
+  document.getElementById('layers').innerHTML = ly.map(([k,n])=>
+    `<button class="btn ${LAYERS[k]?'on':''}" data-l="${k}">${n}</button>`).join('');
+  document.getElementById('themes').innerHTML = Object.keys(THEMES).map(k=>
+    `<button class="btn ${k==='paper'?'on':''}" data-t="${k}">${THEMES[k].label}</button>`).join('');
+
+  const lg = Object.keys(TYPE_LABEL);
+  document.getElementById('lgbody').innerHTML = lg.map(k=>
+    `<div class="it"><span class="sw" style="background:var(--b-${k}-f);border-color:var(--b-${k}-s)"></span>${TYPE_LABEL[k]}</div>`
+  ).join('') + `
+    <div class="it"><span class="sw" style="background:var(--m-water)"></span>水域</div>
+    <div class="it"><span class="sw" style="background:var(--m-lawn)"></span>绿地</div>
+    <div class="it"><span class="sw" style="background:var(--m-road)"></span>道路</div>
+    <div class="it"><span class="sw" style="background:var(--m-plaza)"></span>铺装广场</div>`;
+
+  document.getElementById('scaletxt').textContent = BAR_M + ' m';
+})();
+
+setTimeout(()=>document.getElementById('hint').classList.add('off'), 5200);
+
+/* ---------- 8. 启动 ---------- */
+applyTheme('paper');
+buildMap();
+applyView();
+window.addEventListener('resize', applyView);
+</script>
+</body>
+</html>

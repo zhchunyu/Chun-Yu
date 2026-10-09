@@ -19,7 +19,7 @@
 
 | 资产 | 脚本 | 成图 | 核对清单 |
 | --- | --- | --- | --- |
-| 教学主楼（sxau，已封存） | `blender/scripts/build_main_building.py` | `renders/主楼_*.png` | `教学主楼_实景核对与修正清单.md` |
+| 教学主楼（外部参考，已封存） | `blender/scripts/build_main_building.py` | `renders/主楼_*.png` | `教学主楼_实景核对与修正清单.md` |
 | **山河大学 · 阶段 0 场地骨架** | `blender/scripts/build_campus_site.py` | `renders/山河大学_*.png` | — |
 
 ---

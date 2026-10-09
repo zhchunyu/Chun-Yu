@@ -1,0 +1,75 @@
+# LLaMA-Factory 训练配置 V7-Deep — Qwen2.5-14B QLoRA
+# 人设 LoRA 的「深度诊断」增强集（228 条 / 64 个手写案例）
+#
+# ★ 这是什么
+#   三块能力：空间行为诊断(144) / 热度异常判定(42) / 等待时间估算(42)
+#   全部手写，训练模型三件事：**抓主导因素、量化推理、承认不确定性**
+#
+# ★★ 与 V7 的关系（重要）
+#   V7 的 instruction = AUV 同伴口吻；本集 = 专家助手口吻（三套独立 instruction）
+#   两种用法：
+#     A) 独立训（本 yaml）—— 单独验证这套深度数据的形态对不对
+#     B) 合并进 V7 —— 1597 + 206 = 1803 条，同一人格扩充思考深度
+#   ★ 选 A 还是 B，取决于「口吻问题」怎么定（见 README 第二节）
+#
+# ★ 超参与 V7 的两处不同（都是被数据规模逼出来的）
+#   1. epoch 3 → 6 —— 228 条比 V7 的 1597 条少得多，3 epoch 只有 45 步，学不动
+#   2. eval_steps 100 → 20 —— 总步数少，否则整个训练只有 0~1 次评估
+#   ★ 样本比 V7 长（诊断输出 100~200 字）⇒ cutoff_len 1024 刚好，不要降到 512
+#
+# ★ 不要盯 loss。人设回应任务的 loss 只说明"有没有练坏"，
+#   真正要看的是生成质量（是否指出主导因素、是否给数、是否敢说"不用处理"）
+#
+# 上传位置：/root/autodl-tmp/v7_deep_train.yaml
+# 数据集位置：/root/autodl-tmp/data/v7_deep_{train,eval}.json
+
+### 模型
+model_name_or_path: /root/autodl-tmp/models/models/qwen--Qwen2.5-14B-Instruct/snapshots/master
+
+### 训练方法
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 128
+lora_alpha: 256
+lora_dropout: 0.05
+lora_target: all
+
+### 量化
+quantization_bit: 4
+quantization_type: nf4
+double_quantization: true
+
+### 数据集
+dataset: auv_v7_deep
+eval_dataset: auv_v7_deep_eval
+dataset_dir: /root/autodl-tmp/data
+template: qwen
+cutoff_len: 1024
+max_samples: 100000
+overwrite_cache: true
+preprocessing_num_workers: 8
+
+### 输出
+output_dir: /root/autodl-tmp/output/qwen25-14b-auv-v7-deep
+per_device_train_batch_size: 2
+per_device_eval_batch_size: 2
+gradient_accumulation_steps: 8
+learning_rate: 1.0e-4
+num_train_epochs: 6.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+
+### 评估与日志
+do_eval: true
+eval_strategy: steps
+eval_steps: 20
+logging_steps: 5
+save_strategy: epoch
+save_total_limit: 2
+
+### 其他
+fp16: true
+gradient_checkpointing: true
+ddp_timeout: 180000000
+report_to: none

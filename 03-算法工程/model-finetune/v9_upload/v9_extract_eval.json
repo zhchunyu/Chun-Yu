@@ -1,0 +1,602 @@
+[
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "西校门今天人特别多，要等19分钟，建议错峰",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"GATE_West\", \"building_name\": \"西校门\", \"floor\": null, \"severity\": \"medium\", \"description\": \"西校门晚上时段排队人数较多，等待时间约19分钟\", \"estimated_wait_min\": 19, \"time_window\": \"evening\", \"advice\": \"可考虑提前或延后前往，避开人流\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "读书分享会延期了，新时间另行通知，关注大学生活动中心公告",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Activity_Center\", \"building_name\": \"大学生活动中心\", \"floor\": null, \"severity\": \"low\", \"description\": \"大学生活动中心近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请提前报名，名额有限先到先得\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "知谷疫苗接种排队老长了，下午人特别多，要等43分钟",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Zhigu\", \"building_name\": \"知谷\", \"floor\": null, \"severity\": \"high\", \"description\": \"知谷下午时段排队人数较多，等待时间约43分钟\", \"estimated_wait_min\": 43, \"time_window\": \"afternoon\", \"advice\": \"建议避开当前时段，或咨询是否有其他接种点\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "5号宿舍楼1F机器坏了，今天用不了，等明天吧",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Dorm_5\", \"building_name\": \"5号宿舍楼\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"5号宿舍楼1F楼设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "创新创业中心今天早上有个创业分享会，想去的早点去占座",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Innovation\", \"building_name\": \"创新创业中心\", \"floor\": null, \"severity\": \"low\", \"description\": \"创新创业中心早上将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"更多信息请关注官方通知\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "3号宿舍楼2F有辆车没锁，小心被偷，大家注意保管好东西",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Dorm_3\", \"building_name\": \"3号宿舍楼\", \"floor\": \"2F\", \"severity\": \"medium\", \"description\": \"3号宿舍楼2F楼车辆未锁，存在被盗风险\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请锁好个人车辆，注意财物安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "公共浴室今天爆满，中午建议换个地方",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Bathhouse\", \"building_name\": \"公共浴室\", \"floor\": null, \"severity\": \"high\", \"description\": \"公共浴室中午时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"建议换个时段，晚点再去\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "社团招新下午在快递服务中心1F举办，有兴趣的可以去看看",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Express_Center\", \"building_name\": \"快递服务中心\", \"floor\": \"1F\", \"severity\": \"low\", \"description\": \"快递服务中心1F楼下午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "西校门今天打疫苗，队伍排到了街上，早上别去了",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"GATE_West\", \"building_name\": \"西校门\", \"floor\": null, \"severity\": \"high\", \"description\": \"西校门早上时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议避开当前时段，或咨询是否有其他接种点\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "南校门今天的菜特别咸，打饭时跟阿姨说少放盐",
+    "output": "{\"type\": \"service\", \"building_id\": \"GATE_South\", \"building_name\": \"南校门\", \"floor\": null, \"severity\": \"low\", \"description\": \"南校门餐食口味反馈\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请提前规划，避免影响行程\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "奖学金申请通知出来了，截止到下周五，要申请的赶紧准备材料",
+    "output": "{\"type\": \"notice\", \"building_id\": null, \"building_name\": null, \"floor\": null, \"severity\": \"medium\", \"description\": \"奖学金申请通知已发布，截止日期为下周五\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "美术馆门口积水很深，下雨天下不去脚",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Art_Museum\", \"building_name\": \"美术馆\", \"floor\": null, \"severity\": \"high\", \"description\": \"美术馆地面湿滑，存在滑倒风险\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"途经时请放慢脚步，注意脚下安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "5号宿舍楼3F今天人特别多，要等13分钟，建议错峰",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Dorm_5\", \"building_name\": \"5号宿舍楼\", \"floor\": \"3F\", \"severity\": \"medium\", \"description\": \"5号宿舍楼3F楼下午时段排队人数较多，等待时间约13分钟\", \"estimated_wait_min\": 13, \"time_window\": \"afternoon\", \"advice\": \"可考虑提前或延后前往，避开人流\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "北校门门口有个大坑，晚上走路注意点",
+    "output": "{\"type\": \"safety\", \"building_id\": \"GATE_North\", \"building_name\": \"北校门\", \"floor\": null, \"severity\": \"medium\", \"description\": \"北校门路面有坑洞，存在跌倒风险\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"途经时请特别注意脚下，夜间尤其小心\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "北区宿舍下周有心理健康讲座，感兴趣的可以报名",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Dorm_N\", \"building_name\": \"北区宿舍\", \"floor\": null, \"severity\": \"low\", \"description\": \"北区宿舍近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议提前到场，或关注是否有线上直播\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "行政楼1F停电了，楼道特别黑，走路小心点",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Admin\", \"building_name\": \"行政楼\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"行政楼1F楼停电导致楼道照明不足\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"建议使用手机照明，慢行通过\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "体育馆1F今天只有一个窗口营业，办业务的速度很慢",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Gym\", \"building_name\": \"体育馆\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"体育馆1F楼服务窗口减少，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请携带现金备用，以防系统故障\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "第二食堂排起了长队，中午还是别去凑热闹了",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Canteen_B\", \"building_name\": \"第二食堂\", \"floor\": null, \"severity\": \"medium\", \"description\": \"第二食堂中午时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"建议错峰就餐，或选择其他食堂\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学生活动中心玻璃门碎了一地，别靠近，小心扎脚",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Student_Center\", \"building_name\": \"学生活动中心\", \"floor\": null, \"severity\": \"high\", \"description\": \"学生活动中心玻璃破碎，碎片散落\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请勿靠近，注意避开碎玻璃\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "听澜图书馆1F机器坏了，今天用不了，等明天吧",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Tinglan_Library\", \"building_name\": \"听澜图书馆\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"听澜图书馆1F楼设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "刚从听澜图书馆3F出来，队伍一眼望不到头，下午要等37分钟",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Tinglan_Library\", \"building_name\": \"听澜图书馆\", \"floor\": \"3F\", \"severity\": \"high\", \"description\": \"听澜图书馆3F楼下午时段排队人数较多，等待时间约37分钟\", \"estimated_wait_min\": 37, \"time_window\": \"afternoon\", \"advice\": \"目前人多，建议稍后再去\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "大学生活动中心发生了点小事故，正在处理，大家先别过去",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Activity_Center\", \"building_name\": \"大学生活动中心\", \"floor\": null, \"severity\": \"high\", \"description\": \"大学生活动中心现场发生事故，正在处理中\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请勿靠近现场，等待处理完毕\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "C实验楼3F今天下午有个科技节，想去的早点去占座",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Lab_C\", \"building_name\": \"C实验楼\", \"floor\": \"3F\", \"severity\": \"low\", \"description\": \"C实验楼3F楼下午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "奖学金申请通知出来了，A教学楼5F可以领表，截止到月底",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Teaching_A\", \"building_name\": \"A教学楼\", \"floor\": \"5F\", \"severity\": \"medium\", \"description\": \"A教学楼5F楼近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "暖廊今晚有活动，人爆满，下午别去了没座",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Warm_Corridor\", \"building_name\": \"暖廊\", \"floor\": null, \"severity\": \"high\", \"description\": \"暖廊下午时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"建议提前到场，或关注是否有线上直播\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "暖廊新开了个文具店，今天开业活动，人还挺多",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Warm_Corridor\", \"building_name\": \"暖廊\", \"floor\": null, \"severity\": \"low\", \"description\": \"暖廊晚上将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"欢迎踊跃参与\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "暖廊今天人特别多，要等13分钟，建议错峰",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Warm_Corridor\", \"building_name\": \"暖廊\", \"floor\": null, \"severity\": \"medium\", \"description\": \"暖廊夜里时段排队人数较多，等待时间约13分钟\", \"estimated_wait_min\": 13, \"time_window\": \"night\", \"advice\": \"建议选择其他同类场所，减少等待\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "中轴路南段今天的菜特别咸，打饭时跟阿姨说少放盐",
+    "output": "{\"type\": \"service\", \"building_id\": \"ROAD_Central_Axis_S\", \"building_name\": \"中轴路南段\", \"floor\": null, \"severity\": \"low\", \"description\": \"中轴路南段餐食口味反馈\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"如有紧急需求，请联系相关部门\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "实验楼C区3楼化学实验室今天下午有个实验出了点小事故，正在处理，大家暂时别过去",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Lab_C\", \"building_name\": \"C实验楼\", \"floor\": \"3F\", \"severity\": \"high\", \"description\": \"C实验楼3楼化学实验室发生实验事故，正在处理中\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"请勿靠近现场，等待处理完毕\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "5号宿舍楼2F早上停水停电，记得提前做好准备",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Dorm_5\", \"building_name\": \"5号宿舍楼\", \"floor\": \"2F\", \"severity\": \"high\", \"description\": \"5号宿舍楼2F楼停电导致楼道照明不足\", \"estimated_wait_min\": 120, \"time_window\": \"morning\", \"advice\": \"建议使用手机照明，慢行通过\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "垂直书院今天晚上人挺多的，要等一会儿",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Vertical_Academy\", \"building_name\": \"垂直书院\", \"floor\": null, \"severity\": \"medium\", \"description\": \"垂直书院晚上时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"可考虑提前或延后前往，避开人流\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "行政楼今天维修，早上之后就不能用了，要去的早点",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Admin\", \"building_name\": \"行政楼\", \"floor\": null, \"severity\": \"medium\", \"description\": \"行政楼设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "开学典礼开始报名了，截止到本周五，要报的抓紧",
+    "output": "{\"type\": \"notice\", \"building_id\": null, \"building_name\": null, \"floor\": null, \"severity\": \"medium\", \"description\": \"中轴路北段近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "快递服务中心早上举办学术报告，有兴趣的可以去看看",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Express_Center\", \"building_name\": \"快递服务中心\", \"floor\": null, \"severity\": \"low\", \"description\": \"快递服务中心早上将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "听澜图书馆3F取快递的人特别多，下午排了半小时还没到",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Tinglan_Library\", \"building_name\": \"听澜图书馆\", \"floor\": \"3F\", \"severity\": \"high\", \"description\": \"听澜图书馆3F楼下午时段排队人数较多，等待时间约38分钟\", \"estimated_wait_min\": 38, \"time_window\": \"afternoon\", \"advice\": \"建议晚点再来，或使用自助取件柜\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "中轴路北段玻璃门碎了一地，别靠近，小心扎脚",
+    "output": "{\"type\": \"safety\", \"building_id\": \"ROAD_Central_Axis_N\", \"building_name\": \"中轴路北段\", \"floor\": null, \"severity\": \"high\", \"description\": \"中轴路北段玻璃破碎，碎片散落\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请勿靠近，注意避开碎玻璃\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "北校门下午举办读书分享会，有兴趣的可以去看看",
+    "output": "{\"type\": \"notice\", \"building_id\": \"GATE_North\", \"building_name\": \"北校门\", \"floor\": null, \"severity\": \"low\", \"description\": \"北校门下午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "体育馆夜里举办电影放映，有兴趣的可以去看看",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Gym\", \"building_name\": \"体育馆\", \"floor\": null, \"severity\": \"low\", \"description\": \"体育馆夜里将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "C实验楼3F下午停水停电，记得提前做好准备",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Lab_C\", \"building_name\": \"C实验楼\", \"floor\": \"3F\", \"severity\": \"high\", \"description\": \"C实验楼3F楼停电导致楼道照明不足\", \"estimated_wait_min\": 120, \"time_window\": \"afternoon\", \"advice\": \"建议使用手机照明，慢行通过\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "西校门下周有招聘会，感兴趣的可以报名",
+    "output": "{\"type\": \"notice\", \"building_id\": \"GATE_West\", \"building_name\": \"西校门\", \"floor\": null, \"severity\": \"low\", \"description\": \"西校门近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议错峰投递，或先线上投简历\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学术报告厅今天放假不开放，别白跑一趟",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Lecture_Hall\", \"building_name\": \"学术报告厅\", \"floor\": null, \"severity\": \"low\", \"description\": \"学术报告厅暂停对外开放\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请调整时间安排，改日再前往\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "读书分享会结果出来了，名单在南区宿舍门口贴着呢",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Dorm_S\", \"building_name\": \"南区宿舍\", \"floor\": null, \"severity\": \"low\", \"description\": \"南区宿舍下午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"详情可前往现场查看，或关注官方通知\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "职业规划分享会结果出来了，名单在公共浴室门口贴着呢",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Bathhouse\", \"building_name\": \"公共浴室\", \"floor\": null, \"severity\": \"low\", \"description\": \"公共浴室下午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"详情可前往现场查看，或关注官方通知\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "招聘会延期了，新时间另行通知，关注学术报告厅公告",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Lecture_Hall\", \"building_name\": \"学术报告厅\", \"floor\": null, \"severity\": \"low\", \"description\": \"学术报告厅近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议错峰投递，或先线上投简历\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学科竞赛培训延期了，新时间另行通知，关注C实验楼3F公告",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Lab_C\", \"building_name\": \"C实验楼\", \"floor\": \"3F\", \"severity\": \"low\", \"description\": \"C实验楼3F楼近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议提前15分钟到场入座\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "下雪了，南区宿舍门口结冰了，特别滑，大家注意",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Dorm_S\", \"building_name\": \"南区宿舍\", \"floor\": null, \"severity\": \"high\", \"description\": \"南区宿舍地面湿滑，存在滑倒风险\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"途经时请放慢脚步，注意脚下安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "快递服务中心1F围栏倒了一块，路过的注意安全",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Express_Center\", \"building_name\": \"快递服务中心\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"快递服务中心1F楼围栏破损，存在安全隐患\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"途经时请绕开破损区域\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学术报告厅取快递的人特别多，下午排了半小时还没到",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Lecture_Hall\", \"building_name\": \"学术报告厅\", \"floor\": null, \"severity\": \"high\", \"description\": \"学术报告厅下午时段排队人数较多，等待时间约23分钟\", \"estimated_wait_min\": 23, \"time_window\": \"afternoon\", \"advice\": \"建议晚点再来，或使用自助取件柜\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "体育馆早上举办创业分享会，有兴趣的可以去看看",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Gym\", \"building_name\": \"体育馆\", \"floor\": null, \"severity\": \"low\", \"description\": \"体育馆早上将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "下雪了，校史馆门口结冰了，特别滑，大家注意",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_History_Museum\", \"building_name\": \"校史馆\", \"floor\": null, \"severity\": \"high\", \"description\": \"校史馆地面湿滑，存在滑倒风险\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"途经时请放慢脚步，注意脚下安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学术报告厅今天爆满，夜里建议换个地方",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Lecture_Hall\", \"building_name\": \"学术报告厅\", \"floor\": null, \"severity\": \"high\", \"description\": \"学术报告厅夜里时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"建议错峰前往，或选择其他同类场所\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "快递服务中心停电了，楼道特别黑，走路小心点",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Express_Center\", \"building_name\": \"快递服务中心\", \"floor\": null, \"severity\": \"medium\", \"description\": \"快递服务中心停电导致楼道照明不足\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"建议使用手机照明，慢行通过\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "知行楼今天有安全检查，暂时不让进",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_ZhiXing\", \"building_name\": \"知行楼\", \"floor\": null, \"severity\": \"medium\", \"description\": \"知行楼安全检查期间暂停进入\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请配合检查，等开放后再前往\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "B教学楼3F下午举办校运会开幕式，大家可以去看",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Teaching_B\", \"building_name\": \"B教学楼\", \"floor\": \"3F\", \"severity\": \"low\", \"description\": \"B教学楼3F楼下午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"感兴趣的同学可前往观看\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "3号宿舍楼4F玻璃门碎了一地，别靠近，小心扎脚",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Dorm_3\", \"building_name\": \"3号宿舍楼\", \"floor\": \"4F\", \"severity\": \"high\", \"description\": \"3号宿舍楼4F楼玻璃破碎，碎片散落\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请勿靠近，注意避开碎玻璃\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "第一食堂2F楼梯灯坏了，黑漆漆的，下楼小心",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Canteen_A\", \"building_name\": \"第一食堂\", \"floor\": \"2F\", \"severity\": \"medium\", \"description\": \"第一食堂2F楼楼梯照明损坏\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"上下楼请扶好扶手，使用手机照明\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "澡堂今天晚上维修，6点之后就不能用了，要洗澡的早点去",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Bathhouse\", \"building_name\": \"公共浴室\", \"floor\": null, \"severity\": \"medium\", \"description\": \"公共浴室今晚维修，18:00后停止开放\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"建议换个时段，晚点再去\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "3号宿舍楼系统升级，今天暂停服务",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Dorm_3\", \"building_name\": \"3号宿舍楼\", \"floor\": null, \"severity\": \"medium\", \"description\": \"3号宿舍楼系统更换，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议预留更多办理时间，或线上办理\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "南校门今天提前关门，要办事的赶紧去",
+    "output": "{\"type\": \"service\", \"building_id\": \"GATE_South\", \"building_name\": \"南校门\", \"floor\": null, \"severity\": \"medium\", \"description\": \"南校门今日提前闭馆\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"请提前安排好时间\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "校园超市1F今天有安全检查，暂时不让进",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Supermarket\", \"building_name\": \"校园超市\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"校园超市1F楼安全检查期间暂停进入\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请配合检查，等开放后再前往\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "大学生活动中心疫苗接种排队老长了，下午人特别多，要等41分钟",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Activity_Center\", \"building_name\": \"大学生活动中心\", \"floor\": null, \"severity\": \"high\", \"description\": \"大学生活动中心下午时段排队人数较多，等待时间约41分钟\", \"estimated_wait_min\": 41, \"time_window\": \"afternoon\", \"advice\": \"建议避开当前时段，或咨询是否有其他接种点\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "美术馆今天的菜特别咸，打饭时跟阿姨说少放盐",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Art_Museum\", \"building_name\": \"美术馆\", \"floor\": null, \"severity\": \"low\", \"description\": \"美术馆餐食口味反馈\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请携带现金备用，以防系统故障\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "第一食堂1F窗口减少了一半，办事速度慢了很多",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Canteen_A\", \"building_name\": \"第一食堂\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"第一食堂1F楼服务窗口减少，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"建议错峰就餐，或选择其他食堂\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "校园超市结账速度特别慢，夜里队伍越来越长",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Supermarket\", \"building_name\": \"校园超市\", \"floor\": null, \"severity\": \"medium\", \"description\": \"校园超市夜里时段排队人数较多，等待时间约25分钟\", \"estimated_wait_min\": 25, \"time_window\": \"night\", \"advice\": \"建议换个收银台，或等人少时再来\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "暖廊实验室出了点状况，正在处理，暂时别进",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Warm_Corridor\", \"building_name\": \"暖廊\", \"floor\": null, \"severity\": \"high\", \"description\": \"暖廊实验室出现异常，暂时封闭\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"建议绕行，避免经过附近\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "垂直书院明天早上有招聘会，记得带简历",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Vertical_Academy\", \"building_name\": \"垂直书院\", \"floor\": null, \"severity\": \"low\", \"description\": \"垂直书院早上将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议错峰投递，或先线上投简历\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "北区宿舍电梯排队排到楼梯口了，早上还是爬楼梯吧",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Dorm_N\", \"building_name\": \"北区宿舍\", \"floor\": null, \"severity\": \"medium\", \"description\": \"北区宿舍早上时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议走楼梯，既快又能顺便活动\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "3号宿舍楼3F今天维修，夜里之后就不能用了，要去的早点",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Dorm_3\", \"building_name\": \"3号宿舍楼\", \"floor\": \"3F\", \"severity\": \"medium\", \"description\": \"3号宿舍楼3F楼设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "奖学金申请通知出来了，第一食堂可以领表，截止到下周一",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Canteen_A\", \"building_name\": \"第一食堂\", \"floor\": null, \"severity\": \"medium\", \"description\": \"第一食堂近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议错峰就餐，或选择其他食堂\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "3号宿舍楼1F楼梯灯坏了，黑漆漆的，下楼小心",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Dorm_3\", \"building_name\": \"3号宿舍楼\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"3号宿舍楼1F楼楼梯照明损坏\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"上下楼请扶好扶手，使用手机照明\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学生活动中心换了新系统，操作变慢了，办事多等会儿",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Student_Center\", \"building_name\": \"学生活动中心\", \"floor\": null, \"severity\": \"low\", \"description\": \"学生活动中心系统更换，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议预留更多办理时间，或线上办理\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "5号宿舍楼2F今天维修，中午不能用了，要去的改时间",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Dorm_5\", \"building_name\": \"5号宿舍楼\", \"floor\": \"2F\", \"severity\": \"medium\", \"description\": \"5号宿舍楼2F楼设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "美术馆换了新系统，操作变慢了，办事多等会儿",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Art_Museum\", \"building_name\": \"美术馆\", \"floor\": null, \"severity\": \"low\", \"description\": \"美术馆系统更换，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议预留更多办理时间，或线上办理\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "垂直书院围栏倒了一块，路过的注意安全",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Vertical_Academy\", \"building_name\": \"垂直书院\", \"floor\": null, \"severity\": \"medium\", \"description\": \"垂直书院围栏破损，存在安全隐患\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"途经时请绕开破损区域\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "听澜图书馆3F人巨多，排到门外了，早上去肯定来不及",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Tinglan_Library\", \"building_name\": \"听澜图书馆\", \"floor\": \"3F\", \"severity\": \"high\", \"description\": \"听澜图书馆3F楼早上时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议错峰前往，或选择其他替代地点\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "行政楼2F今天临时关闭，具体开放时间另行通知",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Admin\", \"building_name\": \"行政楼\", \"floor\": \"2F\", \"severity\": \"medium\", \"description\": \"行政楼2F楼今日临时关闭，恢复时间待通知\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议提前做好准备，合理安排时间\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "体育馆2F今天放假不开放，别白跑一趟",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Gym\", \"building_name\": \"体育馆\", \"floor\": \"2F\", \"severity\": \"low\", \"description\": \"体育馆2F楼暂停对外开放\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请提前规划，避免影响行程\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "校医院1F在施工，被围挡围起来了，过不去要绕路",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Hospital\", \"building_name\": \"校医院\", \"floor\": \"1F\", \"severity\": \"high\", \"description\": \"校医院1F楼施工围挡占道，通行受阻\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议绕行，避开施工区域\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "南区宿舍今晚有活动，人爆满，夜里别去了没座",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Dorm_S\", \"building_name\": \"南区宿舍\", \"floor\": null, \"severity\": \"high\", \"description\": \"南区宿舍夜里时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"建议提前到场，或关注是否有线上直播\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "开学典礼开始报名了，截止到月底，要报的抓紧",
+    "output": "{\"type\": \"notice\", \"building_id\": null, \"building_name\": null, \"floor\": null, \"severity\": \"medium\", \"description\": \"学生活动中心近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "创新创业中心窗口减少了一半，办事速度慢了很多",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Innovation\", \"building_name\": \"创新创业中心\", \"floor\": null, \"severity\": \"medium\", \"description\": \"创新创业中心服务窗口减少，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请提前规划，避免影响行程\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "编程比赛延期了，新时间另行通知，关注北校门公告",
+    "output": "{\"type\": \"notice\", \"building_id\": \"GATE_North\", \"building_name\": \"北校门\", \"floor\": null, \"severity\": \"low\", \"description\": \"北校门近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"有兴趣的请留意时间，提前到场\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "大学生活动中心机器坏了，今天用不了，等明天吧",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Activity_Center\", \"building_name\": \"大学生活动中心\", \"floor\": null, \"severity\": \"medium\", \"description\": \"大学生活动中心设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "体育馆2F在施工，被围挡围起来了，过不去要绕路",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Gym\", \"building_name\": \"体育馆\", \"floor\": \"2F\", \"severity\": \"high\", \"description\": \"体育馆2F楼施工围挡占道，通行受阻\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议绕行，避开施工区域\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "北门那边新开了一家奶茶店，今天买一送一，人巨多",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"GATE_North\", \"building_name\": \"北校门\", \"floor\": null, \"severity\": \"medium\", \"description\": \"北校门新开奶茶店开业促销（买一送一），排队人数多\", \"estimated_wait_min\": 30, \"time_window\": \"afternoon\", \"advice\": \"想尝鲜的同学建议错峰前往，或选择外卖配送\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "行政楼围栏倒了一块，路过的注意安全",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Admin\", \"building_name\": \"行政楼\", \"floor\": null, \"severity\": \"medium\", \"description\": \"行政楼围栏破损，存在安全隐患\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"途经时请绕开破损区域\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "下雪了，中轴路北段门口结冰了，特别滑，大家注意",
+    "output": "{\"type\": \"safety\", \"building_id\": \"ROAD_Central_Axis_N\", \"building_name\": \"中轴路北段\", \"floor\": null, \"severity\": \"high\", \"description\": \"中轴路北段地面湿滑，存在滑倒风险\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"途经时请放慢脚步，注意脚下安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "打印店1F今晚有活动，人爆满，早上别去了没座",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Print_Shop\", \"building_name\": \"校园打印店\", \"floor\": \"1F\", \"severity\": \"high\", \"description\": \"打印店1F楼早上时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议提前到场，或关注是否有线上直播\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学生活动中心充值系统坏了，充不了值，只能用现金",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Student_Center\", \"building_name\": \"学生活动中心\", \"floor\": null, \"severity\": \"medium\", \"description\": \"学生活动中心设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议预留更多办理时间，或线上办理\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "第二食堂午餐人最多，中午要等26分钟",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Canteen_B\", \"building_name\": \"第二食堂\", \"floor\": null, \"severity\": \"high\", \"description\": \"第二食堂中午时段排队人数较多，等待时间约26分钟\", \"estimated_wait_min\": 26, \"time_window\": \"noon\", \"advice\": \"建议错峰就餐，或选择其他食堂\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "学生活动中心下周有艺术展览，感兴趣的可以报名",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Student_Center\", \"building_name\": \"学生活动中心\", \"floor\": null, \"severity\": \"low\", \"description\": \"学生活动中心近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"感兴趣的同学可前往参观\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "中轴路北段有辆车没锁，小心被偷，大家注意保管好东西",
+    "output": "{\"type\": \"safety\", \"building_id\": \"ROAD_Central_Axis_N\", \"building_name\": \"中轴路北段\", \"floor\": null, \"severity\": \"medium\", \"description\": \"中轴路北段车辆未锁，存在被盗风险\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请锁好个人车辆，注意财物安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "南校门结账速度特别慢，晚上队伍越来越长",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"GATE_South\", \"building_name\": \"南校门\", \"floor\": null, \"severity\": \"medium\", \"description\": \"南校门晚上时段排队人数较多，等待时间约24分钟\", \"estimated_wait_min\": 24, \"time_window\": \"evening\", \"advice\": \"建议换个收银台，或等人少时再来\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "主校门今天放假不开放，别白跑一趟",
+    "output": "{\"type\": \"service\", \"building_id\": \"GATE_Main\", \"building_name\": \"主校门\", \"floor\": null, \"severity\": \"low\", \"description\": \"主校门暂停对外开放\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请关注后续通知，恢复后第一时间告知\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "中轴路南段窗口减少了一半，办事速度慢了很多",
+    "output": "{\"type\": \"service\", \"building_id\": \"ROAD_Central_Axis_S\", \"building_name\": \"中轴路南段\", \"floor\": null, \"severity\": \"medium\", \"description\": \"中轴路南段服务窗口减少，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"如有紧急需求，请联系相关部门\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "体育馆机器坏了，今天用不了，等明天吧",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Gym\", \"building_name\": \"体育馆\", \"floor\": null, \"severity\": \"medium\", \"description\": \"体育馆设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "C实验楼2F窗口减少了一半，办事速度慢了很多",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Lab_C\", \"building_name\": \"C实验楼\", \"floor\": \"2F\", \"severity\": \"medium\", \"description\": \"C实验楼2F楼服务窗口减少，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议提前做好准备，合理安排时间\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "南区宿舍今天爆满，晚上建议换个地方",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Dorm_S\", \"building_name\": \"南区宿舍\", \"floor\": null, \"severity\": \"high\", \"description\": \"南区宿舍晚上时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"建议错峰前往，或选择其他同类场所\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "行政楼2F门口有个大坑，晚上走路注意点",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Admin\", \"building_name\": \"行政楼\", \"floor\": \"2F\", \"severity\": \"medium\", \"description\": \"行政楼2F楼路面有坑洞，存在跌倒风险\", \"estimated_wait_min\": null, \"time_window\": \"night\", \"advice\": \"途经时请特别注意脚下，夜间尤其小心\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "工程训练中心1F疫苗接种排队老长了，中午人特别多，要等37分钟",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Engineering_Center\", \"building_name\": \"工程训练中心\", \"floor\": \"1F\", \"severity\": \"high\", \"description\": \"工程训练中心1F楼中午时段排队人数较多，等待时间约37分钟\", \"estimated_wait_min\": 37, \"time_window\": \"noon\", \"advice\": \"建议避开当前时段，或咨询是否有其他接种点\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "心理健康讲座延期了，新时间另行通知，关注北区宿舍公告",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Dorm_N\", \"building_name\": \"北区宿舍\", \"floor\": null, \"severity\": \"low\", \"description\": \"北区宿舍近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议提前到场，或关注是否有线上直播\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "通知：校园超市中午有社团招新，免费开放",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Supermarket\", \"building_name\": \"校园超市\", \"floor\": null, \"severity\": \"low\", \"description\": \"校园超市中午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "5号宿舍楼1F实验室出了点状况，正在处理，暂时别进",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Dorm_5\", \"building_name\": \"5号宿舍楼\", \"floor\": \"1F\", \"severity\": \"high\", \"description\": \"5号宿舍楼1F楼实验室出现异常，暂时封闭\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"请提高警惕，保护好个人财物\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "奖学金申请通知出来了，学术报告厅可以领表，截止到本周日",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Lecture_Hall\", \"building_name\": \"学术报告厅\", \"floor\": null, \"severity\": \"medium\", \"description\": \"学术报告厅近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "3号宿舍楼空调坏了，下午特别热，尽量别待太久",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Dorm_3\", \"building_name\": \"3号宿舍楼\", \"floor\": null, \"severity\": \"low\", \"description\": \"3号宿舍楼设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"建议改到其他时间，或换用其他设备\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "中轴路南段充值系统坏了，充不了值，只能用现金",
+    "output": "{\"type\": \"service\", \"building_id\": \"ROAD_Central_Axis_S\", \"building_name\": \"中轴路南段\", \"floor\": null, \"severity\": \"medium\", \"description\": \"中轴路南段设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议预留更多办理时间，或线上办理\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "创业分享会结果出来了，名单在学术报告厅门口贴着呢",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Lecture_Hall\", \"building_name\": \"学术报告厅\", \"floor\": null, \"severity\": \"low\", \"description\": \"学术报告厅下午将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"详情可前往现场查看，或关注官方通知\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "知行楼下午停水停电，记得提前做好准备",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_ZhiXing\", \"building_name\": \"知行楼\", \"floor\": null, \"severity\": \"high\", \"description\": \"知行楼停电导致楼道照明不足\", \"estimated_wait_min\": 120, \"time_window\": \"afternoon\", \"advice\": \"建议使用手机照明，慢行通过\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "主校门今天的菜特别咸，打饭时跟阿姨说少放盐",
+    "output": "{\"type\": \"service\", \"building_id\": \"GATE_Main\", \"building_name\": \"主校门\", \"floor\": null, \"severity\": \"low\", \"description\": \"主校门餐食口味反馈\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"请关注后续通知，恢复后第一时间告知\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "刚从第一食堂3F出来，队伍一眼望不到头，中午要等47分钟",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Canteen_A\", \"building_name\": \"第一食堂\", \"floor\": \"3F\", \"severity\": \"high\", \"description\": \"第一食堂3F楼中午时段排队人数较多，等待时间约47分钟\", \"estimated_wait_min\": 47, \"time_window\": \"noon\", \"advice\": \"建议错峰就餐，或选择其他食堂\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "下雪了，5号宿舍楼1F门口结冰了，特别滑，大家注意",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Dorm_5\", \"building_name\": \"5号宿舍楼\", \"floor\": \"1F\", \"severity\": \"high\", \"description\": \"5号宿舍楼1F楼地面湿滑，存在滑倒风险\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"途经时请放慢脚步，注意脚下安全\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "开学典礼延期了，新时间另行通知，关注3号宿舍楼4F公告",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Dorm_3\", \"building_name\": \"3号宿舍楼\", \"floor\": \"4F\", \"severity\": \"low\", \"description\": \"3号宿舍楼4F楼近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "奖学金申请通知出来了，快递服务中心可以领表，截止到下周一",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Express_Center\", \"building_name\": \"快递服务中心\", \"floor\": null, \"severity\": \"medium\", \"description\": \"快递服务中心近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "主校门窗口减少了一半，办事速度慢了很多",
+    "output": "{\"type\": \"service\", \"building_id\": \"GATE_Main\", \"building_name\": \"主校门\", \"floor\": null, \"severity\": \"medium\", \"description\": \"主校门服务窗口减少，办理效率下降\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"请调整时间安排，改日再前往\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "听澜图书馆1F电梯排队排到楼梯口了，中午还是爬楼梯吧",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"BLD_Tinglan_Library\", \"building_name\": \"听澜图书馆\", \"floor\": \"1F\", \"severity\": \"medium\", \"description\": \"听澜图书馆1F楼中午时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"noon\", \"advice\": \"建议走楼梯，既快又能顺便活动\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "C实验楼2F外面挂着的广告牌快掉了，走路离远点",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Lab_C\", \"building_name\": \"C实验楼\", \"floor\": \"2F\", \"severity\": \"high\", \"description\": \"C实验楼2F楼广告牌固定不牢，有坠落风险\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请绕开该区域行走，远离建筑物外墙\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "B教学楼3F今天晚上有个创业分享会，想去的早点去占座",
+    "output": "{\"type\": \"notice\", \"building_id\": \"BLD_Teaching_B\", \"building_name\": \"B教学楼\", \"floor\": \"3F\", \"severity\": \"low\", \"description\": \"B教学楼3F楼晚上将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"感兴趣的同学可前往参加\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "西校门排起了长队，早上还是别去凑热闹了",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"GATE_West\", \"building_name\": \"西校门\", \"floor\": null, \"severity\": \"medium\", \"description\": \"西校门早上时段人流量大，较为拥挤\", \"estimated_wait_min\": null, \"time_window\": \"morning\", \"advice\": \"建议错峰前往，或选择其他同类场所\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "C实验楼今天提前关门，要办事的赶紧去",
+    "output": "{\"type\": \"service\", \"building_id\": \"BLD_Lab_C\", \"building_name\": \"C实验楼\", \"floor\": null, \"severity\": \"medium\", \"description\": \"C实验楼今日提前闭馆\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"请提前安排好时间\"}"
+  },
+  {
+    "instruction": "你是校园事件分析助手。请从用户描述中提取事件的结构化信息，输出JSON格式，包含以下字段：type(事件类型，取值safety/congestion/service/notice)、building_id(建筑ID)、building_name(建筑名称，描述中未提及地点时填null)、floor(楼层，没有则为null)、severity(严重程度，取值low/medium/high)、description(事件摘要)、estimated_wait_min(预计等待或持续时间，单位分钟，没有则为null)、time_window(时间段，取值morning/noon/afternoon/evening/night/unknown)、advice(行动建议)。注意：描述中没有明确提到的地点、楼层等信息一律填null，不要推测或编造。",
+    "input": "美术馆发生了点小事故，正在处理，大家先别过去",
+    "output": "{\"type\": \"safety\", \"building_id\": \"BLD_Art_Museum\", \"building_name\": \"美术馆\", \"floor\": null, \"severity\": \"high\", \"description\": \"美术馆现场发生事故，正在处理中\", \"estimated_wait_min\": null, \"time_window\": \"afternoon\", \"advice\": \"请勿靠近现场，等待处理完毕\"}"
+  }
+]

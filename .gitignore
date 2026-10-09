@@ -47,3 +47,7 @@ venv/
 # ---- 工具产物与外部素材 ----
 /.trae-html-share-packages/
 /picture/
+
+# ---- 合规：去标识黑名单（含校名，禁止入库/外发）----
+.identifier_blacklist.txt
+**/.identifier_blacklist.txt

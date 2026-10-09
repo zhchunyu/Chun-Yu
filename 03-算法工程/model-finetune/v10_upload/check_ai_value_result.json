@@ -1,0 +1,342 @@
+[
+  {
+    "text": "谷园餐厅排队太长了，等好久",
+    "expect": {
+      "type": "congestion",
+      "wait": null,
+      "window": "unknown",
+      "severity": null
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": null,
+      "type": "congestion"
+    },
+    "plain": {
+      "type": "congestion",
+      "building_name": "谷园餐厅",
+      "floor": null,
+      "severity": "high",
+      "estimated_wait_min": 25,
+      "time_window": "noon"
+    },
+    "lora": {
+      "type": "congestion",
+      "building_id": "BLD_Guyuan_Canteen_A",
+      "building_name": "谷园餐厅A区",
+      "floor": null,
+      "severity": "high",
+      "description": "谷园餐厅A区中午时段排队人数较多，等待时间约23分钟",
+      "estimated_wait_min": 23,
+      "time_window": "noon",
+      "advice": "建议错峰就餐，或选择其他食堂"
+    }
+  },
+  {
+    "text": "图书馆三楼空调外机看着要掉",
+    "expect": {
+      "type": "safety",
+      "wait": null,
+      "window": "unknown",
+      "severity": "high"
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": "high",
+      "type": "safety"
+    },
+    "plain": {
+      "type": "safety",
+      "building_name": "BLD_Library",
+      "floor": "3F",
+      "severity": "high",
+      "estimated_wait_min": null,
+      "time_window": "unknown"
+    },
+    "lora": {
+      "type": "safety",
+      "building_id": "BLD_Library",
+      "building_name": "图书馆",
+      "floor": "3F",
+      "severity": "high",
+      "description": "图书馆三楼空调外机固定不牢，有坠落风险",
+      "estimated_wait_min": null,
+      "time_window": "unknown",
+      "advice": "请勿靠近建筑物外墙，远离窗户下方"
+    }
+  },
+  {
+    "text": "一食堂今天人爆满，队排到门外了",
+    "expect": {
+      "type": "congestion",
+      "wait": null,
+      "window": "unknown",
+      "severity": "high"
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": "high",
+      "type": "congestion"
+    },
+    "plain": {
+      "type": "congestion",
+      "building_name": "BLD_Canteen_A",
+      "floor": null,
+      "severity": "high",
+      "estimated_wait_min": 20,
+      "time_window": "noon"
+    },
+    "lora": {
+      "type": "congestion",
+      "building_id": "BLD_Canteen_A",
+      "building_name": "第一食堂",
+      "floor": null,
+      "severity": "high",
+      "description": "第一食堂中午时段排队人数较多，等待时间约30分钟",
+      "estimated_wait_min": 30,
+      "time_window": "noon",
+      "advice": "建议错峰就餐，或选择其他食堂"
+    }
+  },
+  {
+    "text": "教学楼门口有人在发传单，有点堵路",
+    "expect": {
+      "type": "congestion",
+      "wait": null,
+      "window": "unknown",
+      "severity": "low"
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": "low",
+      "type": "congestion"
+    },
+    "plain": {
+      "type": "congestion",
+      "building_name": "BLD_Teaching_Center",
+      "floor": null,
+      "severity": "medium",
+      "estimated_wait_min": null,
+      "time_window": "evening"
+    },
+    "lora": {
+      "type": "congestion",
+      "building_id": "BLD_Teaching_Building",
+      "building_name": "教学楼",
+      "floor": null,
+      "severity": "medium",
+      "description": "教学楼门口因活动导致通行受阻",
+      "estimated_wait_min": null,
+      "time_window": "evening",
+      "advice": "建议绕行，避开活动区域"
+    }
+  },
+  {
+    "text": "有人晕倒了，快来人",
+    "expect": {
+      "type": "safety",
+      "wait": null,
+      "window": "unknown",
+      "severity": "high"
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": "high",
+      "type": "safety"
+    },
+    "plain": {
+      "type": "safety",
+      "building_name": "图书馆",
+      "floor": "3F",
+      "severity": "high",
+      "estimated_wait_min": null,
+      "time_window": "evening"
+    },
+    "lora": {
+      "type": "safety",
+      "building_id": "BLD_Hospital",
+      "building_name": "校医院",
+      "floor": null,
+      "severity": "high",
+      "description": "校医院现场有人晕倒，需要紧急救助",
+      "estimated_wait_min": null,
+      "time_window": "evening",
+      "advice": "请勿靠近围观，等待专业人员处理"
+    }
+  },
+  {
+    "text": "英语角开始报名了，截止到周日",
+    "expect": {
+      "type": "notice",
+      "wait": null,
+      "window": "unknown",
+      "severity": "low"
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": null,
+      "type": "notice"
+    },
+    "plain": {
+      "type": "notice",
+      "building_name": null,
+      "floor": null,
+      "severity": "medium",
+      "estimated_wait_min": null,
+      "time_window": "evening"
+    },
+    "lora": {
+      "type": "notice",
+      "building_id": null,
+      "building_name": null,
+      "floor": null,
+      "severity": "medium",
+      "description": "知谷近期将举办活动",
+      "estimated_wait_min": null,
+      "time_window": "unknown",
+      "advice": "请留意报名截止时间，及时提交"
+    }
+  },
+  {
+    "text": "谷园2楼新开的窗口超好吃但排队40分钟",
+    "expect": {
+      "type": "congestion",
+      "wait": 40,
+      "window": "noon",
+      "severity": "medium"
+    },
+    "rule": {
+      "wait": 40,
+      "window": "unknown",
+      "severity": null,
+      "type": "congestion"
+    },
+    "plain": {
+      "type": "congestion",
+      "building_name": "谷园",
+      "floor": "2F",
+      "severity": "high",
+      "estimated_wait_min": 40,
+      "time_window": "evening"
+    },
+    "lora": {
+      "type": "congestion",
+      "building_id": "BLD_Guyuan",
+      "building_name": "谷园",
+      "floor": "2F",
+      "severity": "high",
+      "description": "谷园2楼中午时段排队人数较多，等待时间约40分钟",
+      "estimated_wait_min": 40,
+      "time_window": "noon",
+      "advice": "建议错峰就餐或选择其他食堂"
+    }
+  },
+  {
+    "text": "宿舍楼下有人乱停车，把路都堵了",
+    "expect": {
+      "type": "congestion",
+      "wait": null,
+      "window": "unknown",
+      "severity": "medium"
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": null,
+      "type": "congestion"
+    },
+    "plain": {
+      "type": "congestion",
+      "building_name": "BLD_Dorm",
+      "floor": null,
+      "severity": "medium",
+      "estimated_wait_min": null,
+      "time_window": "evening"
+    },
+    "lora": {
+      "type": "congestion",
+      "building_id": "BLD_Dorm_A",
+      "building_name": "第一学生公寓",
+      "floor": null,
+      "severity": "medium",
+      "description": "第一学生公寓楼下车辆乱停乱放，导致道路堵塞",
+      "estimated_wait_min": null,
+      "time_window": "evening",
+      "advice": "请将车辆停放在指定区域，保持通道畅通"
+    }
+  },
+  {
+    "text": "校医院开的药好贵啊",
+    "expect": {
+      "type": "service",
+      "wait": null,
+      "window": "unknown",
+      "severity": "low"
+    },
+    "rule": {
+      "wait": null,
+      "window": "unknown",
+      "severity": null,
+      "type": null
+    },
+    "plain": {
+      "type": "service",
+      "building_name": "BLD_Hospital",
+      "floor": null,
+      "severity": "low",
+      "estimated_wait_min": null,
+      "time_window": "evening"
+    },
+    "lora": {
+      "type": "service",
+      "building_id": "BLD_Hospital",
+      "building_name": "校医院",
+      "floor": null,
+      "severity": "low",
+      "description": "校医院药品价格偏高",
+      "estimated_wait_min": null,
+      "time_window": "unknown",
+      "advice": "可考虑使用医保报销"
+    }
+  },
+  {
+    "text": "西校门这边晚上堵车堵了20分钟",
+    "expect": {
+      "type": "congestion",
+      "wait": 20,
+      "window": "evening",
+      "severity": "medium"
+    },
+    "rule": {
+      "wait": 20,
+      "window": "evening",
+      "severity": null,
+      "type": "congestion"
+    },
+    "plain": {
+      "type": "congestion",
+      "building_name": "西校门",
+      "floor": null,
+      "severity": "high",
+      "estimated_wait_min": 20,
+      "time_window": "evening"
+    },
+    "lora": {
+      "type": "congestion",
+      "building_id": "GATE_West",
+      "building_name": "西校门",
+      "floor": null,
+      "severity": "high",
+      "description": "西校门晚上时段车辆排队进入约20分钟",
+      "estimated_wait_min": 20,
+      "time_window": "evening",
+      "advice": "建议错峰前往，或选择其他同类场所"
+    }
+  }
+]

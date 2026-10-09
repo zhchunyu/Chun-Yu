@@ -1,0 +1,78 @@
+# LLaMA-Factory 训练配置 V9 — Qwen2.5-14B QLoRA
+# 事件结构化提取 LoRA（校园事件 JSON 抽取）
+#
+# ★ 这是「两个独立适配器」中的第一个：提取 LoRA
+#   第二个（人设化回应）见 v7_train.yaml。
+#   部署时用 vLLM 的 --enable-lora 同时挂载，按请求选。
+#
+# ★★ V9 相对 V8 的改动（依据 2026-10-04 产品架构讨论）：
+#   1. **删掉 mutual 类 245 条** —— 互助（拼车/求借/求组队/转让票）本质是"找人不是报事"，
+#      走论坛板块，**不进提取管线**
+#   2. **instruction 的 type 从 5 类改为 4 类**（safety/congestion/service/notice）
+#   3. **明确写入"未提及地点填 null，不要推测编造"** —— V8 验收暴露模型会凭空编建筑名
+#   4. 清掉 20 条"建筑名无中生有"（input 没提却填了建筑）→ null
+#   5. 建筑名归一：`打印店`(26) 与 `校园打印店`(1) 合并
+#
+# ★ V9 数据规模：训练 983 + 评估 120，4 类均衡（22.8%~26.7%）
+#
+# ★ 提取任务的特殊性（决定了超参与回应任务不同）：
+#   1. 输出是严格 JSON ⇒ learning_rate 取 1.0e-4，epoch 只跑 2
+#   2. 样本短（输入 ~30 字，输出 ~200 字）⇒ cutoff_len 512 足够
+#   3. 评估指标看「JSON 可解析率」而非 loss ⇒ do_eval 必开
+#
+# ★ 地点字段说明：当前建筑名**是占位**，接软件后会替换为真实建筑表。
+#   模型职责 = 只搬运文本里明确写的地点，抽不到就 null（系统用发帖人定位补）。
+#
+# 上传位置：/root/autodl-tmp/v9_extract.yaml
+# 数据集位置：/root/autodl-tmp/data/v9_extract_train.json + v9_extract_eval.json
+
+### 模型
+model_name_or_path: /root/autodl-tmp/models/models/qwen--Qwen2.5-14B-Instruct/snapshots/master
+
+### 训练方法
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 128
+lora_alpha: 256
+lora_dropout: 0.05
+lora_target: all
+
+### 量化
+quantization_bit: 4
+quantization_type: nf4
+double_quantization: true
+
+### 数据集
+dataset: auv_v9_extract
+eval_dataset: auv_v9_extract_eval
+dataset_dir: /root/autodl-tmp/data
+template: qwen
+cutoff_len: 512
+max_samples: 100000
+overwrite_cache: true
+preprocessing_num_workers: 8
+
+### 输出
+output_dir: /root/autodl-tmp/output/qwen25-14b-auv-v9-extract
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 4
+learning_rate: 1.0e-4
+num_train_epochs: 2.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+
+### 评估与日志
+do_eval: true
+eval_strategy: steps
+eval_steps: 100
+logging_steps: 10
+save_strategy: epoch
+save_total_limit: 2
+
+### 其他
+fp16: true
+gradient_checkpointing: true
+ddp_timeout: 180000000
+report_to: none

@@ -1,0 +1,98 @@
+[
+  {
+    "input": "谷园餐厅现在人多到爆，队都排到门口了",
+    "expect": "congestion",
+    "exp_building": "谷园餐厅",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"canteen\", \"building_name\": \"谷园餐厅\", \"floor\": null, \"severity\": \"high\", \"description\": \"谷园餐厅中午时段排队人数较多，等待时间约28分钟\", \"estimated_wait_min\": 28, \"time_window\": \"noon\", \"advice\": \"建议错峰就餐，或选择其他食堂\"}",
+    "got_type": "congestion",
+    "got_building": "谷园餐厅",
+    "got_id": "canteen",
+    "loc_hallucinated": true
+  },
+  {
+    "input": "图书馆三楼空调外机看着要掉",
+    "expect": "safety",
+    "exp_building": "图书馆",
+    "output": "{\"type\": \"safety\", \"building_id\": \"library\", \"building_name\": \"图书馆\", \"floor\": \"3F\", \"severity\": \"high\", \"description\": \"图书馆三楼空调外机固定不牢，有坠落风险\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请绕开该区域行走，远离建筑物外墙\"}",
+    "got_type": "safety",
+    "got_building": "图书馆",
+    "got_id": "library",
+    "loc_hallucinated": true
+  },
+  {
+    "input": "3号公寓楼楼下洗衣机全是坏的，一个能用的都没有",
+    "expect": "service",
+    "exp_building": "3号公寓楼",
+    "output": "{\"type\": \"service\", \"building_id\": \"apartment-3\", \"building_name\": \"3号公寓楼\", \"floor\": null, \"severity\": \"high\", \"description\": \"3号公寓楼设备故障，暂停使用\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议改到其他时间，或换用其他设备\"}",
+    "got_type": "service",
+    "got_building": "3号公寓楼",
+    "got_id": "apartment-3",
+    "loc_hallucinated": true
+  },
+  {
+    "input": "崇文楼下周有创业分享会，感兴趣的可以报名",
+    "expect": "notice",
+    "exp_building": "崇文楼",
+    "output": "{\"type\": \"notice\", \"building_id\": \"chongwen-building\", \"building_name\": \"崇文楼\", \"floor\": null, \"severity\": \"low\", \"description\": \"崇文楼近期将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}",
+    "got_type": "notice",
+    "got_building": "崇文楼",
+    "got_id": "chongwen-building",
+    "loc_hallucinated": true
+  },
+  {
+    "input": "睿智文体馆羽毛球场地今晚约满了",
+    "expect": "congestion",
+    "exp_building": "睿智文体馆",
+    "output": "{\"type\": \"service\", \"building_id\": \"ruizhi-sports-center\", \"building_name\": \"睿智文体馆\", \"floor\": null, \"severity\": \"medium\", \"description\": \"睿智文体馆羽毛球场地晚上时段约满\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"建议提前到场，或关注是否有线上直播\"}",
+    "got_type": "service",
+    "got_building": "睿智文体馆",
+    "got_id": "ruizhi-sports-center",
+    "loc_hallucinated": true
+  },
+  {
+    "input": "实验大楼门口自行车乱停，都堵住路了",
+    "expect": "congestion",
+    "exp_building": "实验大楼",
+    "output": "{\"type\": \"congestion\", \"building_id\": \"lab-building\", \"building_name\": \"实验大楼\", \"floor\": null, \"severity\": \"medium\", \"description\": \"实验大楼门前车辆乱停，占用人行道\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"请将车辆停放到指定区域\"}",
+    "got_type": "congestion",
+    "got_building": "实验大楼",
+    "got_id": "lab-building",
+    "loc_hallucinated": true
+  },
+  {
+    "input": "英语角开始报名了，截止到本周日，要报的抓紧",
+    "expect": "notice",
+    "exp_building": "NULL",
+    "output": "{\"type\": \"notice\", \"building_id\": null, \"building_name\": null, \"floor\": null, \"severity\": \"medium\", \"description\": \"英语角报名截止日期临近，请及时提交\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"请留意报名截止时间，及时提交\"}",
+    "got_type": "notice",
+    "got_building": null,
+    "got_id": null
+  },
+  {
+    "input": "有人晕倒了，快来人",
+    "expect": "safety",
+    "exp_building": "NULL",
+    "output": "{\"type\": \"safety\", \"building_id\": null, \"building_name\": null, \"floor\": null, \"severity\": \"high\", \"description\": \"有人突然晕倒，需要紧急救助\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"请立即拨打急救电话，同时寻找现场目击者\"}",
+    "got_type": "safety",
+    "got_building": null,
+    "got_id": null
+  },
+  {
+    "input": "有没有人今晚一起去操场跑步的",
+    "expect": "非提取任务(互助)",
+    "exp_building": null,
+    "output": "{\"type\": \"notice\", \"building_id\": \"sports-field\", \"building_name\": \"操场\", \"floor\": null, \"severity\": \"low\", \"description\": \"操场晚上将举办活动\", \"estimated_wait_min\": null, \"time_window\": \"evening\", \"advice\": \"欢迎踊跃参与\"}",
+    "got_type": "notice",
+    "got_building": "操场",
+    "got_id": "sports-field"
+  },
+  {
+    "input": "感觉这学期什么活动都没赶上，有点失落",
+    "expect": "非提取任务(情绪)",
+    "exp_building": null,
+    "output": "{\"type\": \"notice\", \"building_id\": null, \"building_name\": null, \"floor\": null, \"severity\": \"low\", \"description\": \"近期无大型活动安排\", \"estimated_wait_min\": null, \"time_window\": \"unknown\", \"advice\": \"建议关注官方通知，及时了解最新动态\"}",
+    "got_type": "notice",
+    "got_building": null,
+    "got_id": null
+  }
+]
