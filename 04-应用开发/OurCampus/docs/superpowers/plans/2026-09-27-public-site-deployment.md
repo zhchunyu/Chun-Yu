@@ -33,13 +33,13 @@
 ```js
 import { rm } from 'node:fs/promises'
 
-const unusedCampusModel = new URL('../dist/assets/sxau-campus-extracted.glb', import.meta.url)
+const unusedCampusModel = new URL('../dist/assets/campus-extracted.glb', import.meta.url)
 
 await rm(unusedCampusModel, { force: true })
-console.log('Excluded unused sxau-campus-extracted.glb from the Pages deployment.')
+console.log('Excluded unused campus-extracted.glb from the Pages deployment.')
 ```
 
-脚本只移除 `dist/assets/sxau-campus-extracted.glb`，不改动 `public/assets` 中的原始文件。
+脚本只移除 `dist/assets/campus-extracted.glb`，不改动 `public/assets` 中的原始文件。
 
 - [ ] **Step 3: 构建并检查发布目录**
 
@@ -49,7 +49,7 @@ console.log('Excluded unused sxau-campus-extracted.glb from the Pages deployment
 npm run build:pages
 ```
 
-预期：Vite 构建成功，`dist/assets/campus.glb` 和 `dist/assets/shanhe-campus-plan.svg` 存在，`dist/assets/sxau-campus-extracted.glb` 不存在。此步骤不运行 Vitest 测试套件。
+预期：Vite 构建成功，`dist/assets/campus.glb` 和 `dist/assets/shanhe-campus-plan.svg` 存在，`dist/assets/campus-extracted.glb` 不存在。此步骤不运行 Vitest 测试套件。
 
 - [ ] **Step 4: 提交并推送构建配置**
 
@@ -83,7 +83,7 @@ git push origin campustwin-afternoon
 
 - [ ] **Step 1: 检查部署页面和静态资源**
 
-用手机蜂窝网络或其他外部网络打开 Pages 提供的 HTTPS URL，确认页面加载，且网络请求能获取 `/assets/campus.glb` 与 `/assets/shanhe-campus-plan.svg`。确认 `/assets/sxau-campus-extracted.glb` 不在部署产物中。
+用手机蜂窝网络或其他外部网络打开 Pages 提供的 HTTPS URL，确认页面加载，且网络请求能获取 `/assets/campus.glb` 与 `/assets/shanhe-campus-plan.svg`。确认 `/assets/campus-extracted.glb` 不在部署产物中。
 
 - [ ] **Step 2: 确认分支自动部署状态**
 

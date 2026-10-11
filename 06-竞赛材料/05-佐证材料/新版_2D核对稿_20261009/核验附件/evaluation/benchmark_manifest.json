@@ -1,0 +1,18 @@
+{
+  "schema": "OurCampus-2D-offline-v1",
+  "formal_cases": 240,
+  "development_cases": 60,
+  "groups": {
+    "location": 120,
+    "intent": 40,
+    "context": 60,
+    "protocol": 20
+  },
+  "sha256": "2e9a0ed23a29018f189ff9e77daec14e335123fa5bd869e50ce570d50d6acce3",
+  "data_origin": "规则化编写的合成场景，不是真实用户消息",
+  "gold_review": "单人制定；在线语义评测前待独立二审",
+  "development_relation": "60条调试样例是正式题的近义改写，不构成独立留出集；本轮未据此调参，正式题仅用于固定回归和协议测试",
+  "train_inputs_scanned": 15358,
+  "exact_train_overlap": [],
+  "semantic_overlap_review": "未完成，后续在线质量评测前需补"
+}

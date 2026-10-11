@@ -1,0 +1,222 @@
+[
+  {
+    "file": "OurCampus_二维应用佐证材料_核对稿_v2.docx",
+    "bytes": 1121199,
+    "sha256": "df7157903255e941f96d285c9872c2cd4ad9b5a358d59e5a533c2e29bc241fac"
+  },
+  {
+    "file": "OurCampus_二维应用佐证材料_核对稿_v2.pdf",
+    "bytes": 1568517,
+    "sha256": "2298cbe31d0489a0de1e2eeadee84480794609034a6b0608d79e044e7b2d5837"
+  },
+  {
+    "file": "OurCampus_二维应用佐证材料_正文.md",
+    "bytes": 11416,
+    "sha256": "78658d1c7fa9bacda1ee38610c8556730d3b04b111ec1393f136451b2ee95eae"
+  },
+  {
+    "file": "交付说明.md",
+    "bytes": 3304,
+    "sha256": "57aa6d923c77a62f92bcb5a06c0f672cb180b29c745c82fc3b2a50ac6c3adbf2"
+  },
+  {
+    "file": "图示素材/before_after.png",
+    "bytes": 49037,
+    "sha256": "decc5ad2a4b77895bee690c1ec8f22f5990cc09af8bec5a43f3e119fc821655b"
+  },
+  {
+    "file": "图示素材/chain.png",
+    "bytes": 94284,
+    "sha256": "d263baf89cd8017a978d792ab3654ca6b8fd0aab6ecb38f06b0fceb691b5dc3d"
+  },
+  {
+    "file": "图示素材/context.png",
+    "bytes": 105831,
+    "sha256": "e75a36f80f9e2feaafeae13ee6c61ac7bdebf305333a1a0a63f0d1265b9ab91e"
+  },
+  {
+    "file": "图示素材/errors.png",
+    "bytes": 94840,
+    "sha256": "33b31ea98ad986b2c03d8fe647783a62eebc0f0ec762518872f785e3feb1b021"
+  },
+  {
+    "file": "图示素材/evidence_levels.png",
+    "bytes": 94447,
+    "sha256": "2680c8c15df80350d9213d7ba0b485ab10041030113794f684926678ab322022"
+  },
+  {
+    "file": "图示素材/historical_ui.png",
+    "bytes": 275241,
+    "sha256": "c129fdb4a4eb36db1de80c952528b00f5e35c62802780b02e74638c908bc47c1"
+  },
+  {
+    "file": "图示素材/offline_groups.png",
+    "bytes": 53721,
+    "sha256": "2ad674bcf15bc3d73d99dd020ef89624f29eaed37ace44392823a18d9875a023"
+  },
+  {
+    "file": "图示素材/place_examples.png",
+    "bytes": 74286,
+    "sha256": "7e89ce2b924d9d066e252dea5beec5cd6bba3fb39024c6b39113083780936cf3"
+  },
+  {
+    "file": "图示素材/routing.png",
+    "bytes": 91089,
+    "sha256": "1ee3181bdd342b577e96b49f70d886e1de8dd6865206849d7f5f616ffd2c0d20"
+  },
+  {
+    "file": "图示素材/user_tasks.png",
+    "bytes": 79820,
+    "sha256": "49f023825dfc5b877a704533ff486347c4ea20e631b4673dce17032ac02a4ec5"
+  },
+  {
+    "file": "图示素材/wrong_place.png",
+    "bytes": 134530,
+    "sha256": "c2facf41f32764bf739808d9cae84c1aba8f00a670832fca0f38e4534e13324f"
+  },
+  {
+    "file": "手机验收与补证执行包.pdf",
+    "bytes": 326087,
+    "sha256": "e4df6e4d04d6b2a550c55ba9fa09a7801c7e3f630516f1e699464263cbb9b65d"
+  },
+  {
+    "file": "核验附件/build_final_log.txt",
+    "bytes": 1186,
+    "sha256": "2482fd258526dbd6ff0591a042032e8cf4e1ab8297dbf88c9eccc617f81683ac"
+  },
+  {
+    "file": "核验附件/dependency_markers.json",
+    "bytes": 1723,
+    "sha256": "e62f8d3a42e7d1a49af5e3a890b159501058ac1e68d65b45a1956de14ff5862f"
+  },
+  {
+    "file": "核验附件/evaluation/benchmark_manifest.json",
+    "bytes": 730,
+    "sha256": "edd26765b1589faacb87a1b3412faa2b07c12cfac43eb980564bf6e4ef74be07"
+  },
+  {
+    "file": "核验附件/evaluation/build_cases.mjs",
+    "bytes": 7574,
+    "sha256": "7381f9310baabff5939663767d8b75e354ccc5b1cb70342076a7267678f2b1de"
+  },
+  {
+    "file": "核验附件/evaluation/build_online_quality.mjs",
+    "bytes": 3475,
+    "sha256": "780bdd3c29d1011f948bb3be76c81ff64e4d0442d38ea7dafb01735449df0348"
+  },
+  {
+    "file": "核验附件/evaluation/development_cases.json",
+    "bytes": 26290,
+    "sha256": "0181dc2a5d630ec10370c3add08786eb7eea4b5e7db03f7c3f1a9cb886a8778a"
+  },
+  {
+    "file": "核验附件/evaluation/formal_cases.json",
+    "bytes": 119913,
+    "sha256": "2e9a0ed23a29018f189ff9e77daec14e335123fa5bd869e50ce570d50d6acce3"
+  },
+  {
+    "file": "核验附件/evaluation/offline_before_results.json",
+    "bytes": 1424624,
+    "sha256": "05c9d1ebd4ee5f19501afd50f4299418bae7f705d64aec8899f43037ad2f06da"
+  },
+  {
+    "file": "核验附件/evaluation/offline_before_summary.json",
+    "bytes": 4301,
+    "sha256": "7c8cf06ee2dff7c40791efd529ff4d3553691899412ea0c6b87ec331432301ee"
+  },
+  {
+    "file": "核验附件/evaluation/offline_results.json",
+    "bytes": 1451014,
+    "sha256": "07315e83de072f869d58e06a0219ac1401204c53d96c49c5190216ade0d6bc4d"
+  },
+  {
+    "file": "核验附件/evaluation/offline_summary.json",
+    "bytes": 2210,
+    "sha256": "6e93a0eabd554f79e4fa013ee7554de70ee04947c85cf073d7387603bebf1d39"
+  },
+  {
+    "file": "核验附件/evaluation/online_quality_cases.json",
+    "bytes": 199542,
+    "sha256": "09dff952bba496c3dca5cb1875af8b80991bd2c742368ab1c3e9fc282faecf2a"
+  },
+  {
+    "file": "核验附件/evaluation/online_runner.mjs",
+    "bytes": 4657,
+    "sha256": "1d6e0b6f7a37ecb2e91a86e84cc1560cfc471d479dd3917c7036935192fab8de"
+  },
+  {
+    "file": "核验附件/evaluation/README.md",
+    "bytes": 3083,
+    "sha256": "6d747dd76c65c3317902de7c8dab1dbeb8ac89aa8888a5aa9d495b17a1b67d67"
+  },
+  {
+    "file": "核验附件/evaluation/run_offline.mjs",
+    "bytes": 8972,
+    "sha256": "00255afa81e7885ef98b807346210d6a508dfe5ccc8979d18b044d7028579d1e"
+  },
+  {
+    "file": "核验附件/final_verification.json",
+    "bytes": 875,
+    "sha256": "38ff2cc0551cbefb290ea078bacfd7343ebe862cfb3176e66d87fe78bdfa99b9"
+  },
+  {
+    "file": "核验附件/frontend_after.json",
+    "bytes": 33378,
+    "sha256": "15d67895ebc38ad79fbca97faf67d795e5e97353ba289a4ec790fc87315be3cb"
+  },
+  {
+    "file": "核验附件/frontend_before.json",
+    "bytes": 43665,
+    "sha256": "e0f02d0ba986527da80809c43da123ae1f533c9a1eb72296fb9f5d821f9e90c1"
+  },
+  {
+    "file": "核验附件/gateway_tests.txt",
+    "bytes": 812,
+    "sha256": "14d677c914ef27074f4fbed6840df75b6731d92807519b32bb3450f1dfc66dca"
+  },
+  {
+    "file": "核验附件/source_baseline.json",
+    "bytes": 1220,
+    "sha256": "8beaa17e31928570113f1da1d4ed32028701bbfbdb1c4c9c88555095da68e79c"
+  },
+  {
+    "file": "核验附件/source_before/supabase/functions/_shared/auv.js",
+    "bytes": 15435,
+    "sha256": "4a2ef82708fe8920718c1ef69c56f432389b22d7c9644909ec17fd91631698c4"
+  },
+  {
+    "file": "核验附件/source_before/supabase/functions/_shared/campus-catalog.js",
+    "bytes": 10263,
+    "sha256": "ec1ca4f5d19b7d930a826718190e7bfdb6994d87c3a008853c97a7f5847fe64c"
+  },
+  {
+    "file": "核验附件/源码修改后指纹.json",
+    "bytes": 1128,
+    "sha256": "7d66a37ebbac1fcbf0bf312dee802d09fd3ce7f9bf20a156ec4952b678b591f0"
+  },
+  {
+    "file": "核验附件/源码变更.patch",
+    "bytes": 30092,
+    "sha256": "4b46033164f80e853be381ca89bab800218fa66df410e4d4e515d075bd2c116d"
+  },
+  {
+    "file": "采集包/体验记录表.html",
+    "bytes": 6214,
+    "sha256": "14265a7a85916c14b3497cbbdf771898634582f38cf73c8d518334dc57dcae90"
+  },
+  {
+    "file": "采集包/后续补证清单.md",
+    "bytes": 3684,
+    "sha256": "6a69492f656cb0ab81bd7dc20387b87645f2109ff98b85f88d5c7a41e2c6a505"
+  },
+  {
+    "file": "采集包/手机验收与用户体验采集.md",
+    "bytes": 5284,
+    "sha256": "97d0a7144ca43d46712fa7c57efb6bcdf885d553f6e61b630fd03e3a3ce55f5d"
+  },
+  {
+    "file": "采集包/汇总真实记录.py",
+    "bytes": 2998,
+    "sha256": "e41c701793bb58a750a100a25e882673cf7c49964258c05cbbed36a64c21e446"
+  }
+]

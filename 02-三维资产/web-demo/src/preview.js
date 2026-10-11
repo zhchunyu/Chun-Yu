@@ -924,7 +924,7 @@ async function handleNavigate(el) {
     if (alias?.anchor) to = findBuilding(alias.anchor.name);
   }
 
-  if (!from) { showNavError(el, '找不到起点：' + fromName + '，试试输入建筑全称（如：亭兰图书馆）'); return; }
+  if (!from) { showNavError(el, '找不到起点：' + fromName + '，试试输入建筑全称（如：中心图书馆）'); return; }
   if (!to) { showNavError(el, '找不到终点：' + toName + '，试试输入建筑全称（如：体育馆）'); return; }
 
   const route = await computeRoute(from.name, to.name);
@@ -995,7 +995,7 @@ async function handleAINavigate(el) {
       if (alias?.anchor) to = findBuilding(alias.anchor.name);
     }
 
-    if (!from) { showNavError(el, '找不到起点：' + result.from + '，试试说全称（如：从亭兰图书馆出发）'); return; }
+    if (!from) { showNavError(el, '找不到起点：' + result.from + '，试试说全称（如：从中心图书馆出发）'); return; }
     if (!to) { showNavError(el, '找不到终点：' + result.to + '，试试说全称（如：到体育馆）'); return; }
 
     const route = await computeRoute(from.name, to.name);

@@ -90,7 +90,7 @@ export const BUILDINGS = [
   // 建筑入口均朝南（面向中轴大道来向）
   { name: '主校门',     sx: 340, sy: 502,  shx: 14, shy: 6,   type: 'landmark', accent: 0x4dabff, entrance: 'south' },
   { name: '智谷谷底',   sx: 340, sy: 462,  shx: 18, shy: 28,  type: 'landmark', accent: 0x2ee6a8, entrance: 'south' },
-  { name: '亭兰图书馆', sx: 340, sy: 300,  shx: 32, shy: 28,  type: 'landmark', accent: 0x7fd4ff, entrance: 'south' },
+  { name: '中心图书馆', sx: 340, sy: 300,  shx: 32, shy: 28,  type: 'landmark', accent: 0x7fd4ff, entrance: 'south' },
   { name: '垂直书院',   sx: 340, sy: 246,  shx: 18, shy: 18,  type: 'landmark', accent: 0xc9a87c, entrance: 'south' },
   { name: '讲堂',       sx: 340, sy: 165,  shx: 26, shy: 18,  type: 'landmark', accent: 0xb07dff, entrance: 'south' },
 
@@ -165,7 +165,7 @@ export function getBuildingNames() {
    ==================================================================
    用户说的口语化名称 → 标准锚点名的映射。
    人工维护，三类别名：
-     · 简称/缩写：图书馆 → 亭兰图书馆
+     · 简称/缩写：图书馆 → 中心图书馆
      · 数字写法：3 号楼 → 教学C楼
      · 俗称/方言：大活 → 学生中心
    
@@ -173,10 +173,10 @@ export function getBuildingNames() {
 ================================================================== */
 const ANCHOR_ALIASES = {
   // —— 图书馆 ——
-  '图书馆': '亭兰图书馆',
-  '亭兰图书馆': '亭兰图书馆',
-  '图': '亭兰图书馆',
-  '图书': '亭兰图书馆',
+  '图书馆': '中心图书馆',
+  '中心图书馆': '中心图书馆',
+  '图': '中心图书馆',
+  '图书': '中心图书馆',
   
   // —— 食堂 ——
   '食堂': '食堂',
@@ -1098,7 +1098,7 @@ async function computeRouteWithAI(fromName, toName) {
 
 /**
  * 解析自然语言输入，提取起点和终点
- * 例如："从图书馆去体育馆" → { from: "亭兰图书馆", to: "体育馆" }
+ * 例如："从图书馆去体育馆" → { from: "中心图书馆", to: "体育馆" }
  *       "帮我导航到食堂" → { from: null, to: "食堂" }
  */
 export async function parseNaturalLanguage(text) {
@@ -1123,7 +1123,7 @@ ${buildingList}
 
 规则：
 1. 如果用户只说了一个地点，那就是终点，from 为 null
-2. 模糊匹配：用户说"图书馆"匹配"亭兰图书馆"，说"食堂"匹配"食堂"，说"宿舍"匹配最近的宿舍
+2. 模糊匹配：用户说"图书馆"匹配"中心图书馆"，说"食堂"匹配"食堂"，说"宿舍"匹配最近的宿舍
 3. 只从上面的列表中选择，不要编造不存在的建筑
 4. 必须输出合法的 JSON`;
 
@@ -1812,7 +1812,7 @@ export class BuildingHighlighter {
   _buildHitTargets() {
     BUILDINGS.forEach((b) => {
       // ★ 碰撞体半径必须按建筑实际尺寸计算（2026-09-26 修）。
-      //   旧版固定半径（landmark=60, tech=45 等）——亭兰图书馆半宽就有 76.8 m，
+      //   旧版固定半径（landmark=60, tech=45 等）——中心图书馆半宽就有 76.8 m，
       //   科研中心半宽 84.6 m，体育场半宽 100.8 m，碰撞体整个埋在楼里，
       //   点楼边完全没反应 ⇒ 用户以为"这栋楼没有标签"。
       //   这里按 shx/shy（SVG 半宽，×2.4 = 米）算外接圆，再放宽 25% 确保边缘也能点到。
@@ -1899,7 +1899,7 @@ export class BuildingHighlighter {
     const baseY = GROUND_Y;
 
     // ★ 光环半径必须**跟着建筑尺寸走**（2026-09-26 修）。
-    //   旧版固定 25 m 光斑 + 18/26/34 m 三个环 —— 而亭兰图书馆半宽就有 76.8 m，
+    //   旧版固定 25 m 光斑 + 18/26/34 m 三个环 —— 而中心图书馆半宽就有 76.8 m，
     //   环整个埋在楼底下被遮挡 ⇒ 点了建筑只有一根光柱，地面光圈根本看不见。
     //   这里按 `shx/shy`（SVG 半宽，×2.4 = 米）算外接圆，再放到圆外一圈。
     //   `_texAnnulus` 的亮环在贴图半径的 0.70~0.84 处 ⇒ 除以 0.77 才是"环半径"。

@@ -1,0 +1,42 @@
+[
+  {
+    "file": "src/app/campusReducer.test.js",
+    "bytes": 12235,
+    "sha256": "ab1bd86f2dc81706f0f08694abe01185349d82b92eb969649239d08b1bedaf81"
+  },
+  {
+    "file": "src/domain/campus.test.js",
+    "bytes": 2133,
+    "sha256": "be0d664e03b1cc444e37ccf6b28597c85b1b70c647d147981407c323bca4fcc3"
+  },
+  {
+    "file": "src/domain/mapScene.test.js",
+    "bytes": 1403,
+    "sha256": "9924bc861dad9a68b47c1b98f3c33cfefbf3e9197e06d65db1ce269f4d568745"
+  },
+  {
+    "file": "src/data/routeGraph.test.js",
+    "bytes": 1322,
+    "sha256": "bdebb06f75e09d2b9086a605b84cf22a0a6cf140085f52811ecfde60c1cab6cd"
+  },
+  {
+    "file": "supabase/functions/_shared/auv.js",
+    "bytes": 15435,
+    "sha256": "4a2ef82708fe8920718c1ef69c56f432389b22d7c9644909ec17fd91631698c4"
+  },
+  {
+    "file": "supabase/functions/_shared/campus-catalog.js",
+    "bytes": 10263,
+    "sha256": "ec1ca4f5d19b7d930a826718190e7bfdb6994d87c3a008853c97a7f5847fe64c"
+  },
+  {
+    "file": "src/data/locations.js",
+    "bytes": 9806,
+    "sha256": "77bc6b0b614828626a8adddf789d206699e9a1ba7aebb73f4825ce01b8a886ef"
+  },
+  {
+    "file": "README.md",
+    "bytes": 5980,
+    "sha256": "9221f20877944754c05752bf118ef25a2d0078958f62f2c2d9b9895458ada0a4"
+  }
+]

@@ -1,0 +1,196 @@
+{
+  "benchmark_sha256": "2e9a0ed23a29018f189ff9e77daec14e335123fa5bd869e50ce570d50d6acce3",
+  "mode": "离线测试桩与故障注入；未调用在线模型",
+  "executed": 240,
+  "passed": 232,
+  "failed": 8,
+  "groups": [
+    {
+      "group": "canonical",
+      "total": 20,
+      "passed": 20
+    },
+    {
+      "group": "alias",
+      "total": 20,
+      "passed": 20
+    },
+    {
+      "group": "number_boundary",
+      "total": 20,
+      "passed": 20
+    },
+    {
+      "group": "missing",
+      "total": 20,
+      "passed": 20
+    },
+    {
+      "group": "ambiguous",
+      "total": 20,
+      "passed": 20
+    },
+    {
+      "group": "selected",
+      "total": 20,
+      "passed": 16
+    },
+    {
+      "group": "intent_emergency",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "intent_community",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "intent_event",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "intent_other",
+      "total": 10,
+      "passed": 6
+    },
+    {
+      "group": "chat_available",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "chat_empty",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "chat_events_unavailable",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "chat_service_fallback",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "chat_history_as_data",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "chat_manual_context",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "group": "protocol",
+      "total": 20,
+      "passed": 20
+    }
+  ],
+  "model_quality_score": null,
+  "live_service_performance": null,
+  "gold_second_review": "待完成",
+  "failures": [
+    {
+      "id": "selected-14",
+      "expected": {
+        "building_id": "jing-garden",
+        "building_name": "静园",
+        "location_status": "selected"
+      },
+      "actual": {
+        "type": "service",
+        "building_id": null,
+        "building_name": null,
+        "floor": null,
+        "description": "用户描述设施故障",
+        "estimated_wait_min": null,
+        "time_window": "unknown",
+        "advice": "可以核实后再反馈。",
+        "location_status": "missing"
+      }
+    },
+    {
+      "id": "selected-15",
+      "expected": {
+        "building_id": "underpass",
+        "building_name": "地下通道",
+        "location_status": "selected"
+      },
+      "actual": {
+        "type": "service",
+        "building_id": null,
+        "building_name": null,
+        "floor": null,
+        "description": "用户描述设施故障",
+        "estimated_wait_min": null,
+        "time_window": "unknown",
+        "advice": "可以核实后再反馈。",
+        "location_status": "missing"
+      }
+    },
+    {
+      "id": "selected-19",
+      "expected": {
+        "building_id": "jing-garden",
+        "building_name": "静园",
+        "location_status": "selected"
+      },
+      "actual": {
+        "type": "service",
+        "building_id": null,
+        "building_name": null,
+        "floor": null,
+        "description": "用户描述设施故障",
+        "estimated_wait_min": null,
+        "time_window": "unknown",
+        "advice": "可以核实后再反馈。",
+        "location_status": "missing"
+      }
+    },
+    {
+      "id": "selected-20",
+      "expected": {
+        "building_id": "underpass",
+        "building_name": "地下通道",
+        "location_status": "selected"
+      },
+      "actual": {
+        "type": "service",
+        "building_id": null,
+        "building_name": null,
+        "floor": null,
+        "description": "用户描述设施故障",
+        "estimated_wait_min": null,
+        "time_window": "unknown",
+        "advice": "可以核实后再反馈。",
+        "location_status": "missing"
+      }
+    },
+    {
+      "id": "intent_other-06",
+      "expected": "other",
+      "actual": "emergency"
+    },
+    {
+      "id": "intent_other-07",
+      "expected": "other",
+      "actual": "emergency"
+    },
+    {
+      "id": "intent_other-08",
+      "expected": "other",
+      "actual": "event"
+    },
+    {
+      "id": "intent_other-09",
+      "expected": "other",
+      "actual": "event"
+    }
+  ],
+  "code_baseline": "修改前源文件快照"
+}

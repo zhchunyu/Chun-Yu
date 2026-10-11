@@ -1,0 +1,52 @@
+[
+  {
+    "file": "OurCampus_佐证材料_20261009.docx",
+    "bytes": 528137,
+    "sha256": "e7c4feafea790dd93ba58ba398b715ef43f376ed20f77fee4ca66021a1b460fb"
+  },
+  {
+    "file": "OurCampus_佐证材料_20261009.pdf",
+    "bytes": 1207365,
+    "sha256": "0e994cc2e9224a6acff8237dbf070f6cefeae249a5cf573446a4afdf584c69c7"
+  },
+  {
+    "file": "交付说明.md",
+    "bytes": 2764,
+    "sha256": "6cc0236794efb4061c2ddd5ce85fa0500857e23394776983d14e738588ee22c0"
+  },
+  {
+    "file": "核验附件/build_log.txt",
+    "bytes": 1171,
+    "sha256": "f8fd8926d09e20f509f060582b4aea7c618edd9f0c7e9393c25dbfe7602ca851"
+  },
+  {
+    "file": "核验附件/check_ai_value_result.json",
+    "bytes": 8707,
+    "sha256": "39796b4af05d95d9757537ce4ea3d850fafe11fa81addf7afa783c44c283992e"
+  },
+  {
+    "file": "核验附件/check_v10_result.json",
+    "bytes": 5746,
+    "sha256": "31caf3375a85b6473d33d8f2d68af51e57bb8fe9c186791de124c3257bc7ce54"
+  },
+  {
+    "file": "核验附件/frontend_tests.json",
+    "bytes": 43644,
+    "sha256": "2d9a961ea4666708588919e0275a752335dbef3b77629b35e0fecd9f51ec82c7"
+  },
+  {
+    "file": "核验附件/gateway_tests_inprocess.txt",
+    "bytes": 814,
+    "sha256": "5ccecf03cfd5b290a7a2c24662c2fc0fd781e970ca4b675a4fa3ba2554b5df51"
+  },
+  {
+    "file": "核验附件/v10_campus_locations.json",
+    "bytes": 12060,
+    "sha256": "cbef077fae876b4e887d1e422d1cdf351d28b53abb4d1c1ec32f91e8a29f5a33"
+  },
+  {
+    "file": "核验附件/核验摘要_匿名.json",
+    "bytes": 22952,
+    "sha256": "baf98757684d15c617913382b73fcfe8c156f15c403b4ecc0e5a2ae53a041e75"
+  }
+]

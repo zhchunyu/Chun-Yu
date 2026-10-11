@@ -3,8 +3,9 @@ import { LocateFixed, Minus, Navigation, Plus, RotateCcw } from 'lucide-react'
 import {
   getTencentCampusPosition,
   TENCENT_CAMPUS_CENTER,
-  TENCENT_CAMPUS_MIN_ZOOM,
+  TENCENT_CAMPUS_LABEL_BOUNDS,
   TENCENT_CAMPUS_MAX_ZOOM,
+  TENCENT_CAMPUS_MIN_ZOOM,
   TENCENT_CAMPUS_ZOOM,
 } from '../../data/tencentCampusGeo.js'
 import { loadTencentMapSdk, requestTencentWalkingRoute } from '../../data/tencentMapApi.js'
@@ -13,6 +14,25 @@ import { COMPETITION_PRESENTATION, campusDisplayText, canShowCampusLink } from '
 
 const apiKey = import.meta.env.VITE_TENCENT_MAP_KEY
 const liveLocationMarkerImage = '/assets/current-location.svg'
+
+// ── 坐标探针（临时标定工具）───────────────────────────────────────────────
+// 用途：为宿舍楼做「名称 ↔ 实测坐标」严格标定时，需要建筑的真实 GCJ-02 坐标。
+// 原理：腾讯 **JS API GL 底图渲染不消耗 WebService 的「每日调用量」配额**，
+//       所以「在底图上点建筑」就能拿到坐标，完全绕开被配额卡住的接口。
+// 开启：地址栏加参数 → http://localhost:5173/?poi-debug=1
+// 关闭：去掉参数即可；未开启时正常点击行为、界面、性能完全不受影响。
+const poiDebugEnabled = typeof window !== 'undefined' && (() => {
+  const params = new URLSearchParams(window.location.search)
+  return params.has('poi-debug') || params.get('debug') === 'poi'
+})()
+
+// 兼容 TMap.LatLng 实例与普通 {lat,lng} 字面量
+function readLatLng(value) {
+  if (!value) return null
+  const lat = Number(typeof value.getLat === 'function' ? value.getLat() : value.lat)
+  const lng = Number(typeof value.getLng === 'function' ? value.getLng() : value.lng)
+  return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null
+}
 
 function normalizePoiName(value) {
   return String(value ?? '')
@@ -171,6 +191,12 @@ export function TencentCampusMap({
   const [loadError, setLoadError] = useState('')
   const [zoomLevel, setZoomLevel] = useState(TENCENT_CAMPUS_ZOOM)
   const [routeState, setRouteState] = useState({ status: 'idle', route: null, message: '' })
+  // 坐标探针记录（仅 poiDebugEnabled 时会写入）
+  const [probePoints, setProbePoints] = useState([])
+  const [probeLabel, setProbeLabel] = useState('')
+  const probeSeqRef = useRef(0)
+  // 地图点击回调在 [] 依赖的 effect 里注册，读 state 会拿到旧值，故用 ref 同步当前栋号
+  const probeLabelRef = useRef('')
 
   routeCallbackRef.current = onPlanRouteToLocation
   feedbackCallbackRef.current = onOpenFeedback
@@ -179,6 +205,7 @@ export function TencentCampusMap({
   eventsRef.current = events
   lostFoundRef.current = allLostFoundPosts
   selectCallbackRef.current = onSelectLocation
+  probeLabelRef.current = probeLabel
 
   useEffect(() => {
     let disposed = false
@@ -188,9 +215,24 @@ export function TencentCampusMap({
     loadTencentMapSdk(apiKey)
       .then((TMap) => {
         if (disposed || !containerRef.current) return
+        // 拖动边界：优先用 GL 原生 LatLngBounds；SDK 版本不支持时静默降级（不设置边界），
+        // 绝不因为边界功能让整张地图起不来。
+        const campusBoundary = (() => {
+          if (!TENCENT_CAMPUS_LABEL_BOUNDS) return null
+          if (typeof TMap.LatLngBounds !== 'function' || typeof TMap.LatLng !== 'function') return null
+          try {
+            return new TMap.LatLngBounds(
+              new TMap.LatLng(TENCENT_CAMPUS_LABEL_BOUNDS.south, TENCENT_CAMPUS_LABEL_BOUNDS.west),
+              new TMap.LatLng(TENCENT_CAMPUS_LABEL_BOUNDS.north, TENCENT_CAMPUS_LABEL_BOUNDS.east),
+            )
+          } catch {
+            return null
+          }
+        })()
         map = new TMap.Map(containerRef.current, {
           center: new TMap.LatLng(TENCENT_CAMPUS_CENTER.lat, TENCENT_CAMPUS_CENTER.lng),
           zoom: TENCENT_CAMPUS_ZOOM,
+          // 锁定缩放范围：最小 14 级（再缩小校园只剩一小块），最大 20 级
           minZoom: TENCENT_CAMPUS_MIN_ZOOM,
           maxZoom: TENCENT_CAMPUS_MAX_ZOOM,
           pitch: 0,
@@ -198,6 +240,9 @@ export function TencentCampusMap({
           viewMode: '3D',
           // 保留道路、绿地和二维建筑，底图文字统一由匿名校园标签代替。
           ...(COMPETITION_PRESENTATION ? { baseMap: { type: 'vector', features: ['base', 'building2d', 'arrow'], buildingRange: [14.5, 20] } } : {}),
+          // 锁定可拖动范围：腾讯 GL 原生 boundary，设置后拖拽/缩放都无法把地图移出该矩形。
+          // 矩形 = 全部地点标注范围 + 10% 留白（见 tencentCampusGeo.js）。
+          ...(campusBoundary ? { boundary: campusBoundary } : {}),
           draggable: true,
           scrollable: true,
           touchZoomable: true,
@@ -244,6 +289,32 @@ export function TencentCampusMap({
         mapElement.addEventListener('click', handlePoiCardAction, true)
         removePoiCardActionListener = () => mapElement.removeEventListener('click', handlePoiCardAction, true)
         map.on('click', (event) => {
+          // 【坐标探针】开启时接管点击行为：记录点击点坐标 + 该点腾讯 POI 坐标。
+          // 不走 isInsideCampusBounds 过滤，也不弹地点详情卡，避免与标定互相干扰。
+          if (poiDebugEnabled) {
+            const clicked = readLatLng(event?.latLng)
+            const poiPosition = readLatLng(event?.poi?.latLng)
+            const poiName = event?.poi?.name?.trim() || ''
+            const seq = probeSeqRef.current + 1
+            probeSeqRef.current = seq
+            setProbePoints((previous) => [...previous, {
+              seq,
+              label: probeLabelRef.current.trim(),
+              clickLat: clicked?.lat ?? null,
+              clickLng: clicked?.lng ?? null,
+              poiName,
+              poiLat: poiPosition?.lat ?? null,
+              poiLng: poiPosition?.lng ?? null,
+            }])
+            if (clicked) {
+              const poiLine = poiName ? `<br>POI：${escapeHtml(poiName)}` : '<br>POI：无（该点腾讯未返回 POI）'
+              infoWindow.setPosition(new TMap.LatLng(clicked.lat, clicked.lng))
+              infoWindow.setContent(`<div style="padding:6px 9px;font:12px/1.5 sans-serif;white-space:nowrap">#${seq}&nbsp;<b>${clicked.lat.toFixed(6)},&nbsp;${clicked.lng.toFixed(6)}</b>${poiLine}</div>`)
+              infoWindow.open()
+            }
+            return
+          }
+
           const poiName = event?.poi?.name?.trim()
           const poiPosition = event?.poi?.latLng
           if (!poiName || !poiPosition || !isInsideCampusBounds(poiPosition, locationsRef.current)) {
@@ -492,9 +563,46 @@ export function TencentCampusMap({
     return () => { active = false }
   }, [routePlan?.originId, routePlan?.destinationId, routePlan?.mode, routePlan?.status, routePlan?.blockedEdgeIds?.join(','), locations])
 
+  // 坐标探针的结果文本（可直接选中复制发回）
+  const probeText = [
+    'seq\t栋号\t腾讯POI名\tPOI坐标(lat,lng)\t点击坐标(lat,lng)',
+    ...probePoints.map((point) => [
+      point.seq,
+      point.label || '(未填)',
+      point.poiName || '(无POI)',
+      point.poiLat == null ? '—' : `${point.poiLat.toFixed(6)},${point.poiLng.toFixed(6)}`,
+      point.clickLat == null ? '—' : `${point.clickLat.toFixed(6)},${point.clickLng.toFixed(6)}`,
+    ].join('\t')),
+  ].join('\n')
+
   return (
     <div className="tencent-campus-map" aria-label="腾讯地图校园地图">
       <div className="tencent-campus-map__canvas" ref={containerRef} />
+      {poiDebugEnabled && (
+        <div className="poi-probe">
+          <div className="poi-probe__head">
+            <strong>坐标探针 · 已记录 {probePoints.length} 点</strong>
+            <span className="poi-probe__actions">
+              <button type="button" onClick={() => { setProbePoints([]); probeSeqRef.current = 0 }}>清空</button>
+              <button type="button" onClick={() => { navigator.clipboard?.writeText(probeText) }}>复制</button>
+            </span>
+          </div>
+          <p className="poi-probe__hint">
+            ① 放大到 <b>18 级以上</b>；② 在下面的框里填栋号（如 <b>18号</b>）；③ 点击该栋楼的<b>建筑中心</b>（不是文字标签）。逐个重复即可。
+          </p>
+          <label className="poi-probe__label">
+            <span>当前栋号</span>
+            <input
+              type="text"
+              value={probeLabel}
+              placeholder="例如：18号公寓楼"
+              onChange={(event) => setProbeLabel(event.target.value)}
+            />
+          </label>
+          <textarea className="poi-probe__text" readOnly value={probeText} onFocus={(event) => event.currentTarget.select()} />
+          <p className="poi-probe__foot">此工具只用免费的地图渲染，不消耗腾讯 WebService 配额。</p>
+        </div>
+      )}
       {loadState === 'loading' && (
         <div className="tencent-campus-map__state"><span className="tencent-campus-map__spinner" />正在连接腾讯地图…</div>
       )}
@@ -504,7 +612,7 @@ export function TencentCampusMap({
           <span>{loadError}</span>
           {onUseCampusMap
             ? <button type="button" onClick={onUseCampusMap}>切回校园引导图</button>
-            : <span>请检查网络后重试。</span>}
+            : <span>请检查网络后刷新页面重试。</span>}
         </div>
       )}
       {loadState === 'ready' && (

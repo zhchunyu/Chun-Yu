@@ -1,0 +1,56 @@
+[
+  {
+    "name": "react",
+    "locked_version": "19.3.0",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "react-dom",
+    "locked_version": "19.3.0",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "vite",
+    "locked_version": "8.3.0",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "vitest",
+    "locked_version": "4.1.11",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "@capacitor/core",
+    "locked_version": "8.5.2",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "@capacitor/android",
+    "locked_version": "8.5.2",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "@capacitor/geolocation",
+    "locked_version": "8.2.3",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "@supabase/supabase-js",
+    "locked_version": "2.117.2",
+    "license_marker": "MIT",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  },
+  {
+    "name": "lucide-react",
+    "locked_version": "1.47.0",
+    "license_marker": "ISC",
+    "evidence": "package-lock.json；许可字段不等于云服务商用授权审查"
+  }
+]

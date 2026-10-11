@@ -8,7 +8,7 @@
 
 - 应用是 Vite + React 静态前端，仓库没有配置线上托管，也没有 Git 远程地址。
 - 当前校园演示数据和管理员改动保存在各浏览器的本地存储中，没有后端同步；手机与电脑的数据彼此独立。
-- `public/assets/sxau-campus-extracted.glb` 约 42 MB，当前地图配置未引用，但 Vite 会将 `public/` 内容复制到构建产物。
+- `public/assets/campus-extracted.glb` 约 42 MB，当前地图配置未引用，但 Vite 会将 `public/` 内容复制到构建产物。
 - 页面已有 760px 手机断点，但地图固定最小高度、控件占位和面板布局仍需按手机浏览器重新检查。
 
 ## 范围

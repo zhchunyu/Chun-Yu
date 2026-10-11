@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax.
 
-**Goal:** Show Tencent's 2D map for Shanxi Agricultural University Taigu Campus in the current phone preview, while retaining the campus map fallback and local campus-specific routing.
+**Goal:** Show Tencent's 2D map for Campus Taigu Campus in the current phone preview, while retaining the campus map fallback and local campus-specific routing.
 
 **Architecture:** Load JS API GL from the Tencent CDN using a local Vite environment key. Transform the existing normalized campus markers with a five-anchor GCJ-02 calibration, then render labels and routes as Tencent map overlays. Call WebService walking directions only for the ordinary shortest mode; preserve the existing local route for campus-specific constraints and on any service failure.
 

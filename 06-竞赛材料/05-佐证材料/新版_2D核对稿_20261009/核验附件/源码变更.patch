@@ -1,0 +1,180 @@
+diff --git "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/app/campusReducer.test.js" "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/app/campusReducer.test.js"
+index 324ee01..dca9817 100644
+--- "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/app/campusReducer.test.js"
++++ "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/app/campusReducer.test.js"
+@@ -12,13 +12,14 @@ describe('campus reducer', () => {
+     const locations = locationRepository.loadAll()
+     const persisted = {
+       locations: locations.map((location) => location.id === 'library'
+-        ? { ...location, mapPosition: { '3d': [999, 4, 999] }, openStatus: 'closed' }
++        ? { ...location, mapPosition: { '2d': [999, 999] }, openStatus: 'closed' }
+         : location),
+     }
+     const state = createInitialState(locations, demoEvents, persisted)
+     const library = state.locations.find((location) => location.id === 'library')
+ 
+-    expect(library.mapPosition['3d']).toEqual([0, 3, -518.4])
++    expect(library.mapPosition['2d'][0]).toBeCloseTo(0.2272817657, 9)
++    expect(library.mapPosition['2d'][1]).toBeCloseTo(0.4705882352, 9)
+     expect(library.openStatus).toBe('closed')
+   })
+ 
+@@ -269,7 +270,7 @@ describe('campus reducer', () => {
+     expect(nextState.routePlan.blockedEdgeIds).toContain('road:inner_e_s7:inner_e_s8')
+   })
+ 
+-  it('starts in the 3D scene and switches without clearing shared map state', () => {
++  it('starts in the 2D scene and preserves shared state when it is selected again', () => {
+     const withRoute = campusReducer(initialState, {
+       type: 'SET_ROUTE_DESTINATION',
+       destinationId: 'library',
+@@ -280,7 +281,7 @@ describe('campus reducer', () => {
+     })
+     const nextState = campusReducer(withSelection, { type: 'SET_MAP_SCENE', scene: '2d' })
+ 
+-    expect(initialState.mapScene).toBe('3d')
++    expect(initialState.mapScene).toBe('2d')
+     expect(nextState.mapScene).toBe('2d')
+     expect(nextState.selectedId).toBe('library')
+     expect(nextState.routePlan).toBe(withSelection.routePlan)
+@@ -289,7 +290,7 @@ describe('campus reducer', () => {
+   it('normalizes unknown map scenes back to 2D', () => {
+     const nextState = campusReducer(initialState, { type: 'SET_MAP_SCENE', scene: 'satellite' })
+ 
+-    expect(nextState.mapScene).toBe('3d')
++    expect(nextState.mapScene).toBe('2d')
+   })
+ 
+   it('updates and resets foundational map settings', () => {
+diff --git "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/data/routeGraph.test.js" "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/data/routeGraph.test.js"
+index 29ca600..78d72ff 100644
+--- "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/data/routeGraph.test.js"
++++ "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/data/routeGraph.test.js"
+@@ -2,17 +2,24 @@ import { describe, expect, it } from 'vitest'
+ import { locationRepository } from './locations.js'
+ import { campusRouteGraph, getEntryNodeId } from './routeGraph.js'
+ 
+-describe('campus model bindings', () => {
+-  it('maps every demo location to a model anchor and an entry node', () => {
++describe('campus route bindings', () => {
++  it('keeps current guide locations and verifies every available graph entry', () => {
+     const locations = locationRepository.loadAll()
+ 
+-    expect(locations).toHaveLength(30)
++    expect(locations).toHaveLength(68)
++    expect(locations.map((location) => location.id)).toEqual(expect.arrayContaining([
++      'east-gate', 'library', 'canteen', 'jing-garden', 'underpass',
++    ]))
+     locations.forEach((location) => {
+-      expect(location.source).toBe('shared-repo')
+-      expect(location.modelAnchorId === null || location.modelAnchorId.startsWith('ANCHOR_')).toBe(true)
+-      expect(getEntryNodeId(location.id)).toBeTruthy()
+-      expect(campusRouteGraph.nodes[getEntryNodeId(location.id)]).toBeTruthy()
++      expect(location.source).toBe('campus-guide')
++      expect(location.modelAnchorId).toBeNull()
++      const entryId = getEntryNodeId(location.id)
++      if (entryId) expect(campusRouteGraph.nodes[entryId].locationId).toBe(location.id)
+     })
++    expect(getEntryNodeId('library')).toBe('library-entry')
++    // Guide-only locations use the Tencent routing path; the local graph is a subset.
++    expect(getEntryNodeId('jing-garden')).toBeNull()
++    expect(getEntryNodeId('underpass')).toBeNull()
+   })
+ 
+   it('uses GLB coordinates in metres for core locations', () => {
+diff --git "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/campus.test.js" "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/campus.test.js"
+index d9cec94..dc427c2 100644
+--- "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/campus.test.js"
++++ "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/campus.test.js"
+@@ -21,11 +21,13 @@ describe('campus domain helpers', () => {
+   })
+ 
+   it('filters by category', () => {
+-    expect(filterLocations(locations, '', 'dining').map((location) => location.id)).toEqual(['canteen', 'commercial-street'])
++    expect(filterLocations(locations, '', 'dining').map((location) => location.id)).toEqual([
++      'canteen', 'employee-canteen', 'yixinyuan-canteen', 'dining-center', 'bitaoyuan-canteen',
++    ])
+   })
+ 
+   it('returns every location with empty filters', () => {
+-    expect(filterLocations(locations, '', 'all')).toHaveLength(30)
++    expect(filterLocations(locations, '', 'all')).toHaveLength(68)
+   })
+ 
+   it('only managers can manage campus status', () => {
+@@ -38,7 +40,7 @@ describe('campus domain helpers', () => {
+     const result = filterHotspots(demoEvents, { locationId: 'library', type: 'activity' })
+ 
+     expect(result).toHaveLength(1)
+-    expect(result[0].title).toBe('计算机学院讲座')
++    expect(result[0].title).toBe('图书馆阅读活动')
+   })
+ 
+   it('only managers can publish hotspots', () => {
+diff --git "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/mapScene.test.js" "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/mapScene.test.js"
+index 5027170..82b6b68 100644
+--- "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/mapScene.test.js"
++++ "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/src/domain/mapScene.test.js"
+@@ -13,8 +13,10 @@ describe('map scene helpers', () => {
+   it('reads a location position for each scene', () => {
+     const library = locationRepository.loadAll().find((location) => location.id === 'library')
+ 
+-    expect(getLocationMapPosition(library, '2d')).toEqual([0.5, 300 / 595])
+-    expect(getLocationMapPosition(library, '3d')).toEqual([0, 3, -518.4])
++    const point = getLocationMapPosition(library, '2d')
++    expect(point[0]).toBeCloseTo(0.2272817657, 9)
++    expect(point[1]).toBeCloseTo(0.4705882352, 9)
++    expect(getLocationMapPosition(library, '3d')).toBeNull()
+   })
+ 
+   it('projects route node ids to 2D points', () => {
+diff --git "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/auv.js" "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/auv.js"
+index df38179..0ec7634 100644
+--- "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/auv.js"
++++ "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/auv.js"
+@@ -39,7 +39,9 @@ function containsName(text, name) {
+ export function mentionedLocations(text) {
+   const matches = []
+   for (const location of campusLocations) {
+-    for (const name of [location.name, ...location.aliases.filter((alias) => !genericAliases.has(alias))]) {
++    // 当前地图将同名车间区分为“车间（西）/车间（北）”。只说“车间”仍保留歧义，不能猜方位。
++    const sharedWorkshopName = /^车间[（(]/.test(location.name) ? ['车间'] : []
++    for (const name of [location.name, ...sharedWorkshopName, ...location.aliases.filter((alias) => !genericAliases.has(alias))]) {
+       let from = 0
+       while (from < text.length) {
+         const start = text.indexOf(name, from)
+diff --git "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/campus-catalog.js" "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/campus-catalog.js"
+index b88ca0c..e2bfa7d 100644
+--- "a/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/campus-catalog.js"
++++ "b/04-\345\272\224\347\224\250\345\274\200\345\217\221/OurCampus/supabase/functions/_shared/campus-catalog.js"
+@@ -1,3 +1,3 @@
+ // AUV 地点 ID 与项目一致；历史名称保留为别名，状态从服务器获取。
+-export const campusLocations = [{"id":"east-gate","name":"西校门","aliases":["西门","校门"],"category":"transport","region":"gate"},{"id":"library","name":"图书馆","aliases":["校图书馆","主图书馆"],"category":"learning","region":"teaching"},{"id":"teaching-a","name":"明德楼","aliases":["教学楼","教学科研楼"],"category":"learning","region":"teaching"},{"id":"canteen","name":"禾香餐厅","aliases":["禾香","学生食堂","餐厅"],"category":"dining","region":"living"},{"id":"gymnasium","name":"体育场","aliases":["体育场馆","操场"],"category":"service","region":"sports"},{"id":"sports-ground","name":"运动场","aliases":["操场","田径场"],"category":"service","region":"sports"},{"id":"ball-court","name":"球类场","aliases":["球场","篮球场","球类场地"],"category":"service","region":"sports"},{"id":"swimming-pool","name":"游泳馆","aliases":["游泳池"],"category":"service","region":"sports"},{"id":"employee-canteen","name":"教工餐厅","aliases":["教工食堂","教师餐厅"],"category":"dining","region":"living"},{"id":"lab-building","name":"实验大楼","aliases":["实验楼"],"category":"learning","region":"teaching"},{"id":"hospital","name":"校医院","aliases":["医院","医务室"],"category":"service","region":"living"},{"id":"old-north-gate","name":"旧北门","aliases":["北门旧门"],"category":"transport","region":"gate"},{"id":"new-north-gate","name":"新北门","aliases":["北门","北校门"],"category":"transport","region":"gate"},{"id":"paifang","name":"牌楼","aliases":["校园牌楼"],"category":"transport","region":"gate"},{"id":"botanical-garden","name":"植物园","aliases":["校园植物园"],"category":"service","region":"living"},{"id":"main-teaching-building","name":"教学主楼","aliases":["主教学楼"],"category":"learning","region":"teaching"},{"id":"chongwen-building","name":"博雅楼","aliases":["崇文教学楼"],"category":"learning","region":"teaching"},{"id":"family-compound","name":"家属院","aliases":[],"category":"living","region":"living"},{"id":"guest-house","name":"招待所","aliases":[],"category":"service","region":"living"},{"id":"qinxue-building","name":"笃行楼","aliases":[],"category":"learning","region":"teaching"},{"id":"resource-environment-college","name":"环境楼","aliases":[],"category":"learning","region":"teaching"},{"id":"veterinary-center","name":"动医楼","aliases":[],"category":"learning","region":"teaching"},{"id":"life-sciences-building","name":"生科楼","aliases":[],"category":"learning","region":"teaching"},{"id":"agricultural-engineering-building","name":"机械工程学院","aliases":[],"category":"learning","region":"teaching"},{"id":"chongshi-building","name":"致知楼","aliases":[],"category":"learning","region":"teaching"},{"id":"workshop-west-1","name":"车间","aliases":["西车间"],"category":"service","region":"living"},{"id":"workshop-west-2","name":"车间","aliases":["西车间二号"],"category":"service","region":"living"},{"id":"hanshi-building","name":"汇文楼","aliases":[],"category":"learning","region":"teaching"},{"id":"tianshi-building","name":"思源楼","aliases":[],"category":"learning","region":"teaching"},{"id":"physical-chemistry-building","name":"格物楼","aliases":[],"category":"learning","region":"teaching"},{"id":"chongxin-building","name":"立信楼","aliases":[],"category":"learning","region":"teaching"},{"id":"animal-science-building","name":"生物楼","aliases":[],"category":"learning","region":"teaching"},{"id":"teaching-management-building","name":"教学管理楼","aliases":[],"category":"learning","region":"teaching"},{"id":"graduate-dormitory","name":"研究生宿舍","aliases":[],"category":"living","region":"dorm"},{"id":"kangxinyuan","name":"教师公寓","aliases":[],"category":"living","region":"living"},{"id":"smart-greenhouse","name":"智能温室","aliases":[],"category":"service","region":"living"},{"id":"food-laboratory","name":"食品实验室","aliases":[],"category":"learning","region":"teaching"},{"id":"yixinyuan-canteen","name":"悦膳餐厅","aliases":[],"category":"dining","region":"living"},{"id":"dining-center","name":"饮食中心","aliases":[],"category":"dining","region":"living"},{"id":"heat-exchange-station","name":"换热站","aliases":[],"category":"service","region":"living"},{"id":"sports-department","name":"体育中心","aliases":[],"category":"service","region":"sports"},{"id":"ruizhi-sports-center","name":"文体馆","aliases":[],"category":"service","region":"sports"},{"id":"bitaoyuan-canteen","name":"桃李餐厅","aliases":[],"category":"dining","region":"living"},{"id":"apartment-1","name":"1号公寓楼","aliases":["1号公寓","1公寓","公寓1","一公寓","一号公寓","一号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-2","name":"2号公寓楼","aliases":["2号公寓","2公寓","公寓2","二公寓","二号公寓","二号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-3","name":"3号公寓楼","aliases":["3号公寓","3公寓","公寓3","三公寓","三号公寓","三号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-4","name":"4号公寓楼","aliases":["4号公寓","4公寓","公寓4","四公寓","四号公寓","四号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-5","name":"5号公寓楼","aliases":["5号公寓","5公寓","公寓5","五公寓","五号公寓","五号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-6","name":"6号公寓楼","aliases":["6号公寓","6公寓","公寓6","六公寓","六号公寓","六号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-7","name":"7号公寓楼","aliases":["7号公寓","7公寓","公寓7","七公寓","七号公寓","七号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-8","name":"8号公寓楼","aliases":["8号公寓","8公寓","公寓8","八公寓","八号公寓","八号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-9","name":"9号公寓楼","aliases":["9号公寓","9公寓","公寓9","九公寓","九号公寓","九号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-10","name":"10号公寓楼","aliases":["10号公寓","10公寓","公寓10","十公寓","十号公寓","十号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-11","name":"11号公寓楼","aliases":["11号公寓","11公寓","公寓11","十一公寓","十一号公寓","十一号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-12","name":"12号公寓楼","aliases":["12号公寓","12公寓","公寓12","十二公寓","十二号公寓","十二号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-13","name":"13号公寓楼","aliases":["13号公寓","13公寓","公寓13","十三公寓","十三号公寓","十三号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-14","name":"14号公寓楼","aliases":["14号公寓","14公寓","公寓14","十四公寓","十四号公寓","十四号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-15","name":"15号公寓楼","aliases":["15号公寓","15公寓","公寓15","十五公寓","十五号公寓","十五号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-16","name":"16号公寓楼","aliases":["16号公寓","16公寓","公寓16","十六公寓","十六号公寓","十六号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-17","name":"17号公寓楼","aliases":["17号公寓","17公寓","公寓17","十七公寓","十七号公寓","十七号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-18","name":"18号公寓楼","aliases":["18号公寓","18公寓","公寓18","十八公寓","十八号公寓","十八号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-19","name":"19号公寓楼","aliases":["19号公寓","19公寓","公寓19","十九公寓","十九号公寓","十九号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-20","name":"20号公寓楼","aliases":["20号公寓","20公寓","公寓20","二十公寓","二十号公寓","二十号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-21","name":"21号公寓楼","aliases":["21号公寓","21公寓","公寓21","二十一公寓","二十一号公寓","二十一号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-22","name":"22号公寓楼","aliases":["22号公寓","22公寓","公寓22","二十二公寓","二十二号公寓","二十二号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-23","name":"23号公寓楼","aliases":["23号公寓","23公寓","公寓23","二十三公寓","二十三号公寓","二十三号公寓楼"],"category":"living","region":"dorm"}]
++export const campusLocations = [{"id":"east-gate","name":"西校门","aliases":["西门","校园西门","校门"],"category":"transport","region":"gate"},{"id":"library","name":"图书馆","aliases":["校图书馆","主图书馆"],"category":"learning","region":"teaching"},{"id":"teaching-a","name":"明德楼","aliases":["教学楼","教学科研楼","一教"],"category":"learning","region":"teaching"},{"id":"canteen","name":"禾香餐厅","aliases":["禾香","学生食堂","餐厅"],"category":"dining","region":"living"},{"id":"gymnasium","name":"体育场","aliases":["体育场馆","操场"],"category":"service","region":"sports"},{"id":"sports-ground","name":"运动场","aliases":["操场","田径场"],"category":"service","region":"sports"},{"id":"ball-court","name":"球类场","aliases":["球场","篮球场","球类场地"],"category":"service","region":"sports"},{"id":"swimming-pool","name":"游泳馆","aliases":["游泳池"],"category":"service","region":"sports"},{"id":"employee-canteen","name":"教工餐厅","aliases":["教工食堂","教师餐厅"],"category":"dining","region":"living"},{"id":"lab-building","name":"实验大楼","aliases":["实验楼"],"category":"learning","region":"teaching"},{"id":"hospital","name":"校医院","aliases":["医院","医务室"],"category":"service","region":"living"},{"id":"old-north-gate","name":"旧北门","aliases":["北门旧门"],"category":"transport","region":"gate"},{"id":"new-north-gate","name":"新北门","aliases":["北门","北校门"],"category":"transport","region":"gate"},{"id":"paifang","name":"牌楼","aliases":["校园牌楼"],"category":"transport","region":"gate"},{"id":"botanical-garden","name":"植物园","aliases":["校园植物园"],"category":"service","region":"living"},{"id":"main-teaching-building","name":"教学主楼","aliases":["主教学楼"],"category":"learning","region":"teaching"},{"id":"chongwen-building","name":"博雅楼","aliases":["博雅教学楼"],"category":"learning","region":"teaching"},{"id":"family-compound","name":"家属院","aliases":[],"category":"living","region":"living"},{"id":"guest-house","name":"招待所","aliases":[],"category":"service","region":"living"},{"id":"qinxue-building","name":"笃行楼","aliases":[],"category":"learning","region":"teaching"},{"id":"resource-environment-college","name":"环境楼","aliases":[],"category":"learning","region":"teaching"},{"id":"veterinary-center","name":"动医楼","aliases":[],"category":"learning","region":"teaching"},{"id":"life-sciences-building","name":"生科楼","aliases":[],"category":"learning","region":"teaching"},{"id":"agricultural-engineering-building","name":"机械工程学院","aliases":[],"category":"learning","region":"teaching"},{"id":"chongshi-building","name":"致知楼","aliases":[],"category":"learning","region":"teaching"},{"id":"workshop-west-1","name":"车间（西）","aliases":["西车间"],"category":"service","region":"living"},{"id":"workshop-west-2","name":"车间（北）","aliases":["西车间二号"],"category":"service","region":"living"},{"id":"hanshi-building","name":"汇文楼","aliases":[],"category":"learning","region":"teaching"},{"id":"tianshi-building","name":"思源楼","aliases":[],"category":"learning","region":"teaching"},{"id":"physical-chemistry-building","name":"格物楼","aliases":[],"category":"learning","region":"teaching"},{"id":"chongxin-building","name":"立信楼","aliases":[],"category":"learning","region":"teaching"},{"id":"animal-science-building","name":"生物楼","aliases":[],"category":"learning","region":"teaching"},{"id":"teaching-management-building","name":"教学管理楼","aliases":[],"category":"learning","region":"teaching"},{"id":"graduate-dormitory","name":"研究生宿舍","aliases":[],"category":"living","region":"dorm"},{"id":"kangxinyuan","name":"教师公寓","aliases":[],"category":"living","region":"living"},{"id":"smart-greenhouse","name":"智能温室","aliases":[],"category":"service","region":"living"},{"id":"food-laboratory","name":"食品实验室","aliases":[],"category":"learning","region":"teaching"},{"id":"yixinyuan-canteen","name":"悦膳餐厅","aliases":[],"category":"dining","region":"living"},{"id":"dining-center","name":"饮食中心","aliases":[],"category":"dining","region":"living"},{"id":"heat-exchange-station","name":"换热站","aliases":[],"category":"service","region":"living"},{"id":"sports-department","name":"体育中心","aliases":[],"category":"service","region":"sports"},{"id":"ruizhi-sports-center","name":"文体馆","aliases":[],"category":"service","region":"sports"},{"id":"bitaoyuan-canteen","name":"桃李餐厅","aliases":[],"category":"dining","region":"living"},{"id":"jing-garden","name":"静园","aliases":[],"category":"service","region":"living"},{"id":"underpass","name":"地下通道","aliases":[],"category":"transport","region":"gate"},{"id":"apartment-1","name":"1号公寓楼","aliases":["1号公寓","1公寓","公寓1","一公寓","一号公寓","一号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-2","name":"2号公寓楼","aliases":["2号公寓","2公寓","公寓2","二公寓","二号公寓","二号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-3","name":"3号公寓楼","aliases":["3号公寓","3公寓","公寓3","三公寓","三号公寓","三号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-4","name":"4号公寓楼","aliases":["4号公寓","4公寓","公寓4","四公寓","四号公寓","四号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-5","name":"5号公寓楼","aliases":["5号公寓","5公寓","公寓5","五公寓","五号公寓","五号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-6","name":"6号公寓楼","aliases":["6号公寓","6公寓","公寓6","六公寓","六号公寓","六号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-7","name":"7号公寓楼","aliases":["7号公寓","7公寓","公寓7","七公寓","七号公寓","七号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-8","name":"8号公寓楼","aliases":["8号公寓","8公寓","公寓8","八公寓","八号公寓","八号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-9","name":"9号公寓楼","aliases":["9号公寓","9公寓","公寓9","九公寓","九号公寓","九号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-10","name":"10号公寓楼","aliases":["10号公寓","10公寓","公寓10","十公寓","十号公寓","十号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-11","name":"11号公寓楼","aliases":["11号公寓","11公寓","公寓11","十一公寓","十一号公寓","十一号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-12","name":"12号公寓楼","aliases":["12号公寓","12公寓","公寓12","十二公寓","十二号公寓","十二号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-13","name":"13号公寓楼","aliases":["13号公寓","13公寓","公寓13","十三公寓","十三号公寓","十三号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-14","name":"14号公寓楼","aliases":["14号公寓","14公寓","公寓14","十四公寓","十四号公寓","十四号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-15","name":"15号公寓楼","aliases":["15号公寓","15公寓","公寓15","十五公寓","十五号公寓","十五号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-16","name":"16号公寓楼","aliases":["16号公寓","16公寓","公寓16","十六公寓","十六号公寓","十六号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-17","name":"17号公寓楼","aliases":["17号公寓","17公寓","公寓17","十七公寓","十七号公寓","十七号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-18","name":"18号公寓楼","aliases":["18号公寓","18公寓","公寓18","十八公寓","十八号公寓","十八号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-19","name":"19号公寓楼","aliases":["19号公寓","19公寓","公寓19","十九公寓","十九号公寓","十九号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-20","name":"20号公寓楼","aliases":["20号公寓","20公寓","公寓20","二十公寓","二十号公寓","二十号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-21","name":"21号公寓楼","aliases":["21号公寓","21公寓","公寓21","二十一公寓","二十一号公寓","二十一号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-22","name":"22号公寓楼","aliases":["22号公寓","22公寓","公寓22","二十二公寓","二十二号公寓","二十二号公寓楼"],"category":"living","region":"dorm"},{"id":"apartment-23","name":"23号公寓楼","aliases":["23号公寓","23公寓","公寓23","二十三公寓","二十三号公寓","二十三号公寓楼"],"category":"living","region":"dorm"}]
+ export const campusServiceFacts = [{"id":"library-service","title":"图书馆","locationId":"library","summary":"馆藏查询、借阅与阅览服务，具体安排以图书馆官网通知为准。","hours":null,"phone":null,"website":"https://libweb.campus.example.invalid/","sourceUrl":"https://www.campus.example.invalid/ksdh/xxfw.htm","keywords":["中心图书馆","借书","自习","查书"]},{"id":"canteen-service","title":"禾香餐厅","locationId":"canteen","summary":"本校区校园餐饮服务。","hours":null,"phone":null,"website":null,"sourceUrl":"https://www.campus.example.invalid/info/1269/7613.htm","keywords":["食堂","餐饮","吃饭","就餐"]},{"id":"clinic-service","title":"校医院","locationId":"hospital","summary":"本校区校内医疗点。","hours":null,"phone":null,"website":null,"sourceUrl":"https://sky.campus.example.invalid/__local/C/76/CB/2D46A7113038E886EC627F4C5CA_AD1DB864_7A348.pdf","keywords":["医务室","医疗","看病","急诊"]},{"id":"one-stop-service","title":"一站式服务大厅","locationId":null,"summary":"校园线上协同办公与办事服务入口，部分内容需要校园账号。","hours":null,"phone":null,"website":"https://ehall.campus.example.invalid/","sourceUrl":"https://www.campus.example.invalid/ksdh/xxfw.htm","keywords":["办事大厅","服务大厅","校务","线上办理","事务办理"]}]
+--- /dev/null
++++ b/04-应用开发/OurCampus/src/data/auvCatalog.test.js
+@@ -0,0 +1,23 @@
++import { describe, expect, it } from 'vitest'
++import { locationRepository } from './locations.js'
++import { campusLocations } from '../../supabase/functions/_shared/campus-catalog.js'
++import { validateExtractedEvent } from '../../supabase/functions/_shared/auv.js'
++
++describe('AUV catalog and map contract', () => {
++  it('uses the same complete id and display-name set as the current 2D map', () => {
++    const frontend = locationRepository.loadAll().map(({ id, name }) => ({ id, name })).sort((a, b) => a.id.localeCompare(b.id))
++    const gateway = campusLocations.map(({ id, name }) => ({ id, name })).sort((a, b) => a.id.localeCompare(b.id))
++    expect(gateway).toEqual(frontend)
++    expect(new Set(gateway.map(x => x.id)).size).toBe(68)
++  })
++  it('accepts guide-only places as explicit selections rather than rejecting them', () => {
++    const raw = JSON.stringify({ type: 'service', description: '路灯故障' })
++    expect(validateExtractedEvent(raw, '这里路灯坏了', 'jing-garden')).toMatchObject({ building_id: 'jing-garden', building_name: '静园', location_status: 'selected' })
++    expect(validateExtractedEvent(raw, '这里路灯坏了', 'underpass')).toMatchObject({ building_id: 'underpass', building_name: '地下通道', location_status: 'selected' })
++  })
++  it('preserves ambiguity for a generic workshop while matching its explicit direction', () => {
++    const raw = JSON.stringify({ type: 'service', description: '停电' })
++    expect(validateExtractedEvent(raw, '车间停电了').location_status).toBe('ambiguous')
++    expect(validateExtractedEvent(raw, '车间（北）停电了')).toMatchObject({ building_id: 'workshop-west-2', location_status: 'text_match' })
++  })
++})

@@ -1,4 +1,4 @@
--- CampusTwin / 山西农业大学太谷校区 / 2026-10-03
+-- CampusTwin / 本校区本校区 / 2026-10-03
 -- 仅用于空白 Supabase 项目。不要与原指南的 anchors/events 等旧结构混用。
 -- 一个事务创建结构；重复执行会报 already exists，不会删除既有数据。
 begin;
@@ -27,7 +27,7 @@ create table public.campus_locations (
   coordinate_system text not null default 'gcj02' check (coordinate_system = 'gcj02'),
   geo_source text not null,
   geo_verified boolean not null default false,
-  source text not null default 'sxau-campus-guide',
+  source text not null default 'campus-guide',
   open_status text not null default 'unknown' check (open_status in ('unknown','open','limited','closed')),
   crowd_status text not null default 'unknown' check (crowd_status in ('unknown','low','normal','busy')),
   activity text not null default '',

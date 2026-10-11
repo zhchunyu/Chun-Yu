@@ -1,0 +1,30 @@
+{
+  "report_pages": 14,
+  "collection_pages": 4,
+  "pdf_all_pages_inspected": true,
+  "word_native_visual_qa": false,
+  "word_reason": "LibreOffice未安装，官方渲染器失败；Word已安装但此前COM启动失败，本轮未执行新的COM检查",
+  "pdf_layout": "同一正文独立排版，不是Word导出",
+  "table_geometry_errors": [],
+  "docx_tables": 8,
+  "docx_images": 11,
+  "prohibited_text_hits": {},
+  "front_tests": {
+    "total": 103,
+    "passed": 103,
+    "files": 18
+  },
+  "gateway_tests": {
+    "total": 8,
+    "passed": 8
+  },
+  "offline": {
+    "total": 240,
+    "passed": 236,
+    "failed": 4
+  },
+  "real_user_responses": 0,
+  "live_model_calls": 0,
+  "browser_external_search": "自动审批服务配置错误，未执行",
+  "android_rebuild": "本机无SDK/ADB配置，未完成；当前源码不等于旧APK"
+}

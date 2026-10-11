@@ -1,0 +1,922 @@
+[
+  {
+    "id": "DEV-L-1",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "西校门路灯坏了，麻烦看看（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "east-gate",
+      "building_name": "西校门",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-2",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "图书馆路灯坏了，需要检查（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "library",
+      "building_name": "图书馆",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-3",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "明德楼路灯坏了，请核对位置（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "teaching-a",
+      "building_name": "明德楼",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-4",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "禾香餐厅路灯坏了，今天遇到的（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "canteen",
+      "building_name": "禾香餐厅",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-5",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "体育场路灯坏了，想反馈一下（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "gymnasium",
+      "building_name": "体育场",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-6",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "运动场路灯坏了。（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "sports-ground",
+      "building_name": "运动场",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-7",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "球类场路灯坏了，刚刚看到（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "ball-court",
+      "building_name": "球类场",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-8",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "游泳馆路灯坏了，要怎么处理（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "swimming-pool",
+      "building_name": "游泳馆",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-9",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "教工餐厅路灯坏了，请先整理草稿（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "employee-canteen",
+      "building_name": "教工餐厅",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-10",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "实验大楼路灯坏了，还没报修（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "lab-building",
+      "building_name": "实验大楼",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-11",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "校医院路灯坏了，可能影响使用（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-12",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "旧北门路灯坏了，想说明情况（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "old-north-gate",
+      "building_name": "旧北门",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-13",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "新北门路灯坏了，请不要猜地点（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "new-north-gate",
+      "building_name": "新北门",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-14",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "牌楼路灯坏了，请留意（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "paifang",
+      "building_name": "牌楼",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-15",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "植物园路灯坏了，我准备反馈（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "botanical-garden",
+      "building_name": "植物园",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-16",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "教学主楼路灯坏了，先记录一下（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "main-teaching-building",
+      "building_name": "教学主楼",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-17",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "博雅楼路灯坏了，现在不太方便（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "chongwen-building",
+      "building_name": "博雅楼",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-18",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "家属院路灯坏了，请确认一下（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "family-compound",
+      "building_name": "家属院",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-19",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "招待所路灯坏了，还需要核实（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "guest-house",
+      "building_name": "招待所",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-L-20",
+    "group": "canonical",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "location",
+    "text": "笃行楼路灯坏了，请保留原意（调试样例）",
+    "raw": {
+      "type": "service",
+      "description": "用户描述设施故障",
+      "building_id": "hospital",
+      "building_name": "校医院",
+      "floor": "三楼",
+      "severity": "high",
+      "estimated_wait_min": 28,
+      "time_window": "unknown",
+      "advice": "可以核实后再反馈。"
+    },
+    "selectedLocationId": null,
+    "expected": {
+      "building_id": "qinxue-building",
+      "building_name": "笃行楼",
+      "location_status": "text_match"
+    }
+  },
+  {
+    "id": "DEV-I-1",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有人晕倒了，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-2",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有人失去意识，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-3",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "现场有人呼吸困难，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-4",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "这里有人大出血，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-5",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "楼里着火了，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-6",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "垃圾桶起火了，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-7",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有人被困在电梯里，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-8",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有人重伤需要帮助，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-9",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有人受伤了，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-10",
+    "group": "intent_emergency",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有人说正在自残，这是调试描述",
+    "expected": "emergency"
+  },
+  {
+    "id": "DEV-I-11",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "我捡到一张卡，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-12",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "钥匙丢了怎么办，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-13",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "找跑步搭子，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-14",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有没有人一起打球，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-15",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "求借一把雨伞，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-16",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "今晚组队学习，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-17",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "发布失物信息，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-18",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有个物品需要招领，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-19",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "有人拼车吗，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-I-20",
+    "group": "intent_community",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "intent",
+    "text": "钱包丢失了，这是调试描述",
+    "expected": "community"
+  },
+  {
+    "id": "DEV-C-1",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，麻烦看看（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-2",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，需要检查（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-3",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，请核对位置（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-4",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，今天遇到的（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-5",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，想反馈一下（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-6",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？。（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-7",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，刚刚看到（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-8",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，要怎么处理（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-9",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，请先整理草稿（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-10",
+    "group": "chat_available",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "available",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，还没报修（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-11",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，麻烦看看（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-12",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，需要检查（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-13",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，请核对位置（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-14",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，今天遇到的（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-15",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，想反馈一下（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-16",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？。（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-17",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，刚刚看到（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-18",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，要怎么处理（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-19",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，请先整理草稿（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  },
+  {
+    "id": "DEV-C-20",
+    "group": "chat_empty",
+    "source": "人工规则化编写的合成测试场景",
+    "kind": "context",
+    "scenario": "empty",
+    "mode": "chat",
+    "text": "图书馆有哪些已核实的信息？，还没报修（调试样例）",
+    "locationId": null,
+    "history": [],
+    "expected": {
+      "event_data_available": true
+    }
+  }
+]

@@ -42,3 +42,12 @@ docs/screenshots/*
 !docs/screenshots/ourcampus-launcher-icon-preview.png
 !docs/screenshots/2026-10-08-new-startup-phone.png
 !docs/screenshots/2026-10-08-teammate-startup-video.png
+
+# 本机 POI 匹配提示（含真实建筑名，仅用于 tools/harvest-tencent-poi.mjs 定位，不共享、不提交）。
+tools/poi-name-hints.local.json
+
+# 保留资产：真实校园来源的历史资产，未被任何代码引用，**不打包、不提交**
+# （合规红线：来自真实校园数据；且 campus-3d-model.glb 单文件 40 MB，
+#   超过 GitHub blobs API 单请求体积上限「实测 34 MB 通过 / 40 MB 起 422」）。
+# 详见 保留资产-不打包/README.md —— 那是本机说明，同样不入库。
+保留资产-不打包/

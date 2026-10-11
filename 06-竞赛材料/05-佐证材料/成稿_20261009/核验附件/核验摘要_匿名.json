@@ -1,0 +1,550 @@
+{
+  "git": {
+    "head": "0945ddbc55089876a47911021223a2ae747a6c98",
+    "branch": "feat/compliance-rename-and-map-calibration",
+    "head_commits": 18,
+    "origin_main_cached": "3f8fd4287a986caee005337be90f2d9871015f84",
+    "oldest": "3de58c2575c353c30e796d73e06da0c5b7707940 2026-09-19T11:49:05+08:00"
+  },
+  "frontend": {
+    "files": 17,
+    "passed_files": 13,
+    "failed_files": 4,
+    "tests": 100,
+    "passed": 92,
+    "failed": 8,
+    "modules": [
+      [
+        "campusReducer.test.js",
+        24,
+        21
+      ],
+      [
+        "appSettings.test.js",
+        2,
+        2
+      ],
+      [
+        "appStorage.test.js",
+        5,
+        5
+      ],
+      [
+        "campusCommunity.test.js",
+        18,
+        18
+      ],
+      [
+        "campusDataSource.test.js",
+        4,
+        4
+      ],
+      [
+        "campusFacilities.test.js",
+        3,
+        3
+      ],
+      [
+        "campusMap.test.js",
+        3,
+        3
+      ],
+      [
+        "httpCampusDataSource.test.js",
+        2,
+        2
+      ],
+      [
+        "locations.test.js",
+        4,
+        4
+      ],
+      [
+        "routeGraph.test.js",
+        2,
+        1
+      ],
+      [
+        "campus.test.js",
+        8,
+        5
+      ],
+      [
+        "mapScene.test.js",
+        4,
+        3
+      ],
+      [
+        "mapViewport.test.js",
+        5,
+        5
+      ],
+      [
+        "route.test.js",
+        8,
+        8
+      ],
+      [
+        "campus3d.test.js",
+        3,
+        3
+      ],
+      [
+        "mapVisibility.test.js",
+        2,
+        2
+      ],
+      [
+        "RouteDock.test.js",
+        3,
+        3
+      ]
+    ]
+  },
+  "failures": [
+    {
+      "file": "campusReducer.test.js",
+      "case": "campus reducer refreshes structural map bindings while preserving persisted status edits",
+      "message": [
+        "AssertionError: expected undefined to deeply equal [ +0, 3, -518.4 ]\n    at 04-应用开发/OurCampus/src/app/campusReducer.test.js:21:39\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+      ]
+    },
+    {
+      "file": "campusReducer.test.js",
+      "case": "campus reducer starts in the 3D scene and switches without clearing shared map state",
+      "message": [
+        "AssertionError: expected '2d' to be '3d' // Object.is equality\n    at 04-应用开发/OurCampus/src/app/campusReducer.test.js:283:35\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+      ]
+    },
+    {
+      "file": "campusReducer.test.js",
+      "case": "campus reducer normalizes unknown map scenes back to 2D",
+      "message": [
+        "AssertionError: expected '2d' to be '3d' // Object.is equality\n    at 04-应用开发/OurCampus/src/app/campusReducer.test.js:292:32\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+      ]
+    },
+    {
+      "file": "routeGraph.test.js",
+      "case": "campus model bindings maps every demo location to a model anchor and an entry node",
+      "message": [
+        "AssertionError: expected [ { id: 'east-gate', …(16) }, …(67) ] to have a length of 30 but got 68\n    at Proxy.<anonymous> (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/expect/dist/index.js:1389:20)\n    at Proxy.<anonymous> (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/chai/index.js:1700:25)\n    at 04-应用开发/OurCampus/src/data/routeGraph.test.js:9:23\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20"
+      ]
+    },
+    {
+      "file": "campus.test.js",
+      "case": "campus domain helpers filters by category",
+      "message": [
+        "AssertionError: expected [ 'canteen', 'employee-canteen', …(3) ] to deeply equal [ 'canteen', 'commercial-street' ]\n    at 04-应用开发/OurCampus/src/domain/campus.test.js:24:85\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+      ]
+    },
+    {
+      "file": "campus.test.js",
+      "case": "campus domain helpers returns every location with empty filters",
+      "message": [
+        "AssertionError: expected [ { id: 'east-gate', …(16) }, …(67) ] to have a length of 30 but got 68\n    at Proxy.<anonymous> (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/expect/dist/index.js:1389:20)\n    at Proxy.<anonymous> (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/chai/index.js:1700:25)\n    at 04-应用开发/OurCampus/src/domain/campus.test.js:28:51\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20"
+      ]
+    },
+    {
+      "file": "campus.test.js",
+      "case": "campus domain helpers filters active hotspots by location and type",
+      "message": [
+        "AssertionError: expected '图书馆阅读活动' to be '计算机学院讲座' // Object.is equality\n    at 04-应用开发/OurCampus/src/domain/campus.test.js:41:29\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+      ]
+    },
+    {
+      "file": "mapScene.test.js",
+      "case": "map scene helpers reads a location position for each scene",
+      "message": [
+        "AssertionError: expected [ 0.22728176575860015, …(1) ] to deeply equal [ 0.5, 0.5042016806722689 ]\n    at 04-应用开发/OurCampus/src/domain/mapScene.test.js:16:51\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///04-%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/OurCampus/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+      ]
+    }
+  ],
+  "glbs": [
+    {
+      "file": "R6全园模型",
+      "bytes": 4848300,
+      "MiB": 4.6237,
+      "header_length": 4848300,
+      "magic": "glTF",
+      "version": 2,
+      "triangles": 1118087,
+      "meshes": 375,
+      "nodes": 395,
+      "materials": 42,
+      "textures": 0,
+      "extensionsRequired": [
+        "KHR_draco_mesh_compression"
+      ],
+      "pure_white_materials": 0,
+      "sha256": "d10881ed5ff1c66e601cd9fb8f76116683fa2dd2274ff4865beb9159489817c2"
+    },
+    {
+      "file": "R7全园模型",
+      "bytes": 5972880,
+      "MiB": 5.6962,
+      "header_length": 5972880,
+      "magic": "glTF",
+      "version": 2,
+      "triangles": 1535187,
+      "meshes": 392,
+      "nodes": 411,
+      "materials": 54,
+      "textures": 0,
+      "extensionsRequired": [
+        "KHR_draco_mesh_compression"
+      ],
+      "pure_white_materials": 0,
+      "sha256": "401029d71662ca8ab06c2444a674d6457ec6c0b1c7e5ac80b5a85c0eb914d9be"
+    }
+  ],
+  "renders": {
+    "count": 63,
+    "dimensions": {
+      "(1600, 900)": 62,
+      "(1000, 1600)": 1
+    },
+    "by_stage": {
+      "R0": 7,
+      "R1": 8,
+      "R2": 8,
+      "R3": 9,
+      "R4": 11,
+      "R5": 12,
+      "R6": 8
+    }
+  },
+  "ab_recomputed": [
+    {
+      "file": "R0_垂直书院_中轴.png",
+      "MAE_8bit": 0.985,
+      "affected_percent": 1.62,
+      "max_channel_diff": 65,
+      "brightness_change": -0.98
+    },
+    {
+      "file": "R3_人文区_中轴.png",
+      "MAE_8bit": 1.6838,
+      "affected_percent": 2.95,
+      "max_channel_diff": 67,
+      "brightness_change": -1.68
+    },
+    {
+      "file": "R3_书院_鸟瞰.png",
+      "MAE_8bit": 3.2535,
+      "affected_percent": 5.69,
+      "max_channel_diff": 66,
+      "brightness_change": -3.25
+    },
+    {
+      "file": "R4_中轴_望环廊.png",
+      "MAE_8bit": 2.3245,
+      "affected_percent": 4.13,
+      "max_channel_diff": 67,
+      "brightness_change": -2.32
+    },
+    {
+      "file": "R4_环廊_鸟瞰.png",
+      "MAE_8bit": 4.0112,
+      "affected_percent": 7.05,
+      "max_channel_diff": 67,
+      "brightness_change": -4.0
+    }
+  ],
+  "v10": {
+    "rows": [
+      {
+        "n": 1,
+        "input": "谷园餐厅现在人多到爆，队都排到门口了",
+        "expected_type": "congestion",
+        "expected_name": "谷园餐厅",
+        "output_type": "congestion",
+        "output_name": "谷园餐厅",
+        "output_id": "canteen",
+        "parsed": true,
+        "exact_location": true,
+        "type_ok": true,
+        "raw_flag": true
+      },
+      {
+        "n": 2,
+        "input": "图书馆三楼空调外机看着要掉",
+        "expected_type": "safety",
+        "expected_name": "图书馆",
+        "output_type": "safety",
+        "output_name": "图书馆",
+        "output_id": "library",
+        "parsed": true,
+        "exact_location": true,
+        "type_ok": true,
+        "raw_flag": true
+      },
+      {
+        "n": 3,
+        "input": "3号公寓楼楼下洗衣机全是坏的，一个能用的都没有",
+        "expected_type": "service",
+        "expected_name": "3号公寓楼",
+        "output_type": "service",
+        "output_name": "3号公寓楼",
+        "output_id": "apartment-3",
+        "parsed": true,
+        "exact_location": true,
+        "type_ok": true,
+        "raw_flag": true
+      },
+      {
+        "n": 4,
+        "input": "崇文楼下周有创业分享会，感兴趣的可以报名",
+        "expected_type": "notice",
+        "expected_name": "崇文楼",
+        "output_type": "notice",
+        "output_name": "崇文楼",
+        "output_id": "chongwen-building",
+        "parsed": true,
+        "exact_location": true,
+        "type_ok": true,
+        "raw_flag": true
+      },
+      {
+        "n": 5,
+        "input": "睿智文体馆羽毛球场地今晚约满了",
+        "expected_type": "congestion",
+        "expected_name": "睿智文体馆",
+        "output_type": "service",
+        "output_name": "睿智文体馆",
+        "output_id": "ruizhi-sports-center",
+        "parsed": true,
+        "exact_location": true,
+        "type_ok": false,
+        "raw_flag": true
+      },
+      {
+        "n": 6,
+        "input": "实验大楼门口自行车乱停，都堵住路了",
+        "expected_type": "congestion",
+        "expected_name": "实验大楼",
+        "output_type": "congestion",
+        "output_name": "实验大楼",
+        "output_id": "lab-building",
+        "parsed": true,
+        "exact_location": true,
+        "type_ok": true,
+        "raw_flag": true
+      },
+      {
+        "n": 7,
+        "input": "英语角开始报名了，截止到本周日，要报的抓紧",
+        "expected_type": "notice",
+        "expected_name": "NULL",
+        "output_type": "notice",
+        "output_name": null,
+        "output_id": null,
+        "parsed": true,
+        "exact_location": false,
+        "type_ok": true,
+        "raw_flag": null
+      },
+      {
+        "n": 8,
+        "input": "有人晕倒了，快来人",
+        "expected_type": "safety",
+        "expected_name": "NULL",
+        "output_type": "safety",
+        "output_name": null,
+        "output_id": null,
+        "parsed": true,
+        "exact_location": false,
+        "type_ok": true,
+        "raw_flag": null
+      },
+      {
+        "n": 9,
+        "input": "有没有人今晚一起去操场跑步的",
+        "expected_type": "非提取任务(互助)",
+        "expected_name": null,
+        "output_type": "notice",
+        "output_name": "操场",
+        "output_id": "sports-field",
+        "parsed": true,
+        "exact_location": false,
+        "type_ok": false,
+        "raw_flag": null
+      },
+      {
+        "n": 10,
+        "input": "感觉这学期什么活动都没赶上，有点失落",
+        "expected_type": "非提取任务(情绪)",
+        "expected_name": null,
+        "output_type": "notice",
+        "output_name": null,
+        "output_id": null,
+        "parsed": true,
+        "exact_location": false,
+        "type_ok": false,
+        "raw_flag": null
+      }
+    ],
+    "json_ok": 10,
+    "A_location_ok": 6,
+    "A_type_ok": 5,
+    "B_null_ok": 2,
+    "C_out_of_scope_extracted": 2,
+    "locations": 66
+  },
+  "comparison": {
+    "rule": {
+      "hits": {
+        "type": 9,
+        "wait": 10,
+        "window": 9,
+        "severity": 5
+      },
+      "n": 10,
+      "mean": 82.5
+    },
+    "plain": {
+      "hits": {
+        "type": 10,
+        "wait": 8,
+        "window": 2,
+        "severity": 5
+      },
+      "n": 10,
+      "mean": 62.5
+    },
+    "lora": {
+      "hits": {
+        "type": 10,
+        "wait": 8,
+        "window": 5,
+        "severity": 5
+      },
+      "n": 10,
+      "mean": 70.0
+    }
+  },
+  "datasets": {
+    "v7": [
+      {
+        "file": "03-算法工程/model-finetune/v7_upload/v7_eval.json",
+        "rows": 145,
+        "sha256": "877c63ecf58b04c0dae15852e7cc57438809430ffb95d2874da7da290ce24eb1"
+      },
+      {
+        "file": "03-算法工程/model-finetune/v7_upload/v7_train.json",
+        "rows": 1597,
+        "sha256": "f58dd81b727777ebe81c9ef16fed59c5ac6809648bc59dc7b6b0536989f2a6f0"
+      }
+    ],
+    "v8": [
+      {
+        "file": "03-算法工程/model-finetune/v8_upload/v8_extract_eval.json",
+        "rows": 134,
+        "sha256": "7d39c4dd82456da8af05076e1a2a12dfff96e1d4c8b1fa0f6ae887d28606b893"
+      },
+      {
+        "file": "03-算法工程/model-finetune/v8_upload/v8_extract_train.json",
+        "rows": 1214,
+        "sha256": "98943c7ed21ef70fb0a7a25e6cb9b54bf3fad4e911d5cb275a959704acd53ff6"
+      }
+    ],
+    "v9": [
+      {
+        "file": "03-算法工程/model-finetune/v9_upload/v9_extract_eval.json",
+        "rows": 120,
+        "sha256": "41eaebd7191bee1269e14de53271fc73d915f56b0eeafa1ef0d92ee7332f6593"
+      },
+      {
+        "file": "03-算法工程/model-finetune/v9_upload/v9_extract_train.json",
+        "rows": 983,
+        "sha256": "b10b28c97a2343244f05306add2cc3bf9092b4dc6c9d18980e403b561bdff050"
+      }
+    ],
+    "v10": [
+      {
+        "file": "03-算法工程/model-finetune/v10_upload/data/v10_extract_eval.json",
+        "rows": 120,
+        "sha256": "916a85c3753558cd4e6e258ca0258208d67d3203f1fb7dd3f2d6f7538e59d131"
+      },
+      {
+        "file": "03-算法工程/model-finetune/v10_upload/data/v10_extract_train.json",
+        "rows": 419,
+        "sha256": "4bab3a08ed80ccd2a5800f00ca02f94e05e6639d03d54092559c40f209c76d84"
+      }
+    ]
+  },
+  "v10_dataset_overlap": {
+    "exact_row_overlap": 0,
+    "instruction_input_overlap": 0,
+    "unique_train": 419,
+    "unique_eval": 120
+  },
+  "dependencies": [
+    {
+      "name": "react",
+      "lock_version": "19.3.0",
+      "installed_version": "19.3.0",
+      "license_in_lock": "MIT",
+      "license_in_package": "MIT"
+    },
+    {
+      "name": "react-dom",
+      "lock_version": "19.3.0",
+      "installed_version": "19.3.0",
+      "license_in_lock": "MIT",
+      "license_in_package": "MIT"
+    },
+    {
+      "name": "vite",
+      "lock_version": "8.3.0",
+      "installed_version": "8.3.0",
+      "license_in_lock": "MIT",
+      "license_in_package": "MIT"
+    },
+    {
+      "name": "vitest",
+      "lock_version": "4.1.11",
+      "installed_version": "4.1.11",
+      "license_in_lock": "MIT",
+      "license_in_package": "MIT"
+    },
+    {
+      "name": "three",
+      "lock_version": "0.186.0",
+      "installed_version": "0.186.0",
+      "license_in_lock": "MIT",
+      "license_in_package": "MIT"
+    },
+    {
+      "name": "@capacitor/core",
+      "lock_version": "8.5.2",
+      "installed_version": "8.5.2",
+      "license_in_lock": "MIT",
+      "license_in_package": "MIT"
+    },
+    {
+      "name": "@supabase/supabase-js",
+      "lock_version": "2.117.2",
+      "installed_version": "2.117.2",
+      "license_in_lock": "MIT",
+      "license_in_package": "MIT"
+    },
+    {
+      "name": "lucide-react",
+      "lock_version": "1.47.0",
+      "installed_version": "1.47.0",
+      "license_in_lock": "ISC",
+      "license_in_package": "ISC"
+    }
+  ],
+  "verification_scope": {
+    "date": "2026-10-09",
+    "remote_latest_verified": false,
+    "pdf_pages": 23,
+    "pdf_all_pages_visually_reviewed": true,
+    "docx_native_pagination_verified": false,
+    "docx_renderer_limitation": "官方渲染器缺少LibreOffice；已安装Word的COM启动失败。PDF为同一正文独立排版，不是Word导出。",
+    "app_screenshot_limitation": "自动审批服务配置故障阻断补充界面检查，未生成新的应用界面截图。",
+    "model_outputs": "历史模型输出的本地复核，未重新在线推理",
+    "gateway_tests": "Node内置测试框架及网络测试桩，不是在线调用或负载测试"
+  }
+}

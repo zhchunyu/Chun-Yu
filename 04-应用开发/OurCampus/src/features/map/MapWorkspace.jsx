@@ -155,8 +155,10 @@ export function MapWorkspace({
             onUseCampusMap={COMPETITION_PRESENTATION ? undefined : () => setMapProvider('campus')}
           />
         ) : COMPETITION_PRESENTATION ? (
+          // 比赛模式：官方引导图图面印有真实楼名，不做回退展示（需要时把 COMPETITION_PRESENTATION 置 false 供开发使用）
           <div className="map-unavailable-note" role="status">
-            <MapPin size={16} /><strong>地图资源暂不可用</strong>
+            <MapPin size={16} />
+            <strong>地图资源暂不可用</strong>
             <span>请检查网络及地图配置后重试。</span>
           </div>
         ) : (

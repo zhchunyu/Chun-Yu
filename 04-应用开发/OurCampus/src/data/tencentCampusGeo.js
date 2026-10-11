@@ -1,11 +1,14 @@
 import { teamCampusMap } from './campusMap.js'
+import { locationRepository } from './locations.js'
+import { TENCENT_POI_POSITIONS } from './tencentPoiPositions.js'
 
 export const TENCENT_CAMPUS_CENTER = Object.freeze({ lat: 37.423038, lng: 112.583703 })
 export const TENCENT_CAMPUS_ZOOM = 17
+// 缩放下限锁定 14 级：再往外缩就会把校园缩成一小块，标签也会互相压住，因此禁止。
 export const TENCENT_CAMPUS_MIN_ZOOM = 14
 export const TENCENT_CAMPUS_MAX_ZOOM = 20
 
-// 由西校门、牌楼、崇学楼、教学主楼和实验大楼的腾讯 POI 坐标校准。
+// 由西校门、牌楼、明德楼、教学主楼和实验大楼的腾讯 POI 坐标校准。
 // 输入是校园引导图原图像素位置，输出为腾讯地图使用的 GCJ-02 坐标。
 const IMAGE_TO_GCJ02 = Object.freeze({
   lngX: 0.000007751548461,
@@ -69,15 +72,48 @@ export function getCampusMapPositionFromTencentPosition({ lat, lng }) {
 }
 
 // 有独立腾讯 POI 坐标的地点直接使用实测点，避免只靠校园引导图外推。
-const TENCENT_POI_POSITIONS = Object.freeze({
-  'east-gate': { lat: 37.424548, lng: 112.578701 },
-  paifang: { lat: 37.424444, lng: 112.579655 },
-  'teaching-a': { lat: 37.425144, lng: 112.583579 },
-  'main-teaching-building': { lat: 37.423786, lng: 112.585820 },
-  'lab-building': { lat: 37.424905, lng: 112.581233 },
-  'qinxue-building': { lat: 37.423319, lng: 112.578307 },
-  'apartment-18': { lat: 37.423057, lng: 112.590528 },
-})
+// ★ 实测坐标表见 tencentPoiPositions.js，由 tools/harvest-tencent-poi.mjs 自动生成。
+// ★ 系统误差校正：官方引导图是手绘示意图，全局仿射变换平均误差约 16 m（个别点 40 m）。
+//   以实测 POI 点为控制点，把"实测 − 仿射"的残差按反距离权重平滑地加到其余地点上：
+//   控制点处误差归零，邻近建筑获得同向修正，远处保持原状（不会引入新的偏差）。
+const CONTROL_RESIDUALS = Object.freeze((() => {
+  const scene = teamCampusMap.scenes['2d']
+  if (!scene) return []
+  const locations = locationRepository.loadAll()
+  return Object.entries(TENCENT_POI_POSITIONS)
+    .map(([id, exact]) => {
+      const position = locations.find((item) => item.id === id)?.mapPosition?.['2d']
+      if (!Array.isArray(position)) return null
+      const imageX = (scene.crop.x + position[0] * scene.crop.width) * scene.imageWidth
+      const imageY = (scene.crop.y + position[1] * scene.crop.height) * scene.imageHeight
+      const base = applyAffine(imageX, imageY)
+      return { imageX, imageY, dLat: exact.lat - base.lat, dLng: exact.lng - base.lng }
+    })
+    .filter(Boolean)
+})())
+
+function applyAffine(imageX, imageY) {
+  const { lngX, lngY, lngOffset, latX, latY, latOffset } = IMAGE_TO_GCJ02
+  return {
+    lat: latX * imageX + latY * imageY + latOffset,
+    lng: lngX * imageX + lngY * imageY + lngOffset,
+  }
+}
+
+function residualCorrection(imageX, imageY) {
+  let weightSum = 0, latSum = 0, lngSum = 0
+  for (const control of CONTROL_RESIDUALS) {
+    const distance = Math.hypot(imageX - control.imageX, imageY - control.imageY)
+    if (distance < 1) return { lat: control.dLat, lng: control.dLng }
+    // 反距离平方加权：越近修正越强，超过 1200 px（约等于整个校园）后影响自然衰减
+    const weight = 1 / (distance * distance)
+    weightSum += weight
+    latSum += weight * control.dLat
+    lngSum += weight * control.dLng
+  }
+  if (!weightSum) return { lat: 0, lng: 0 }
+  return { lat: latSum / weightSum, lng: lngSum / weightSum }
+}
 
 export function getTencentCampusPosition(location) {
   const tencentPosition = TENCENT_POI_POSITIONS[location?.id]
@@ -92,10 +128,111 @@ export function getTencentCampusPosition(location) {
 
   const imageX = (scene.crop.x + normalizedX * scene.crop.width) * scene.imageWidth
   const imageY = (scene.crop.y + normalizedY * scene.crop.height) * scene.imageHeight
-  const { lngX, lngY, lngOffset, latX, latY, latOffset } = IMAGE_TO_GCJ02
-  const lat = latX * imageX + latY * imageY + latOffset
-  const lng = lngX * imageX + lngY * imageY + lngOffset
+  const base = applyAffine(imageX, imageY)
+  const correction = residualCorrection(imageX, imageY)
+  const lat = base.lat + correction.lat
+  const lng = base.lng + correction.lng
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
   return { lat, lng }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 地图拖动边界（校园标注范围）
+//
+// 目的：把「拖拽/缩放能到达的区域」限制在 App 已有地名标注的范围内，避免用户
+// 一不小心把地图拖到校外很远的地方，回来还得重新找校园。
+//
+// 实现：腾讯 JS API GL 的 MapOptions 原生支持 `boundary`（LatLngBounds），
+//   文档原文：「地图边界，设置后拖拽、缩放等操作无法将地图移动至边界外」，
+//   对应方法 setBoundary() / getBoundary()。所以不需要自己监听事件做回弹。
+//   https://lbs.qq.com/javascript_gl/doc/mapoptions.html
+//   https://lbs.qq.com/javascript_gl/doc/latlngbounds.html
+//
+// 边界 = 全部地点标注坐标的最小外包矩形，再按比例外扩留白。
+//
+// ★ 留白比例由「校园占可拖动面积的目标占比」反推，不要凭感觉拍：
+//     设留白比例为 r，则 边界边长 = 标注边长 × (1 + 2r)，面积比 = (1 + 2r)²
+//     要求 校园面积 / 可拖动面积 = TARGET_AREA_RATIO
+//     ⇒ (1 + 2r)² = 1 / TARGET_AREA_RATIO
+//     ⇒ r = ( √(1 / TARGET_AREA_RATIO) − 1 ) / 2
+//   目标 20% 时：r = (√5 − 1) / 2 ≈ 0.618，边界约为标注范围的 2.24 倍见方。
+//
+// ★ 南侧额外补偿（下边界加长）：
+//   屏幕下方常驻功能菜单（底部标签栏 + 路线面板等），可视区实际只有上方那一块。
+//   要把南边的地名拖到「菜单上方的可视区中央」，地图中心必须能继续往南移，
+//   所以南边界在对称留白之外再单独加长一段。
+//   加长量 = 底部 UI 高度（像素）× 默认缩放级别下的每像素米数，即
+//   「把菜单遮住的那一段屏幕，换成地图上等长的南北距离」。改 TARGET_AREA_RATIO
+//   或默认缩放都会自动跟着变。注意：加了南侧补偿后，校园占可拖动面积会
+//   略低于 TARGET_AREA_RATIO（这是为了菜单避让有意付出的代价）。
+// ─────────────────────────────────────────────────────────────────────────────
+const METERS_PER_DEGREE_LAT = 111320
+const EARTH_EQUATOR_METERS = 40075016.686
+const TILE_SIZE = 256
+
+/** 某纬度、某缩放级别下，1 像素约等于多少米（Web 墨卡托） */
+function metersPerPixel(latitude, zoom) {
+  return (EARTH_EQUATOR_METERS / TILE_SIZE) * Math.cos((latitude * Math.PI) / 180) / (2 ** zoom)
+}
+
+/** 校园标注范围应占「可拖动范围」的面积比例 */
+export const TENCENT_CAMPUS_TARGET_AREA_RATIO = 0.2
+
+/** 由目标面积占比反推的留白比例：r = (√(1/ratio) − 1) / 2 */
+export const TENCENT_CAMPUS_BOUNDS_MARGIN_RATIO = (Math.sqrt(1 / TENCENT_CAMPUS_TARGET_AREA_RATIO) - 1) / 2
+
+export const TENCENT_CAMPUS_BOUNDS_MARGIN_FLOOR_METERS = 60
+
+/**
+ * 底部功能菜单占据的屏幕高度（像素）。
+ * 取值与 styles.css 中地图内容避让底部 UI 所用的 197px 保持一致
+ * （`.tencent-campus-map__route-note { bottom: calc(197px + env(safe-area-inset-bottom)) }`）。
+ */
+export const TENCENT_CAMPUS_BOTTOM_UI_PIXELS = 197
+
+/** 南侧（屏幕下方）在对称留白之外额外加长的米数 */
+export const TENCENT_CAMPUS_BOTTOM_EXTRA_METERS =
+  TENCENT_CAMPUS_BOTTOM_UI_PIXELS * metersPerPixel(TENCENT_CAMPUS_CENTER.lat, TENCENT_CAMPUS_ZOOM)
+
+/**
+ * 由一组坐标算出「标注范围」矩形，并按比例外扩留白。纯函数，便于单测。
+ * @param {Array<{lat:number,lng:number}>} positions
+ * @param {{marginRatio?:number, marginFloorMeters?:number, southExtraMeters?:number}} [options]
+ *   southExtraMeters：南边界（屏幕下方）在对称留白之外再往南加的米数，默认 0。
+ * @returns {{south:number,north:number,west:number,east:number}|null} 无有效坐标时返回 null
+ */
+export function computeLabelBounds(positions, options = {}) {
+  const marginRatio = options.marginRatio ?? TENCENT_CAMPUS_BOUNDS_MARGIN_RATIO
+  const marginFloorMeters = options.marginFloorMeters ?? TENCENT_CAMPUS_BOUNDS_MARGIN_FLOOR_METERS
+  const southExtraMeters = options.southExtraMeters ?? 0
+  const valid = (positions ?? []).filter((point) => Number.isFinite(point?.lat) && Number.isFinite(point?.lng))
+  if (valid.length === 0) return null
+
+  const lats = valid.map((point) => point.lat)
+  const lngs = valid.map((point) => point.lng)
+  const south = Math.min(...lats)
+  const north = Math.max(...lats)
+  const west = Math.min(...lngs)
+  const east = Math.max(...lngs)
+
+  const centerLat = (south + north) / 2
+  const metersPerDegreeLng = METERS_PER_DEGREE_LAT * Math.cos((centerLat * Math.PI) / 180)
+  const latMargin = Math.max((north - south) * marginRatio, marginFloorMeters / METERS_PER_DEGREE_LAT)
+  const lngMargin = Math.max((east - west) * marginRatio, marginFloorMeters / metersPerDegreeLng)
+
+  return {
+    south: south - latMargin - southExtraMeters / METERS_PER_DEGREE_LAT,
+    north: north + latMargin,
+    west: west - lngMargin,
+    east: east + lngMargin,
+  }
+}
+
+// 全部地点（含实测点与推算点）的标注范围，供腾讯地图 boundary 使用。
+export const TENCENT_CAMPUS_LABEL_BOUNDS = Object.freeze(
+  computeLabelBounds(
+    locationRepository.loadAll().map((location) => getTencentCampusPosition(location)).filter(Boolean),
+    { southExtraMeters: TENCENT_CAMPUS_BOTTOM_EXTRA_METERS },
+  ),
+)

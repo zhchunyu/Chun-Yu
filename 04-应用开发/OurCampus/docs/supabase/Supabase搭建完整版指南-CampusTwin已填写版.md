@@ -19,18 +19,18 @@
 | --- | --- |
 | 软件名称 | 数字校园孪生 |
 | 代码名称 | CampusTwin |
-| 校园范围 | 山西农业大学 · 太谷校区 |
-| Supabase 项目 Name | 建议填写 `campustwin-sxau-taigu` |
+| 校园范围 | 本校区 · 本校区 |
+| Supabase 项目 Name | 建议填写 `campustwin-campus-taigu` |
 | 前端技术 | React 19、Vite、JavaScript、Lucide 图标；当前没有安装 Supabase SDK |
 | 手机端 | Capacitor Android APK |
-| Android App ID | `cn.edu.sxau.campustwin` |
+| Android App ID | `cn.edu.campus.campustwin` |
 | 当前底部入口 | 首页、地点、大厅、我的 |
 | 地图 | 腾讯地图原生 2D 地图和地点标签；校园平面图可回退 |
 | 导航 | 保留现有腾讯地图路线／手机导航入口；本次不更换路线服务 |
 | 前端开发地址 | `http://127.0.0.1:5173/`，仅指开发者自己电脑，不是公网服务器地址 |
 | 已有地点数 | 66，地点主键沿用现有字符串 ID |
 | 已有校园服务 | 4 条；开放时间未公开的保持空值；现有电话及来源仍需使用前核实 |
-| 地图配置版本 | `sxau-taigu-plan-2d-v2` |
+| 地图配置版本 | `campus-taigu-plan-2d-v2` |
 | 登录界面 | 学号／校园账号 + 密码；手机号 + 6 位短信验证码 |
 | 当前账号状态 | 未接真实认证；角色切换和管理员操作都是本机演示 |
 | 当前大厅聊天 | 示例消息与本会话消息，不是多人实时聊天 |
@@ -57,8 +57,8 @@
 | --- | --- | --- |
 | `east-gate` | 西校门 | 保留历史代码 ID；不能看 ID 中的 east 就改成东校门 |
 | `library` | 图书馆 | 图书馆服务与热点关联这个 ID |
-| `teaching-a` | 崇学楼 | 保留已有 ID |
-| `canteen` | 谷园餐厅 | 不是原指南的第三食堂 |
+| `teaching-a` | 明德楼 | 保留已有 ID |
+| `canteen` | 禾香餐厅 | 不是原指南的第三食堂 |
 | `hospital` | 校医院 | 校医设施与服务信息的关联地点 |
 | `gymnasium` | 体育场 | 以现有名称为准，不按代码词义重新命名 |
 | `apartment-1` 至 `apartment-23` | 1 至 23 号公寓楼 | 已导出，不能用一个宿舍区替代全部楼号 |
@@ -75,7 +75,7 @@
 
 | Dashboard 字段 | 填写内容 |
 | --- | --- |
-| Name | `campustwin-sxau-taigu` |
+| Name | `campustwin-campus-taigu` |
 | Database Password | 由服务器同学生成独立强密码并保管；本文不放示例密码或真实密码 |
 | Region | 建议先选 Singapore（若可选），再用同学的电脑和安卓手机测实际连通性；不保证该节点在国内最快 |
 | Pricing Plan | 首版可先选 Free；容量、暂停规则、Realtime 和流量限额以账户当前页面为准 |
@@ -144,7 +144,7 @@ PostGIS 可在以后拿到可靠 WGS84 地理数据、需要服务端空间查�
 
 - 5 个地区。
 - 66 个现有校园地点，含别名、关键词、二维图位置、腾讯地图使用的经纬度。
-- 4 条现有校园服务：图书馆、谷园餐厅、校医院、一站式服务大厅。
+- 4 条现有校园服务：图书馆、禾香餐厅、校医院、一站式服务大厅。
 
 地点坐标来自现有前端腾讯点位和引导图校准，不是这次现场测量；`geo_verified = false`，需逐步核对位置。服务联系电话及官网沿用项目已有来源，不代表本次新核验；空缺开放时间保持 `null`。线上一站式服务大厅没有可靠实体地点，`location_id` 保持 `null`。
 
@@ -294,7 +294,7 @@ SUPABASE_SECRET_KEY=<只在可信服务器保管的secret key>
 
 | 交接项 | 当前值／待补信息 |
 | --- | --- |
-| Supabase Name | `campustwin-sxau-taigu`（若已用其他名字，填写实际名） |
+| Supabase Name | `campustwin-campus-taigu`（若已用其他名字，填写实际名） |
 | Supabase Project URL | 待同学创建后填写：________ |
 | 前端 Publishable Key | 待同学单独提供；不是后台 Secret Key |
 | 使用的 Region | 待填写：________ |
@@ -351,7 +351,7 @@ SUPABASE_SECRET_KEY=<只在可信服务器保管的secret key>
 | `src/data/events.js` | 使用真实热点，保留活动日历与到期过滤 |
 | `src/data/tencentCampusGeo.js` | 继续使用 GCJ-02；位置仅用于现有地图与距离功能 |
 
-现有实时 GPS 只在用户点定位时获取。本期没有后台位置追踪和人数统计数据采集任务；不需要新建位置轨迹／通行热度表。现有本机道路图不是本次现场核验的太谷真实路网，不把旧 3D 路段直接导入当真实道路；需另取得可靠数据才能做服务端校内封路避让。
+现有实时 GPS 只在用户点定位时获取。本期没有后台位置追踪和人数统计数据采集任务；不需要新建位置轨迹／通行热度表。现有本机道路图不是本次现场核验的本地区真实路网，不把旧 3D 路段直接导入当真实道路；需另取得可靠数据才能做服务端校内封路避让。
 
 ### 8.3 最小联调验收
 
