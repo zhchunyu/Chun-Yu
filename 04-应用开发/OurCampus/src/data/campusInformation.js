@@ -1,6 +1,6 @@
 import { requireSupabase } from './supabaseClient.js'
 
-export const INFORMATION_KINDS = { construction: '施工', closure: '封路 / 关闭', 'water-power': '停水停电', crowd: '排队 / 拥挤', notice: '校园通知', lost: '寻物', found: '招领', repair: '设施报修', feedback: '地点反馈' }
+export const INFORMATION_KINDS = { activity: '校园活动', construction: '施工', closure: '封路 / 关闭', 'water-power': '停水停电', crowd: '排队 / 拥挤', notice: '校园通知', lost: '寻物', found: '招领', repair: '设施报修', feedback: '地点反馈' }
 export const PUBLIC_INFORMATION_KINDS = new Set(['construction', 'closure', 'water-power'])
 export const REPORT_STATUS = { submitted: '待分析', analyzed: '分析完成 · 待确认', published: '已审核发布', resolved: '已完成', withdrawn: '已撤回', rejected: '未通过审核' }
 export const newReportId = () => crypto.randomUUID()

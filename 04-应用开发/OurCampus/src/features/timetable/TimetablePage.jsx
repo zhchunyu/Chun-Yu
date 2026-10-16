@@ -30,6 +30,8 @@ export function TimetablePage({ userId, onClose, onAskAi }) {
   const conflicts = shown ? scheduleConflicts(shown) : new Set()
   const subjectCount = new Set(shown?.courses.map((course) => course.name) ?? []).size
   const maxWeek = Math.max(16, ...(shown?.courses.flatMap((course) => course.weeks) ?? []))
+  const goBack = () => { if (!busy) { if (preview) setPreview(null); else onClose() } }
+  useBackLayer(true, goBack, 70)
 
   useEffect(() => {
     const previous = document.activeElement, overflow = document.body.style.overflow
@@ -77,7 +79,7 @@ export function TimetablePage({ userId, onClose, onAskAi }) {
 
   return createPortal(<section className="timetable-page" role="dialog" aria-modal="true" aria-labelledby="timetable-title" ref={frameRef}>
     <div className="timetable-frame">
-      <header className="timetable-header"><button ref={backRef} type="button" aria-label="返回我的" onClick={onClose}><ArrowLeft size={21} /></button><div><h1 id="timetable-title">我的课表</h1><span>{shown ? `${shown.semester} · ${preview ? '导入预览' : '本机课表'}` : '把课程安排放进口袋里'}</span></div><button className="timetable-import" type="button" onClick={() => fileRef.current?.click()} disabled={busy}><FileUp size={16} />{busy ? '读取中…' : shown ? '重新导入' : '导入课表'}</button><input className="timetable-file" type="file" accept=".xls,application/vnd.ms-excel" ref={fileRef} onChange={readFile} aria-label="选择教务课表文件" disabled={busy} /></header>
+      <header className="timetable-header"><button ref={backRef} type="button" aria-label="返回服务" onClick={goBack} disabled={busy}><ArrowLeft size={21} /></button><div><h1 id="timetable-title">我的课表</h1><span>{shown ? `${shown.semester} · ${preview ? '导入预览' : '本机课表'}` : '把课程安排放进口袋里'}</span></div><button className="timetable-import" type="button" onClick={() => fileRef.current?.click()} disabled={busy}><FileUp size={16} />{busy ? '读取中…' : shown ? '重新导入' : '导入课表'}</button><input className="timetable-file" type="file" accept=".xls,application/vnd.ms-excel" ref={fileRef} onChange={readFile} aria-label="选择教务课表文件" disabled={busy} /></header>
       <main className="timetable-content">
         {error && <p className="timetable-alert" role="alert">{error}</p>}
         {notice && <p className="timetable-notice" role="status">{notice}</p>}
@@ -98,3 +100,4 @@ export function TimetablePage({ userId, onClose, onAskAi }) {
     </div>
   </section>, document.body)
 }
+import { useBackLayer } from '../../app/useBackLayer.js'

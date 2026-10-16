@@ -12,7 +12,7 @@ function localDateTime(value = new Date()) {
 }
 const newDraft = () => ({ type: 'lost', title: '', description: '', locationId: '', locationDetail: '', occurredAt: localDateTime(), contact: '', image: '' })
 
-export function LostFoundPanel({ posts, locations, regionId, filter, onFilterChange, onRegionChange, onSubmitPost, onStatusChange, onDeletePost, onSelectLocation, onPlanRouteToLocation, showMapMarkers, onMapMarkersChange, currentUserId, cloudReady }) {
+export function LostFoundPanel({ posts, locations, regionId, filter, onFilterChange, onRegionChange, onSubmitPost, onStatusChange, onDeletePost, onSelectLocation, onPlanRouteToLocation, showMapMarkers, onMapMarkersChange, currentUserId, cloudReady, publishToken = 0 }) {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('active')
   const [draft, setDraft] = useState(null)
@@ -24,6 +24,7 @@ export function LostFoundPanel({ posts, locations, regionId, filter, onFilterCha
   const [syncToCloud, setSyncToCloud] = useState(true)
   const clientId = useRef(null)
   const [deleteId, setDeleteId] = useState(null)
+  useBackLayer(Boolean(draft || deleteId || saving), () => { if (!saving) { if (deleteId) setDeleteId(null); else closeForm() } }, 30)
   const photoSequence = useRef(0)
   const examples = useMemo(createDemoLostFoundPosts, [])
   const byId = new Map(locations.map((location) => [location.id, location]))
@@ -39,6 +40,7 @@ export function LostFoundPanel({ posts, locations, regionId, filter, onFilterCha
     setPhotoBusy(false); setError(''); setNotice(''); setEditingId(post?.id ?? null)
     setDraft(post ? { ...post, occurredAt: localDateTime(post.occurredAt) } : newDraft())
   }
+  useEffect(() => { if (publishToken) openForm() }, [publishToken])
   const handlePhoto = async (event) => {
     const file = event.target.files?.[0]
     event.target.value = ''
@@ -79,7 +81,7 @@ export function LostFoundPanel({ posts, locations, regionId, filter, onFilterCha
     <div className="community-action-line"><span className="community-local-label">{cloudReady ? '云端信息 · 本机资料' : '云端服务待连接'}</span><button className="community-primary" type="button" disabled={saving} onClick={() => openForm()}><Plus size={15} />发布信息</button></div>
     {notice && <p className="community-notice" role="status">{notice}</p>}
     {draft && <form className="community-form" onSubmit={submit} aria-label={editingId ? '编辑失物信息' : '发布失物信息'}>
-      <div className="community-list-heading"><h3>{editingId ? '编辑信息' : '发布失物信息'}</h3><button type="button" className="community-icon-button" onClick={closeForm} aria-label="关闭发布表单"><X size={18} /></button></div>
+      <div className="community-list-heading"><h3>{editingId ? '编辑信息' : '发布失物信息'}</h3><button type="button" className="community-icon-button" onClick={closeForm} disabled={saving} aria-label="关闭发布表单"><X size={18} /></button></div>
       <label>信息类型<select value={draft.type} onChange={(event) => change('type', event.target.value)}><option value="lost">我丢了东西 · 寻物</option><option value="found">我捡到东西 · 招领</option></select></label>
       <label>物品名称<input autoFocus required maxLength={40} value={draft.title} placeholder="例如：蓝色折叠伞" onChange={(event) => change('title', event.target.value)} /></label>
       <label>物品特征<textarea required maxLength={300} rows={3} value={draft.description} placeholder="颜色、品牌、明显特征等" onChange={(event) => change('description', event.target.value)} /></label>
@@ -92,7 +94,7 @@ export function LostFoundPanel({ posts, locations, regionId, filter, onFilterCha
       {error && <p className="community-error" role="alert">{error}</p>}
       {!editingId && <label className="information-consent"><input type="checkbox" checked={syncToCloud} disabled={saving} onChange={(e) => setSyncToCloud(e.target.checked)} />同步到云端，交给 AI 分析匹配。联系方式对登录用户可见；照片仅存本机，联系方式字段不发送模型。</label>}
       {!currentUserId && syncToCloud && <small>云端发布需要先登录，登录后可继续提交。</small>}
-      <button className="community-primary community-submit" type="submit" disabled={photoBusy || saving}>{saving ? '正在保存…' : editingId ? '保存修改' : syncToCloud ? '发布到云端大厅' : '仅保存在本机'}</button>
+      <button className="community-primary community-submit" type="submit" disabled={photoBusy || saving}>{saving ? '正在保存…' : editingId ? '保存修改' : syncToCloud ? '发布到校园社区' : '仅保存在本机'}</button>
     </form>}
     <div className="community-chip-strip" aria-label="失物信息类型">{[{ id: 'all', label: '全部' }, { id: 'lost', label: '寻物' }, { id: 'found', label: '招领' }, { id: 'mine', label: '我的发布' }].map((item) => <button type="button" key={item.id} className={filter === item.id ? 'is-active' : ''} aria-pressed={filter === item.id} onClick={() => onFilterChange(item.id)}>{item.label}</button>)}</div>
     <div className="community-search-row"><label className="community-search"><Search size={16} /><input aria-label="搜索失物信息" type="search" value={query} placeholder="搜索物品或特征" onChange={(event) => setQuery(event.target.value)} /></label><select aria-label="失物处理状态" value={status} onChange={(event) => setStatus(event.target.value)}><option value="active">寻找中</option><option value="resolved">已完成</option><option value="all">全部状态</option></select></div>
@@ -113,3 +115,4 @@ export function LostFoundPanel({ posts, locations, regionId, filter, onFilterCha
     }) : <div className="community-empty"><PackageSearch size={32} /><strong>{filter === 'mine' ? '还没有符合筛选的发布' : '暂时没有符合条件的物品'}</strong><p>可以调整地区、关键词或状态，也可以发布一条信息。</p><button className="community-primary" type="button" onClick={() => openForm()}>发布失物信息</button></div>}
   </div>
 }
+import { useBackLayer } from '../../app/useBackLayer.js'
