@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Compass, LayoutGrid, Radio } from 'lucide-react'
 import { createLocalCampusDataSource } from './data/campusDataSource.js'
 import { loadPersistedState, savePersistedState } from './data/appStorage.js'
@@ -14,9 +14,11 @@ import { disablePushDevice } from './data/campusPush.js'
 import { useCampusInformation } from './features/notifications/useCampusInformation.js'
 import { useCampusPush } from './features/notifications/useCampusPush.js'
 import { NotificationCenter } from './features/notifications/NotificationCenter.jsx'
+import { useNotificationPreferences } from './features/notifications/useNotificationPreferences.js'
+import { CampusNoticeBanner } from './features/notifications/CampusNoticeBanner.jsx'
 import { locationRepository } from './data/locations.js'
 import { listActiveHotspots, filterLocations, ROLE_LABELS } from './domain/campus.js'
-import { createPlaceFeedback } from './domain/placeFeedback.js'
+import { createPlaceFeedback, PLACE_FEEDBACK_TYPES } from './domain/placeFeedback.js'
 import { searchCampusResources } from './domain/search.js'
 import { campusReducer, createInitialState } from './app/campusReducer.js'
 import { LocationDetail } from './features/locations/LocationDetail.jsx'
@@ -29,12 +31,15 @@ import { markStartupReady } from './app/startup.js'
 import { useRealtimeHall } from './features/mobile/useRealtimeHall.js'
 import { MePanel } from './features/mobile/MePanel.jsx'
 import { MobileTabBar } from './features/mobile/MobileTabBar.jsx'
+import { PrimaryPageActions } from './features/mobile/PrimaryPageActions.jsx'
+import { MyPublicationsPage } from './features/mobile/MyPublicationsPage.jsx'
 import { TripPanel } from './features/mobile/TripPanel.jsx'
 import { MapWorkspace } from './features/map/MapWorkspace.jsx'
 import { RouteDock } from './features/routes/RouteDock.jsx'
 import { RestaurantReviewsPage } from './features/reviews/RestaurantReviewsPage.jsx'
 import { AuvAssistantPage } from './features/ai/AuvAssistantPage.jsx'
 import { TimetablePage } from './features/timetable/TimetablePage.jsx'
+import { useBackLayer } from './app/useBackLayer.js'
 
 function loadInitialSnapshot() {
   const source = createLocalCampusDataSource({
@@ -54,20 +59,30 @@ function App() {
   const [storedState, dispatch] = useReducer(campusReducer, initialState)
   const auth = useCampusAuth()
   const information = useCampusInformation(auth.user?.id)
+  const notificationPreferences = useNotificationPreferences(auth.user?.id)
   const displayLocations = useMemo(() => storedState.locations.map(campusDisplayRecord), [storedState.locations])
   const displayEvents = useMemo(() => [...storedState.events, ...information.events].map(campusDisplayRecord), [storedState.events, information.events])
   const state = { ...storedState, locations: displayLocations, events: displayEvents }
+  const handleToggleFavorite = (locationId) => {
+    const enabled = !state.favoriteLocationIds.includes(locationId)
+    dispatch({ type: 'TOGGLE_FAVORITE_LOCATION', locationId })
+    if (notificationPreferences.status === 'ready') notificationPreferences.setFavorite(locationId, enabled).catch(() => {})
+  }
   const [activeTab, setActiveTab] = useState('map')
+  const [serviceSection, setServiceSection] = useState('home')
   const [hallRegionId, setHallRegionId] = useState('all')
   const [hallSection, setHallSection] = useState('chat')
+  const [hallFullscreen, setHallFullscreen] = useState(false)
+  const [lostFoundPublishToken, setLostFoundPublishToken] = useState(0)
   const [hallLostFoundFilter, setHallLostFoundFilter] = useState('all')
   const [communityState, setCommunityState] = useState(loadCommunityState)
   const [informationOpen, setInformationOpen] = useState(false)
   const [informationSeed, setInformationSeed] = useState(null)
+  const [informationTab, setInformationTab] = useState('messages')
   const [noticeId, setNoticeId] = useState(null)
-  const openInformation = useCallback((seed = null) => { setInformationSeed(seed); setNoticeId(null); setInformationOpen(true) }, [])
+  const openInformation = useCallback((seed = null, tab = 'messages') => { setInformationSeed(seed); setInformationTab(seed ? 'publish' : tab); setNoticeId(null); setInformationOpen(true) }, [])
   const closeInformation = useCallback(() => { setInformationOpen(false); setNoticeId(null); setInformationSeed(null) }, [])
-  const openNotice = useCallback((id) => { setInformationSeed(null); setNoticeId(id); setInformationOpen(true) }, [])
+  const openNotice = useCallback((id) => { setInformationSeed(null); setInformationTab('messages'); setNoticeId(id); setInformationOpen(true) }, [])
   const push = useCampusPush(auth.user?.id, openNotice)
   const communityPosts = useMemo(() => {
     const cloud = information.reports.filter((r) => ['lost', 'found'].includes(r.kind) && !['withdrawn', 'rejected'].includes(r.status)).map((r) => ({
@@ -82,13 +97,21 @@ function App() {
   }, [information.reports, communityState.posts, storedState.locations, auth.user?.id])
   const [tencentRouteState, setTencentRouteState] = useState(null)
   const [feedbackLocationId, setFeedbackLocationId] = useState(null)
+  const [feedbackInitialType, setFeedbackInitialType] = useState(PLACE_FEEDBACK_TYPES.CROWD)
+  const openPlaceFeedback = (locationId, type = PLACE_FEEDBACK_TYPES.CROWD) => { setFeedbackInitialType(type); setFeedbackLocationId(locationId) }
   const [reviewLocationId, setReviewLocationId] = useState(null)
-  const closeRestaurantReviews = useCallback(() => setReviewLocationId(null), [])
+  const [reviewWindowId, setReviewWindowId] = useState(null)
+  const [myPublicationsOpen, setMyPublicationsOpen] = useState(false)
+  const [myPublicationsFilter, setMyPublicationsFilter] = useState('all')
+  const [myPublicationsRefresh, setMyPublicationsRefresh] = useState(0)
+  const closeMyPublications = useCallback(() => setMyPublicationsOpen(false), [])
+  const closeRestaurantReviews = useCallback(() => { setReviewLocationId(null); setReviewWindowId(null); setMyPublicationsRefresh((value) => value + 1) }, [])
   const [auvOpen, setAuvOpen] = useState(false)
   const [auvSeed, setAuvSeed] = useState(null)
   const [timetableOpen, setTimetableOpen] = useState(false)
   const closeTimetable = useCallback(() => setTimetableOpen(false), [])
   const closeAuv = useCallback(() => setAuvOpen(false), [])
+  const askAi = (prompt = '') => { setAuvSeed({ userId: auth.user?.id ?? null, prompt }); setAuvOpen(true) }
   const [devicePosition, setDevicePosition] = useState(null)
   const [deviceLocationStatus, setDeviceLocationStatus] = useState('idle')
   const [deviceLocationMessage, setDeviceLocationMessage] = useState('')
@@ -105,6 +128,24 @@ function App() {
   const [loginMode, setLoginMode] = useState(null)
   const openLogin = useCallback(() => setLoginMode('login'), [])
   const closeLogin = useCallback(() => setLoginMode(null), [])
+  const mapReturnRef = useRef(null)
+  const rememberMapOrigin = () => {
+    if (activeTab !== 'map') mapReturnRef.current = { activeTab, serviceSection, hallSection, hallFullscreen }
+  }
+  const restoreMapOrigin = () => {
+    const origin = mapReturnRef.current
+    mapReturnRef.current = null
+    if (!origin) return
+    setActiveTab(origin.activeTab); setServiceSection(origin.serviceSection)
+    setHallSection(origin.hallSection); setHallFullscreen(origin.hallFullscreen)
+  }
+  const closeLocation = () => { dispatch({ type: 'CLEAR_SELECTED_LOCATION' }); if (!state.routePlan) restoreMapOrigin() }
+  const closeRoute = () => { dispatch({ type: 'CLEAR_ROUTE' }); dispatch({ type: 'CLEAR_SELECTED_LOCATION' }); restoreMapOrigin() }
+  useBackLayer(activeTab !== 'map', () => { setActiveTab('map'); dispatch({ type: 'CLEAR_SELECTED_LOCATION' }); mapReturnRef.current = null }, 0)
+  useBackLayer(activeTab === 'explore' && serviceSection !== 'home', () => setServiceSection('home'), 10)
+  useBackLayer(activeTab === 'hall' && hallFullscreen, () => { setHallFullscreen(false); setLostFoundPublishToken(0) }, 10)
+  useBackLayer(activeTab === 'map' && Boolean(state.routePlan), closeRoute, 15, false)
+  useBackLayer(activeTab === 'map' && Boolean(state.selectedId), closeLocation, 20)
   useEffect(() => { if (auth.user && noticeId) setInformationOpen(true) }, [auth.user?.id, noticeId])
 
   useEffect(() => {
@@ -128,6 +169,7 @@ function App() {
   }, [])
 
   const handleFullscreen = async () => {
+    setActiveTab('map')
     const mapWorkspace = document.querySelector('.map-workspace')
     if (!mapWorkspace) return
 
@@ -174,6 +216,7 @@ function App() {
   }
 
   const handleExploreLocation = (locationId) => {
+    rememberMapOrigin()
     dispatch({ type: 'SELECT_LOCATION', locationId })
     dispatch({ type: 'SET_QUERY', query: '' })
     dispatch({ type: 'SET_CATEGORY', category: 'all' })
@@ -192,6 +235,7 @@ function App() {
   }
 
   const handlePlanRouteToLocation = (destinationId) => {
+    rememberMapOrigin()
     dispatch({
       type: 'PLAN_ROUTE',
       originId: state.currentLocationId ?? 'east-gate',
@@ -264,7 +308,9 @@ function App() {
     updateCommunity({ ...communityState, facilities: reviewFacilityContribution(communityState.facilities, id, status, state.role) })
   }
   const handleOpenHall = (section, mine = false) => {
+    setLostFoundPublishToken(0)
     setHallSection(section); setHallRegionId('all'); setHallLostFoundFilter(mine ? 'mine' : 'all'); setActiveTab('hall')
+    setHallFullscreen(Boolean(section))
     dispatch({ type: 'CLEAR_SELECTED_LOCATION' })
   }
 
@@ -319,7 +365,8 @@ function App() {
         </div>
       </header>
 
-      <main className={`workspace workspace--tab-${activeTab}${state.routePlan ? ' workspace--has-route' : ''}`}>
+      <main inert={Boolean(loginMode || informationOpen || reviewLocation || auvOpen || timetableOpen || myPublicationsOpen)} className={`workspace workspace--tab-${activeTab}${state.routePlan ? ' workspace--has-route' : ''}${activeTab === 'map' && selectedLocation ? ' workspace--has-detail' : ''}`}>
+        <div style={{ display: 'contents' }} inert={activeTab !== 'map'} aria-hidden={activeTab !== 'map' ? true : undefined}>
         <MapWorkspace
           locations={state.locations}
           visibleLocations={filteredLocations}
@@ -353,13 +400,13 @@ function App() {
           onResetSettings={() => dispatch({ type: 'RESET_SETTINGS' })}
           onResetView={() => dispatch({ type: 'RESET_VIEW' })}
           onFullscreen={handleFullscreen}
-          onClearRoute={() => dispatch({ type: 'CLEAR_ROUTE' })}
+          onClearRoute={closeRoute}
           onClearCurrentLocation={() => dispatch({ type: 'SET_CURRENT_LOCATION', locationId: null })}
           onLocateDevice={handleLocateDevice}
           onResetDemoData={() => dispatch({ type: 'RESET_DEMO_DATA', locations: initialSnapshot.locations, events: initialSnapshot.events })}
           onSelectLocation={(locationId) => dispatch({ type: 'SELECT_LOCATION', locationId })}
           onPlanRouteToLocation={handlePlanRouteToLocation}
-          onOpenFeedback={setFeedbackLocationId}
+          onOpenFeedback={openPlaceFeedback}
           lostFoundPosts={communityPosts}
           onOpenHall={handleOpenHall}
           onRouteStateChange={setTencentRouteState}
@@ -367,9 +414,19 @@ function App() {
           onSelectSearchResult={handleSearchResult}
           onCategoryChange={(category) => dispatch({ type: 'SET_CATEGORY', category })}
         />
+        </div>
 
         {activeTab === 'explore' && (
           <ExplorePanel
+            headerActions={<PrimaryPageActions unread={information.unread} onOpenMessages={() => openInformation()} />}
+            section={serviceSection}
+            onSectionChange={setServiceSection}
+            onOpenTimetable={() => setTimetableOpen(true)}
+            onOpenAssistant={() => askAi()}
+            onOpenRepair={(locationId) => openPlaceFeedback(locationId, PLACE_FEEDBACK_TYPES.REPAIR)}
+            onOpenRepairRecords={() => { setMyPublicationsFilter('feedback'); setMyPublicationsOpen(true) }}
+            placeFeedback={state.placeFeedback}
+            onUpdateFacilityReport={(feedbackId, status) => dispatch({ type: 'SET_FACILITY_REPORT_STATUS', feedbackId, status })}
             locations={filteredLocations}
             allLocations={state.locations}
             calendarEvents={state.events}
@@ -397,6 +454,7 @@ function App() {
         )}
         {activeTab === 'hall' && (
           <HallPanel
+            headerActions={<PrimaryPageActions unread={information.unread} onOpenMessages={() => openInformation()} />}
             messages={chat.messages}
             selectedRegionId={hallRegionId}
             onRegionChange={setHallRegionId}
@@ -405,12 +463,15 @@ function App() {
             auth={auth}
             onOpenLogin={openLogin}
             information={information}
-            onOpenInformation={() => openInformation()}
             onPublishInformation={() => openInformation({ kind: 'notice' })}
             onSubmitAsInformation={(message) => openInformation({ kind: 'notice', title: message.content.slice(0, 60), body: message.content, sourceMessageId: message.id })}
             activeSection={hallSection}
-            onOpenAuv={() => setAuvOpen(true)}
-            onSectionChange={setHallSection}
+            isFullscreen={hallFullscreen}
+            onCloseSection={() => { setHallFullscreen(false); setLostFoundPublishToken(0) }}
+            onSectionChange={(section) => { setLostFoundPublishToken(0); setHallRegionId('all'); setHallLostFoundFilter('all'); setHallSection(section); setHallFullscreen(true) }}
+            onStartLostFound={() => { setHallRegionId('all'); setHallLostFoundFilter('all'); setHallSection('lost-found'); setHallFullscreen(true); setLostFoundPublishToken((value) => value + 1) }}
+            lostFoundPublishToken={lostFoundPublishToken}
+            onAskAi={askAi}
             locations={state.locations}
             hotspots={activeHotspots}
             posts={communityPosts}
@@ -438,14 +499,21 @@ function App() {
             onOriginChange={(originId) => dispatch({ type: 'SET_ROUTE_ORIGIN', originId })}
             onDestinationChange={(destinationId) => dispatch({ type: 'SET_ROUTE_DESTINATION', destinationId })}
             onSwap={() => dispatch({ type: 'SWAP_ROUTE_ENDPOINTS' })}
-            onClear={() => dispatch({ type: 'CLEAR_ROUTE' })}
+            onClear={closeRoute}
           />
         )}
         {activeTab === 'me' && (
           <MePanel
+            key={auth.user?.id ?? 'guest'}
+            onOpenMyPublications={() => { setMyPublicationsFilter('all'); setMyPublicationsOpen(true) }}
             onOpenTimetable={() => setTimetableOpen(true)}
-            onOpenInformation={() => openInformation()}
+            onOpenMessages={() => openInformation()}
             unreadCount={information.unread}
+            onOpenRepair={() => { setServiceSection('repair'); setActiveTab('explore') }}
+            onOpenSubscriptions={() => openInformation(null, 'subscriptions')}
+            onOpenReview={() => openInformation(null, 'review')}
+            onOpenRestaurantManagement={() => handleOpenHall('restaurants')}
+            onOpenLocationManagement={() => { setServiceSection('places'); setActiveTab('explore') }}
             onBeforeLogout={disablePushDevice}
             role={state.role}
             settings={state.settings}
@@ -463,7 +531,7 @@ function App() {
             onResetSettings={() => dispatch({ type: 'RESET_SETTINGS' })}
             onResetView={() => dispatch({ type: 'RESET_VIEW' })}
             onFullscreen={handleFullscreen}
-            onClearRoute={() => dispatch({ type: 'CLEAR_ROUTE' })}
+            onClearRoute={closeRoute}
             onResetDemoData={() => dispatch({ type: 'RESET_DEMO_DATA', locations: initialSnapshot.locations, events: initialSnapshot.events })}
             onUndoAdminAction={() => dispatch({ type: 'UNDO_ADMIN_ACTION' })}
             onPublishEvent={(event) => dispatch({ type: 'PUBLISH_EVENT', event })}
@@ -476,7 +544,7 @@ function App() {
             lostFoundCount={communityPosts.filter((p) => p.authorId === LOCAL_AUTHOR_ID || p.authorId === auth.user?.id).length}
             onOpenMyLostFound={() => handleOpenHall('lost-found', true)}
             onSelectLocation={handleExploreLocation}
-            onToggleFavorite={(locationId) => dispatch({ type: 'TOGGLE_FAVORITE_LOCATION', locationId })}
+            onToggleFavorite={handleToggleFavorite}
             onPlanSavedRoute={(route) => {
               dispatch({ type: 'PLAN_SAVED_ROUTE', routeId: route.id })
               setActiveTab('map')
@@ -494,16 +562,19 @@ function App() {
             onOpenReviews={() => setReviewLocationId(selectedLocation.id)}
             role={state.role}
             isFavorite={state.favoriteLocationIds.includes(selectedLocation.id)}
-            onToggleFavorite={() => dispatch({ type: 'TOGGLE_FAVORITE_LOCATION', locationId: selectedLocation.id })}
-            onClose={() => dispatch({ type: 'CLEAR_SELECTED_LOCATION' })}
+            onToggleFavorite={() => handleToggleFavorite(selectedLocation.id)}
+            onClose={closeLocation}
             onPlanRoute={handlePlanRouteFromDetail}
             onUpdate={(changes) => dispatch({ type: 'UPDATE_LOCATION_STATUS', locationId: selectedLocation.id, changes })}
             onSubmitFeedback={handleSubmitPlaceFeedback}
+            onAskAi={askAi}
           />
         )}
         {feedbackLocation && (
           <PlaceFeedbackSheet
+            key={`${feedbackLocation.id}:${feedbackInitialType}`}
             location={feedbackLocation}
+            initialType={feedbackInitialType}
             onClose={() => setFeedbackLocationId(null)}
             onSubmitFeedback={handleSubmitPlaceFeedback}
           />
@@ -518,18 +589,23 @@ function App() {
             onOriginChange={(originId) => dispatch({ type: 'SET_ROUTE_ORIGIN', originId })}
             onDestinationChange={(destinationId) => dispatch({ type: 'SET_ROUTE_DESTINATION', destinationId })}
             onSwap={() => dispatch({ type: 'SWAP_ROUTE_ENDPOINTS' })}
-            onClear={() => dispatch({ type: 'CLEAR_ROUTE' })}
+            onClear={closeRoute}
             isSaved={state.savedRoutes.some((route) => route.originId === state.routePlan.originId && route.destinationId === state.routePlan.destinationId && route.mode === state.routePlan.mode)}
             onSave={() => dispatch({ type: 'SAVE_ROUTE', routePlan: state.routePlan })}
           />
         )}
-        <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
+        {!(activeTab === 'hall' && hallFullscreen) && <>
+          {activeTab === 'map' && <PrimaryPageActions showAssistant unread={information.unread} onOpenAssistant={() => askAi()} onOpenMessages={() => openInformation()} />}
+          <MobileTabBar activeTab={activeTab} onChange={(tab) => { mapReturnRef.current = null; setHallFullscreen(false); setLostFoundPublishToken(0); if (tab === 'explore') setServiceSection('home'); setActiveTab(tab) }} />
+        </>}
       </main>
       {loginMode && <LoginSheet key={loginMode} auth={auth} initialMode={loginMode} onClose={closeLogin} />}
-      {informationOpen && <NotificationCenter key={auth.user?.id ?? 'guest'} auth={auth} information={information} push={push} locations={state.locations} initialDraft={informationSeed} noticeId={noticeId} onClose={closeInformation} onOpenLogin={() => { setInformationOpen(false); openLogin() }} onSelectLocation={(id) => { closeInformation(); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { closeInformation(); handlePlanRouteToLocation(id) }} />}
-      {reviewLocation && <RestaurantReviewsPage key={`${reviewLocation.id}:${auth.user?.id ?? 'guest'}`} restaurant={reviewLocation} authorName={auth.profile?.nickname ?? '我'} role={auth.role} userId={auth.user?.id} onOpenLogin={openLogin} onClose={closeRestaurantReviews} />}
+      {myPublicationsOpen && <MyPublicationsPage key={`${auth.user?.id ?? 'guest'}:${myPublicationsFilter}`} initialFilter={myPublicationsFilter} userId={auth.user?.id} reports={information.reports} posts={communityPosts} feedbacks={state.placeFeedback} locations={state.locations} refreshToken={myPublicationsRefresh} covered={informationOpen || Boolean(reviewLocation)} onClose={closeMyPublications} onRefresh={information.refresh} onOpenCloudReports={() => openInformation(null, 'reports')} onOpenMyLostFound={() => { closeMyPublications(); handleOpenHall('lost-found', true) }} onOpenReview={(restaurantId, windowId) => { setReviewWindowId(windowId); setReviewLocationId(restaurantId) }} onOpenFeedback={() => { closeMyPublications(); setServiceSection('repair'); setActiveTab('explore') }} onSelectLocation={(id) => { closeMyPublications(); handleExploreLocation(id) }} />}
+      <CampusNoticeBanner userId={auth.user?.id} information={information} covered={informationOpen || Boolean(loginMode) || auvOpen} onOpen={openNotice} />
+      {informationOpen && <NotificationCenter key={`${auth.user?.id ?? 'guest'}:${informationTab}`} auth={auth} information={information} push={push} preferences={notificationPreferences} favoriteIds={state.favoriteLocationIds} locations={state.locations} initialTab={informationTab} initialDraft={informationSeed} noticeId={noticeId} onClose={closeInformation} onOpenLogin={() => { setInformationOpen(false); openLogin() }} onSelectLocation={(id) => { closeInformation(); closeMyPublications(); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { closeInformation(); closeMyPublications(); handlePlanRouteToLocation(id) }} />}
+      {reviewLocation && <RestaurantReviewsPage key={`${reviewLocation.id}:${auth.user?.id ?? 'guest'}:${reviewWindowId ?? ''}`} restaurant={reviewLocation} initialWindowId={reviewWindowId} authorName={auth.profile?.nickname ?? '我'} role={auth.role} userId={auth.user?.id} onOpenLogin={openLogin} onClose={closeRestaurantReviews} />}
       {timetableOpen && <TimetablePage key={auth.user?.id ?? 'guest'} userId={auth.user?.id} onClose={closeTimetable} onAskAi={(prompt) => { setTimetableOpen(false); setAuvSeed({ userId: auth.user?.id ?? null, prompt }); setAuvOpen(true) }} />}
-      {auvOpen && <AuvAssistantPage initialDraft={auvSeed?.userId === (auth.user?.id ?? null) ? auvSeed?.prompt ?? '' : ''} auth={auth} locations={state.locations} onClose={closeAuv} onOpenLogin={() => { setAuvOpen(false); openLogin() }} onSelectLocation={(id) => { setAuvOpen(false); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { setAuvOpen(false); handlePlanRouteToLocation(id) }} />}
+      {auvOpen && <AuvAssistantPage initialDraft={auvSeed?.userId === (auth.user?.id ?? null) ? auvSeed?.prompt ?? '' : ''} auth={auth} locations={state.locations} favoriteLocationIds={notificationPreferences.value.favorite_location_ids} onClose={closeAuv} onOpenLogin={() => { setAuvOpen(false); openLogin() }} onSelectLocation={(id) => { setAuvOpen(false); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { setAuvOpen(false); handlePlanRouteToLocation(id) }} />}
     </div>
   )
 }

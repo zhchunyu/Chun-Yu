@@ -13,7 +13,7 @@ function gatewayUrl() {
   return `${url}/functions/v1/auv-assistant`
 }
 
-export async function requestAuv({ text, mode, locationId, history }, signal) {
+export async function requestAuv({ text, mode, locationId, history, favoriteLocationIds = [] }, signal) {
   const { data, error } = await requireSupabase().auth.getSession()
   if (error || !data.session?.access_token) throw new Error('请先登录，再使用校园助手。')
   const controller = new AbortController()
@@ -25,7 +25,7 @@ export async function requestAuv({ text, mode, locationId, history }, signal) {
     const response = await fetch(gatewayUrl(), {
       method: 'POST', signal: controller.signal,
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session.access_token}`, apikey: String(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '') },
-      body: JSON.stringify({ text, mode, locationId: locationId || null, history }),
+      body: JSON.stringify({ text, mode, locationId: locationId || null, history, favoriteLocationIds }),
     })
     let result
     try { result = await response.json() } catch { throw new Error('AI 网关尚未就绪，请联系管理员检查部署。') }

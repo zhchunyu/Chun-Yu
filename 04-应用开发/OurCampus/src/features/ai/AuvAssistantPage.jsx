@@ -7,7 +7,8 @@ import { requestAuv } from '../../data/auvClient.js'
 const typeLabels = { safety: '安全隐患', congestion: '人流拥挤', service: '设施与服务', notice: '校园通知' }
 const prompts = { chat: ['图书馆开放时间知道吗？', '谷园餐厅有哪些服务信息？', '怎么查校园办事入口？'].map(campusDisplayText), extract: ['谷园餐厅现在排队很久', '崇学楼门前正在施工', '9号公寓楼下路灯坏了'].map(campusDisplayText) }
 
-export function AuvAssistantPage({ auth, locations, initialDraft = '', onClose, onOpenLogin, onSelectLocation, onPlanRouteToLocation }) {
+export function AuvAssistantPage({ auth, locations, favoriteLocationIds = [], initialDraft = '', onClose, onOpenLogin, onSelectLocation, onPlanRouteToLocation }) {
+  useBackLayer(true, onClose, 80)
   const [mode, setMode] = useState('chat')
   const [draft, setDraft] = useState(initialDraft)
   const [locationId, setLocationId] = useState('')
@@ -58,7 +59,7 @@ export function AuvAssistantPage({ auth, locations, initialDraft = '', onClose, 
     controllerRef.current = controller
     setBusy(true); setError(''); setPendingText(text)
     try {
-      const result = await requestAuv({ text, mode, locationId, history: messages.filter((item) => item.mode === 'chat').slice(-6).map(({ role, content }) => ({ role, content: content.slice(0, 600) })) }, controller.signal)
+      const result = await requestAuv({ text, mode, locationId, favoriteLocationIds, history: messages.filter((item) => item.mode === 'chat').slice(-6).map(({ role, content }) => ({ role, content: content.slice(0, 600) })) }, controller.signal)
       if (version !== requestVersion.current || controller.signal.aborted) return
       setMessages((current) => [...current, { id: `${version}-user`, role: 'user', content: text, mode }, { id: `${version}-assistant`, role: 'assistant', content: result.text, mode, result }])
       setDraft('')
@@ -70,7 +71,7 @@ export function AuvAssistantPage({ auth, locations, initialDraft = '', onClose, 
   return createPortal(<section className="auv-page" ref={pageRef} role="dialog" aria-modal="true" aria-labelledby="auv-title">
     <div className="auv-page__frame">
       <header className="auv-page__header">
-        <button ref={backRef} type="button" aria-label="返回大厅" onClick={onClose}><ArrowLeft size={21} /></button>
+        <button ref={backRef} type="button" aria-label="返回上一页" onClick={onClose}><ArrowLeft size={21} /></button>
         <div><h1 id="auv-title">AUV 校园助手</h1><span>校园信息建议 · 事件分析</span></div>
         <button type="button" aria-label="开始新对话" disabled={busy || !messages.length} onClick={() => { setMessages([]); setError('') }}><RotateCcw size={18} /></button>
       </header>
@@ -88,6 +89,7 @@ export function AuvAssistantPage({ auth, locations, initialDraft = '', onClose, 
             return <div className="auv-place" key={location.id}><strong><MapPin size={14} />{location.name}</strong><div><button type="button" onClick={() => onSelectLocation(location.id)}>查看地点</button><button type="button" onClick={() => onPlanRouteToLocation(location.id)}><Navigation size={13} />去这里</button></div></div>
           })}
           {message.result?.live_context_available === false && <small className="auv-context-note">当前未能取得已核实的校园动态。</small>}
+          {message.result?.personal_context_available && <small className="auv-context-note">已参考当前可获取的校园发布和个人相关信息。</small>}
         </article>)}</div>
         {busy && <><article className="auv-message auv-message--user"><span className="auv-message__author">我</span><p>{campusDisplayText(pendingText)}</p></article><p className="auv-pending" role="status"><Sparkles size={15} />AUV 正在思考，请稍候…</p></>}
         {error && <p className="auv-error" role="alert">{error} 输入内容已保留。</p>}
@@ -100,3 +102,4 @@ export function AuvAssistantPage({ auth, locations, initialDraft = '', onClose, 
     </div>
   </section>, document.body)
 }
+import { useBackLayer } from '../../app/useBackLayer.js'

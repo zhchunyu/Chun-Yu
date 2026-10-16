@@ -1,7 +1,7 @@
 import { campusDisplayText } from '../../data/campusPresentation.js'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ArrowLeft, ArrowUpRight, ChevronRight, Leaf, MessageSquare, PenLine, Search, Soup, Star, ThumbsUp, Trash2, UtensilsCrossed, Wheat, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, ChevronRight, Leaf, MessageSquare, PenLine, Search, Soup, Star, ThumbsUp, Trash2, UtensilsCrossed, Wheat, X, ZoomIn, ZoomOut } from 'lucide-react'
 import { createLocalRestaurantReview, getExampleWindowReviews, getRestaurantWindows, loadLocalRestaurantReviews, saveLocalRestaurantReviews, summarizeReviews, WINDOW_CATEGORIES } from '../../data/restaurantReviews.js'
 import { ReviewComposer } from './ReviewComposer.jsx'
 import { RestaurantWindowManager } from './RestaurantWindowManager.jsx'
@@ -13,6 +13,42 @@ import './restaurant-real-menu.css'
 function FoodIcon({ type, size = 26 }) {
   const Icon = type === 'noodles' ? Soup : type === 'salad' ? Leaf : type === 'snack' ? Wheat : UtensilsCrossed
   return <Icon size={size} strokeWidth={1.65} aria-hidden="true" />
+}
+
+function WindowCardArt({ window }) {
+  const [photoFailed, setPhotoFailed] = useState(false)
+  const hasPhoto = window.photo && !photoFailed
+  return <div className={`restaurant-window-card__art${hasPhoto ? ' restaurant-window-card__art--photo' : ''}`}>
+    {hasPhoto ? <><img src={window.photo} alt={`${window.name}现场招牌`} loading="lazy" decoding="async" onError={() => setPhotoFailed(true)} /><span className="restaurant-window-card__photo-badge">实拍<small>{window.floor}</small></span></> : <><span>{window.numberVerified === false ? '实拍' : window.number}<small>{window.numberVerified === false ? window.floor : '号窗口'}</small></span><FoodIcon type={window.icon} size={42} /></>}
+    {window.isExample && <i>示例</i>}
+  </div>
+}
+
+function WindowPhoto({ window, onOpen }) {
+  const [photoFailed, setPhotoFailed] = useState(false)
+  if (!window.photo || photoFailed) return null
+  return <figure className="restaurant-window-photo">
+    <button type="button" onClick={onOpen} aria-label={`查看${window.name}完整现场照片`}><img src={window.photo} alt={`${window.name}现场窗口、招牌及菜单`} decoding="async" onError={() => setPhotoFailed(true)} /><span><ZoomIn size={15} />点击查看大图</span></button>
+    <figcaption>现场实拍 · 招牌与菜单参考，供应和价格以当天窗口为准</figcaption>
+  </figure>
+}
+
+function WindowPhotoViewer({ window, onClose }) {
+  const [zoomed, setZoomed] = useState(false)
+  const [photoFailed, setPhotoFailed] = useState(false)
+  const closeRef = useRef(null)
+  useEffect(() => {
+    const previousFocus = document.activeElement
+    closeRef.current?.focus()
+    return () => { if (previousFocus?.isConnected) previousFocus.focus?.() }
+  }, [])
+  return <section className="restaurant-window-photo-viewer" data-window-photo-viewer role="dialog" aria-modal="true" aria-labelledby="restaurant-window-photo-title">
+    <header><button type="button" ref={closeRef} onClick={onClose} aria-label="返回窗口详情"><ArrowLeft size={21} /></button><div><h2 id="restaurant-window-photo-title">{window.name}</h2><span>现场实拍</span></div><button type="button" className="restaurant-window-photo-viewer__zoom" disabled={photoFailed} aria-pressed={zoomed} onClick={() => setZoomed((value) => !value)}>{zoomed ? <ZoomOut size={18} /> : <ZoomIn size={18} />}{zoomed ? '适应屏幕' : '放大菜单'}</button></header>
+    <div className={`restaurant-window-photo-viewer__image${zoomed ? ' is-zoomed' : ''}`}>
+      {photoFailed ? <p role="status"><FoodIcon type={window.icon} size={40} />照片暂时无法加载，请返回窗口详情。</p> : <img src={window.photo} alt={`${window.name}现场窗口完整照片`} onError={() => setPhotoFailed(true)} />}
+    </div>
+    <p className="restaurant-window-photo-viewer__hint">{zoomed ? '左右滑动查看招牌和菜单' : '可点“放大菜单”查看照片细节'}</p>
+  </section>
 }
 
 function RatingStars({ rating, size = 12 }) {
@@ -40,7 +76,7 @@ function ReviewItem({ review, onDelete, userId, manager }) {
   )
 }
 
-export function RestaurantReviewsPage({ restaurant, authorName = '我', role = 'visitor', userId, onOpenLogin, onClose }) {
+export function RestaurantReviewsPage({ restaurant, authorName = '我', role = 'visitor', userId, onOpenLogin, onClose, initialWindowId = null }) {
   const [windows, setWindows] = useState(() => getRestaurantWindows(restaurant.id))
   const [catalogState, setCatalogState] = useState('loading')
   const [catalogError, setCatalogError] = useState('')
@@ -57,8 +93,9 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
   const alive = useRef(true)
   const examples = useMemo(() => getExampleWindowReviews(restaurant.id), [restaurant.id])
   const [localReviews, setLocalReviews] = useState(loadLocalRestaurantReviews)
-  const [selectedWindowId, setSelectedWindowId] = useState(null)
+  const [selectedWindowId, setSelectedWindowId] = useState(initialWindowId)
   const [composerWindowId, setComposerWindowId] = useState(null)
+  const [photoWindow, setPhotoWindow] = useState(null)
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('全部')
   const [reviewFilter, setReviewFilter] = useState('all')
@@ -69,6 +106,18 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
   const pageRef = useRef(null)
   const contentRef = useRef(null)
   const backRef = useRef(null)
+  const goBack = () => {
+    if (photoWindow) setPhotoWindow(null)
+    else if (managerOpen || deleteTarget) {
+      if (pageRef.current?.querySelector('[data-review-composer][aria-busy="true"]')) return
+      setManagerOpen(false); setDeleteTarget(null)
+    } else if (composerWindowId) {
+      if (pageRef.current?.querySelector('[data-review-composer] button[aria-label="关闭评价表单"]:disabled')) return
+      setComposerWindowId(null)
+    } else if (selectedWindowId) setSelectedWindowId(null)
+    else onClose()
+  }
+  useBackLayer(true, goBack, 60)
   const selectedWindow = windows.find((window) => window.id === selectedWindowId) ?? null
   const restaurantLocalReviews = localReviews.filter((review) => review.restaurantId === restaurant.id && windows.some((window) => window.id === review.windowId))
   const allReviews = [...cloudReviews, ...restaurantLocalReviews, ...examples.filter((review) => windows.some((window) => window.isExample && window.id === review.windowId))]
@@ -134,15 +183,12 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
     const handleKey = (event) => {
       if (event.key === 'Escape') {
         event.preventDefault()
-        if (managerOpen || deleteTarget) return // 管理表单在保存期间保持打开，使用其关闭按钮。
-        if (composerWindowId) setComposerWindowId(null)
-        else if (selectedWindowId) setSelectedWindowId(null)
-        else onClose()
+        goBack()
         return
       }
       if (document.querySelector('.mobile-login-backdrop')) return
       if (event.key !== 'Tab') return
-      const scope = pageRef.current?.querySelector('[data-review-composer]') ?? pageRef.current
+      const scope = pageRef.current?.querySelector('[data-window-photo-viewer]') ?? pageRef.current?.querySelector('[data-review-composer]') ?? pageRef.current
       const focusable = [...(scope?.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)') ?? [])]
       const first = focusable[0]
       const last = focusable.at(-1)
@@ -152,7 +198,7 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [composerWindowId, selectedWindowId, managerOpen, deleteTarget, onClose])
+  }, [composerWindowId, selectedWindowId, managerOpen, deleteTarget, photoWindow, onClose])
 
   useEffect(() => {
     if (!notice) return undefined
@@ -217,7 +263,7 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
     <section className="restaurant-review-page" ref={pageRef} role="dialog" aria-modal="true" aria-labelledby="restaurant-review-page-title">
       <div className="restaurant-review-page__frame">
         <header className="restaurant-review-page__header">
-          <button type="button" ref={backRef} onClick={() => selectedWindow ? setSelectedWindowId(null) : onClose()} aria-label={selectedWindow ? '返回窗口列表' : '返回上一页'}><ArrowLeft size={21} /></button>
+          <button type="button" ref={backRef} onClick={goBack} aria-label={selectedWindow ? '返回窗口列表' : '返回上一页'}><ArrowLeft size={21} /></button>
           <div><h1 id="restaurant-review-page-title">{selectedWindow ? '窗口详情' : '餐厅评价'}</h1><span>{restaurant.name}</span></div>
           <span className="restaurant-review-page__preview">{isManager ? '管理员' : '校园食记'}</span>
         </header>
@@ -245,7 +291,7 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
                 const windowReviews = allReviews.filter((review) => review.windowId === window.id)
                 const stats = cloudReady ? cloudStats.find((s) => s.windowId === window.id) ?? summarizeReviews([]) : summarizeReviews(windowReviews)
                 return <button type="button" key={window.id} className={`restaurant-window-card restaurant-window-card--${window.tone}`} onClick={() => selectWindow(window.id)}>
-                  <div className="restaurant-window-card__art"><span>{window.numberVerified === false ? '实拍' : window.number}<small>{window.numberVerified === false ? window.floor : '号窗口'}</small></span><FoodIcon type={window.icon} size={42} />{window.isExample && <i>示例</i>}</div>
+                  <WindowCardArt key={window.photo || window.id} window={window} />
                   <div className="restaurant-window-card__body"><h4>{window.name}<ArrowUpRight size={15} /></h4><div className="restaurant-window-card__rating"><Star size={12} fill="currentColor" /><strong>{stats.rating ?? '—'}</strong><span>{stats.count} 条评价</span></div><p>{window.dish}</p><div className="restaurant-window-card__bottom"><span>{window.category}</span><span>{stats.price !== null ? `${window.isExample ? '参考样例' : '人均'} ¥${stats.price}` : window.menu?.length ? `菜单 ¥${Math.min(...window.menu.map(([, price]) => price))}起` : '暂无价格'}</span></div></div>
                 </button>
               })}
@@ -254,6 +300,7 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
             <p className="restaurant-review-page__bottom-note">窗口按餐厅分别收录。</p>
           </> : <>
             <section className={`restaurant-window-intro restaurant-window-intro--${selectedWindow.tone}`}><div className="restaurant-window-intro__icon"><FoodIcon type={selectedWindow.icon} size={34} /></div><div><span>{selectedWindow.numberVerified === false ? `现场窗口 · ${selectedWindow.floor}` : `${selectedWindow.number} 号窗口`}{selectedWindow.isExample && ' · 示例'}</span><h2>{selectedWindow.name}</h2><p>{selectedWindow.description}</p></div></section>
+            <WindowPhoto key={selectedWindow.photo || selectedWindow.id} window={selectedWindow} onOpen={() => setPhotoWindow(selectedWindow)} />
             {selectedWindow.menu?.length > 0 && <section className="restaurant-real-menu"><div><h3>现场菜单参考</h3><small>按你提供的照片录入 · 价格以现场为准</small></div>{selectedWindow.menu.map(([name, price]) => <p key={name}><span>{name}</span><strong>¥{price}</strong></p>)}</section>}
             {canManage && selectedWindow.cloudStored && <button className="restaurant-window-delete" type="button" onClick={() => setDeleteTarget(selectedWindow)}><Trash2 size={15} />删除这个窗口</button>}
             <section className="restaurant-window-score"><div><strong>{windowSummary.rating ?? '—'}</strong><RatingStars rating={Number(windowSummary.rating ?? 0)} size={14} /><span>{windowSummary.count} 条评价</span></div><div className="restaurant-window-score__details"><span><b>{windowSummary.count ? `${windowSummary.recommended}%` : '—'}</b> 推荐评价占比</span><div><i style={{ width: `${windowSummary.recommended}%` }} /></div><small>{cloudReady ? '统计包含该窗口全部云端评价，本机历史不计入' : selectedWindow.isExample ? '统计包含示例内容，仅用于体验页面' : '统计仅包含当前设备保存的评价'}</small></div></section>
@@ -270,7 +317,9 @@ export function RestaurantReviewsPage({ restaurant, authorName = '我', role = '
         {notice && <p className="restaurant-review-page__notice" role="status">{notice}</p>}
         {composerWindowId && <ReviewComposer restaurant={restaurant} windows={windows} initialWindowId={composerWindowId} onClose={() => setComposerWindowId(null)} onSubmit={submitReview} cloud={cloudReady} />}
         {(managerOpen || deleteTarget) && isManager && <RestaurantWindowManager restaurant={restaurant} deletingWindow={deleteTarget} onClose={() => { setManagerOpen(false); setDeleteTarget(null) }} onSubmit={submitWindow} />}
+        {photoWindow && <WindowPhotoViewer key={photoWindow.id} window={photoWindow} onClose={() => setPhotoWindow(null)} />}
       </div>
     </section>, document.body,
   )
 }
+import { useBackLayer } from '../../app/useBackLayer.js'
