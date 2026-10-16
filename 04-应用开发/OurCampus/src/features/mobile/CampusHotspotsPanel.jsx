@@ -1,4 +1,4 @@
-import { CalendarDays, MapPin, Navigation, Flame, Users, Construction, Megaphone } from 'lucide-react'
+import { CalendarDays, MapPin, Navigation, Flame, Users, Construction, Megaphone, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { HOTSPOT_TYPE_LABELS } from '../../domain/campus.js'
 import { getCampusRegionId } from '../../data/campusCommunity.js'
@@ -8,7 +8,7 @@ const icons = { activity: CalendarDays, crowd: Users, construction: Construction
 const demoIds = new Set(['event-library-lecture', 'event-canteen-crowd', 'event-sports-training'])
 const formatTime = (value) => value ? new Date(value).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '未设置'
 
-export function CampusHotspotsPanel({ events, locations, regionId, onSelectLocation, onPlanRouteToLocation, onPublishInformation }) {
+export function CampusHotspotsPanel({ events, locations, regionId, onSelectLocation, onPlanRouteToLocation, onPublishInformation, onAskAi }) {
   const [type, setType] = useState('all')
   const byId = new Map(locations.map((location) => [location.id, location]))
   const visible = events.filter((event) => (type === 'all' || event.type === type)
@@ -28,6 +28,7 @@ export function CampusHotspotsPanel({ events, locations, regionId, onSelectLocat
           <h3>{event.title}</h3><p className="community-description">{event.impact || '详细安排请以现场或校方通知为准。'}</p>
           <div className="community-meta"><MapPin size={13} />{location?.name ?? '地点未收录'}</div>
           <div className="community-meta"><CalendarDays size={13} />{formatTime(event.startAt)}{event.endAt ? ` 至 ${formatTime(event.endAt)}` : ''}</div>
+          {onAskAi && <button className="context-ai-entry" type="button" onClick={() => onAskAi(`请根据这条校园动态分析对我的影响：${event.title}。地点：${location?.name ?? '未指定'}。信息：${event.impact ?? ''}。请区分已知事实与建议。`)}><Sparkles size={14} />让 AI 帮我分析</button>}
           <div className="community-card-actions"><button type="button" disabled={!location} onClick={() => onSelectLocation(event.locationId)}><MapPin size={14} />在地图查看</button><button type="button" disabled={!location} onClick={() => onPlanRouteToLocation(event.locationId)}><Navigation size={14} />去这里</button></div>
         </article>
       }) : <div className="community-empty"><Megaphone size={30} /><strong>这个分类暂时没有动态</strong><p>可以切换地区或查看其他类型。</p></div>}
