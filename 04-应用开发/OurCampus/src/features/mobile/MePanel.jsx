@@ -8,6 +8,7 @@ import { FeedbackReviewPanel } from './FeedbackReviewPanel.jsx'
 import { FacilityReportsPanel } from './FacilityReportsPanel.jsx'
 import { PLACE_FEEDBACK_TYPES } from '../../domain/placeFeedback.js'
 import { PersonalHome } from './PersonalHome.jsx'
+import { AppUpdateSettings } from '../updates/AppUpdateSettings.jsx'
 
 export function MePanel({
   role,
@@ -52,6 +53,8 @@ export function MePanel({
   onOpenRestaurantManagement,
   onOpenLocationManagement,
   onBeforeLogout,
+  onOpenMemberProfile,
+  updates,
 }) {
   const [showEventComposer, setShowEventComposer] = useState(false)
   const [showFeedbackReview, setShowFeedbackReview] = useState(false)
@@ -67,7 +70,7 @@ export function MePanel({
 
   return (
     <section className="mobile-page-panel mobile-page-panel--me" aria-label="我的主页">
-      <PersonalHome auth={auth} onBeforeLogout={onBeforeLogout} onOpenLogin={onOpenLogin} onOpenMessages={onOpenMessages} unreadCount={unreadCount} onOpenTimetable={onOpenTimetable} onOpenMyPublications={onOpenMyPublications} onOpenFavorites={() => revealCollection('favorites')} onOpenRoutes={() => revealCollection('routes')} favoriteCount={favoriteLocationIds.length} />
+      <PersonalHome onOpenMemberProfile={onOpenMemberProfile} auth={auth} onBeforeLogout={onBeforeLogout} onOpenLogin={onOpenLogin} onOpenMessages={onOpenMessages} unreadCount={unreadCount} onOpenTimetable={onOpenTimetable} onOpenMyPublications={onOpenMyPublications} onOpenFavorites={() => revealCollection('favorites')} onOpenRoutes={() => revealCollection('routes')} favoriteCount={favoriteLocationIds.length} />
 
       <div className="organized-account-menu">
         <button type="button" onClick={onOpenRepair}><Wrench size={20} /><span><strong>反馈与报修</strong><small>反馈校园设施问题，查看处理入口</small></span><ChevronRight size={17} /></button>
@@ -107,6 +110,7 @@ export function MePanel({
       </details>
       <details className="organized-settings">
         <summary><Settings2 size={20} /><span><strong>应用设置</strong><small>地图显示、路线偏好与操作提示</small></span><ChevronDown size={17} /></summary>
+        <AppUpdateSettings updates={updates} />
         <section className="mobile-me-card" aria-label="地图显示设置"><div className="mobile-me-card__heading"><Layers3 size={17} /><strong>地图显示</strong></div><MapLayerPanel settings={settings} onChange={onSettingsChange} compact /></section>
         <SettingsPanel settings={settings} onChange={onSettingsChange} onResetSettings={onResetSettings} onResetView={onResetView} onFullscreen={onFullscreen} onClearRoute={onClearRoute} showClearCurrentLocation={false} showDevelopmentTools={false} />
       </details>

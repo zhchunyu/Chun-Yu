@@ -7,6 +7,7 @@ import { CampusHotspotsPanel } from './CampusHotspotsPanel.jsx'
 import { LostFoundPanel } from './LostFoundPanel.jsx'
 import { RestaurantHallSection } from './RestaurantHallSection.jsx'
 import { CampusSticker } from './CampusSticker.jsx'
+import { ProfileAvatar } from './ProfileAvatar.jsx'
 import { DEFAULT_PERSONAL_ARTWORK } from '../../data/personalHome.js'
 
 const COMPOSER_REGIONS = CAMPUS_HALL_REGIONS.filter((region) => region.id !== 'all')
@@ -14,7 +15,7 @@ const REGION_LABELS = new Map(COMPOSER_REGIONS.map((region) => [region.id, regio
 const SECTION_TITLES = { chat: '校园聊天', hotspots: '校园热点', 'lost-found': '失物招领', restaurants: '餐厅评价' }
 const SECTION_DESCRIPTIONS = { hotspots: '查看校园最新动态', 'lost-found': '查看寻物与招领信息', restaurants: '查看餐厅、窗口与同学评价' }
 
-export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMessage, activeSection, onSectionChange, isFullscreen = false, onCloseSection, locations, hotspots, posts, lostFoundFilter, onLostFoundFilterChange, onSubmitPost, onPostStatusChange, onDeletePost, onSelectLocation, onPlanRouteToLocation, onOpenRestaurantReviews, showLostFound, onLostFoundMapChange, auth, chat, onOpenLogin, information, onPublishInformation, onSubmitAsInformation, onStartLostFound, lostFoundPublishToken = 0, onAskAi, headerActions }) {
+export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMessage, activeSection, onSectionChange, isFullscreen = false, onCloseSection, locations, hotspots, posts, lostFoundFilter, onLostFoundFilterChange, onSubmitPost, onPostStatusChange, onDeletePost, onSelectLocation, onPlanRouteToLocation, onOpenRestaurantReviews, showLostFound, onLostFoundMapChange, auth, chat, onOpenLogin, information, onPublishInformation, onSubmitAsInformation, onStartLostFound, lostFoundPublishToken = 0, onAskAi, headerActions, onOpenMemberProfile }) {
   const [draft, setDraft] = useState('')
   const [composerRegionId, setComposerRegionId] = useState('living')
   const [sending, setSending] = useState(false)
@@ -180,8 +181,8 @@ export function HallPanel({ messages, selectedRegionId, onRegionChange, onSendMe
               >
                 <article>
                   <header className="mobile-hall-message__header">
-                    <span className="mobile-hall-message__avatar" aria-hidden="true">{[...message.author][0]}</span>
-                    <strong>{campusDisplayText(message.author)}</strong>
+                    <button className="mobile-hall-message__profile" type="button" aria-label={`查看${campusDisplayText(message.author)}的主页`} onClick={() => onOpenMemberProfile?.(message.authorId)}><ProfileAvatar src={message.authorAvatarUrl} name={campusDisplayText(message.author)} /></button>
+                    <button className="mobile-hall-message__author" type="button" onClick={() => onOpenMemberProfile?.(message.authorId)}><strong>{campusDisplayText(message.author)}</strong></button>
                     <span className="mobile-hall-message__region">{REGION_LABELS.get(message.regionId) ?? '校园'}</span>
                     <time dateTime={message.createdAt}>{message.time}</time>
                   </header>
