@@ -30,6 +30,7 @@ import { useCampusAuth } from './features/account/useCampusAuth.js'
 import { markStartupReady } from './app/startup.js'
 import { useRealtimeHall } from './features/mobile/useRealtimeHall.js'
 import { MePanel } from './features/mobile/MePanel.jsx'
+import { MemberProfilePage } from './features/mobile/MemberProfilePage.jsx'
 import { MobileTabBar } from './features/mobile/MobileTabBar.jsx'
 import { PrimaryPageActions } from './features/mobile/PrimaryPageActions.jsx'
 import { MyPublicationsPage } from './features/mobile/MyPublicationsPage.jsx'
@@ -40,6 +41,8 @@ import { RestaurantReviewsPage } from './features/reviews/RestaurantReviewsPage.
 import { AuvAssistantPage } from './features/ai/AuvAssistantPage.jsx'
 import { TimetablePage } from './features/timetable/TimetablePage.jsx'
 import { useBackLayer } from './app/useBackLayer.js'
+import { useAppUpdates } from './features/updates/useAppUpdates.js'
+import { AppUpdateNotice } from './features/updates/AppUpdateNotice.jsx'
 
 function loadInitialSnapshot() {
   const source = createLocalCampusDataSource({
@@ -58,6 +61,16 @@ function App() {
   )
   const [storedState, dispatch] = useReducer(campusReducer, initialState)
   const auth = useCampusAuth()
+  const updates = useAppUpdates()
+  const [startupComplete, setStartupComplete] = useState(() => !document.getElementById('app-startup'))
+  useEffect(() => {
+    if (!document.getElementById('app-startup')) { setStartupComplete(true); return undefined }
+    const observer = new MutationObserver(() => {
+      if (!document.getElementById('app-startup')) { setStartupComplete(true); observer.disconnect() }
+    })
+    observer.observe(document.body, { childList: true })
+    return () => observer.disconnect()
+  }, [])
   const information = useCampusInformation(auth.user?.id)
   const notificationPreferences = useNotificationPreferences(auth.user?.id)
   const displayLocations = useMemo(() => storedState.locations.map(campusDisplayRecord), [storedState.locations])
@@ -76,13 +89,17 @@ function App() {
   const [lostFoundPublishToken, setLostFoundPublishToken] = useState(0)
   const [hallLostFoundFilter, setHallLostFoundFilter] = useState('all')
   const [communityState, setCommunityState] = useState(loadCommunityState)
+  const [memberTarget, setMemberTarget] = useState(null)
+  const visibleMemberTarget = auth.user?.id && memberTarget?.viewerId === auth.user.id ? memberTarget : null
+  const closeMemberProfile = useCallback(() => setMemberTarget(null), [])
+  useEffect(() => { setMemberTarget(null) }, [auth.user?.id])
   const [informationOpen, setInformationOpen] = useState(false)
   const [informationSeed, setInformationSeed] = useState(null)
   const [informationTab, setInformationTab] = useState('messages')
   const [noticeId, setNoticeId] = useState(null)
-  const openInformation = useCallback((seed = null, tab = 'messages') => { setInformationSeed(seed); setInformationTab(seed ? 'publish' : tab); setNoticeId(null); setInformationOpen(true) }, [])
+  const openInformation = useCallback((seed = null, tab = 'messages') => { setMemberTarget(null); setInformationSeed(seed); setInformationTab(seed ? 'publish' : tab); setNoticeId(null); setInformationOpen(true) }, [])
   const closeInformation = useCallback(() => { setInformationOpen(false); setNoticeId(null); setInformationSeed(null) }, [])
-  const openNotice = useCallback((id) => { setInformationSeed(null); setInformationTab('messages'); setNoticeId(id); setInformationOpen(true) }, [])
+  const openNotice = useCallback((id) => { setMemberTarget(null); setInformationSeed(null); setInformationTab('messages'); setNoticeId(id); setInformationOpen(true) }, [])
   const push = useCampusPush(auth.user?.id, openNotice)
   const communityPosts = useMemo(() => {
     const cloud = information.reports.filter((r) => ['lost', 'found'].includes(r.kind) && !['withdrawn', 'rejected'].includes(r.status)).map((r) => ({
@@ -126,7 +143,12 @@ function App() {
   useEffect(() => { if (!auvOpen) setAuvSeed(null) }, [auvOpen])
   const chat = useRealtimeHall({ userId: auth.user?.id ?? null, regionId: hallRegionId })
   const [loginMode, setLoginMode] = useState(null)
-  const openLogin = useCallback(() => setLoginMode('login'), [])
+  const openLogin = useCallback(() => { setMemberTarget(null); setLoginMode('login') }, [])
+  const openMemberProfile = useCallback((userId) => {
+    if (!auth.user?.id) { openLogin(); return }
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId ?? '')) return
+    setMemberTarget({ viewerId: auth.user.id, userId })
+  }, [auth.user?.id, openLogin])
   const closeLogin = useCallback(() => setLoginMode(null), [])
   const mapReturnRef = useRef(null)
   const rememberMapOrigin = () => {
@@ -365,7 +387,8 @@ function App() {
         </div>
       </header>
 
-      <main inert={Boolean(loginMode || informationOpen || reviewLocation || auvOpen || timetableOpen || myPublicationsOpen)} className={`workspace workspace--tab-${activeTab}${state.routePlan ? ' workspace--has-route' : ''}${activeTab === 'map' && selectedLocation ? ' workspace--has-detail' : ''}`}>
+      <main inert={Boolean(loginMode || informationOpen || reviewLocation || auvOpen || timetableOpen || myPublicationsOpen || visibleMemberTarget)} className={`workspace workspace--tab-${activeTab}${state.routePlan ? ' workspace--has-route' : ''}${activeTab === 'map' && selectedLocation ? ' workspace--has-detail' : ''}`}>
+        <AppUpdateNotice updates={updates} covered={!startupComplete || Boolean(loginMode || informationOpen || reviewLocation || auvOpen || timetableOpen || myPublicationsOpen || visibleMemberTarget)} />
         <div style={{ display: 'contents' }} inert={activeTab !== 'map'} aria-hidden={activeTab !== 'map' ? true : undefined}>
         <MapWorkspace
           locations={state.locations}
@@ -454,6 +477,7 @@ function App() {
         )}
         {activeTab === 'hall' && (
           <HallPanel
+            onOpenMemberProfile={openMemberProfile}
             headerActions={<PrimaryPageActions unread={information.unread} onOpenMessages={() => openInformation()} />}
             messages={chat.messages}
             selectedRegionId={hallRegionId}
@@ -504,6 +528,8 @@ function App() {
         )}
         {activeTab === 'me' && (
           <MePanel
+            updates={updates}
+            onOpenMemberProfile={openMemberProfile}
             key={auth.user?.id ?? 'guest'}
             onOpenMyPublications={() => { setMyPublicationsFilter('all'); setMyPublicationsOpen(true) }}
             onOpenTimetable={() => setTimetableOpen(true)}
@@ -601,9 +627,10 @@ function App() {
       </main>
       {loginMode && <LoginSheet key={loginMode} auth={auth} initialMode={loginMode} onClose={closeLogin} />}
       {myPublicationsOpen && <MyPublicationsPage key={`${auth.user?.id ?? 'guest'}:${myPublicationsFilter}`} initialFilter={myPublicationsFilter} userId={auth.user?.id} reports={information.reports} posts={communityPosts} feedbacks={state.placeFeedback} locations={state.locations} refreshToken={myPublicationsRefresh} covered={informationOpen || Boolean(reviewLocation)} onClose={closeMyPublications} onRefresh={information.refresh} onOpenCloudReports={() => openInformation(null, 'reports')} onOpenMyLostFound={() => { closeMyPublications(); handleOpenHall('lost-found', true) }} onOpenReview={(restaurantId, windowId) => { setReviewWindowId(windowId); setReviewLocationId(restaurantId) }} onOpenFeedback={() => { closeMyPublications(); setServiceSection('repair'); setActiveTab('explore') }} onSelectLocation={(id) => { closeMyPublications(); handleExploreLocation(id) }} />}
-      <CampusNoticeBanner userId={auth.user?.id} information={information} covered={informationOpen || Boolean(loginMode) || auvOpen} onOpen={openNotice} />
+      {visibleMemberTarget && !loginMode && <MemberProfilePage key={`${visibleMemberTarget.viewerId}:${visibleMemberTarget.userId}`} userId={visibleMemberTarget.userId} viewerId={visibleMemberTarget.viewerId} onClose={closeMemberProfile} />}
+      <CampusNoticeBanner userId={auth.user?.id} information={information} covered={informationOpen || Boolean(loginMode) || auvOpen || Boolean(visibleMemberTarget)} onOpen={openNotice} />
       {informationOpen && <NotificationCenter key={`${auth.user?.id ?? 'guest'}:${informationTab}`} auth={auth} information={information} push={push} preferences={notificationPreferences} favoriteIds={state.favoriteLocationIds} locations={state.locations} initialTab={informationTab} initialDraft={informationSeed} noticeId={noticeId} onClose={closeInformation} onOpenLogin={() => { setInformationOpen(false); openLogin() }} onSelectLocation={(id) => { closeInformation(); closeMyPublications(); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { closeInformation(); closeMyPublications(); handlePlanRouteToLocation(id) }} />}
-      {reviewLocation && <RestaurantReviewsPage key={`${reviewLocation.id}:${auth.user?.id ?? 'guest'}:${reviewWindowId ?? ''}`} restaurant={reviewLocation} initialWindowId={reviewWindowId} authorName={auth.profile?.nickname ?? '我'} role={auth.role} userId={auth.user?.id} onOpenLogin={openLogin} onClose={closeRestaurantReviews} />}
+      {reviewLocation && <RestaurantReviewsPage onOpenMemberProfile={openMemberProfile} key={`${reviewLocation.id}:${auth.user?.id ?? 'guest'}:${reviewWindowId ?? ''}`} restaurant={reviewLocation} initialWindowId={reviewWindowId} authorName={auth.profile?.nickname ?? '我'} role={auth.role} userId={auth.user?.id} onOpenLogin={openLogin} onClose={closeRestaurantReviews} />}
       {timetableOpen && <TimetablePage key={auth.user?.id ?? 'guest'} userId={auth.user?.id} onClose={closeTimetable} onAskAi={(prompt) => { setTimetableOpen(false); setAuvSeed({ userId: auth.user?.id ?? null, prompt }); setAuvOpen(true) }} />}
       {auvOpen && <AuvAssistantPage initialDraft={auvSeed?.userId === (auth.user?.id ?? null) ? auvSeed?.prompt ?? '' : ''} auth={auth} locations={state.locations} favoriteLocationIds={notificationPreferences.value.favorite_location_ids} onClose={closeAuv} onOpenLogin={() => { setAuvOpen(false); openLogin() }} onSelectLocation={(id) => { setAuvOpen(false); handleExploreLocation(id) }} onPlanRouteToLocation={(id) => { setAuvOpen(false); handlePlanRouteToLocation(id) }} />}
     </div>
