@@ -1,38 +1,63 @@
 <div align="center">
 
-<img src="docs/assets/ourcampus-icon.png" alt="OurCampus 图标" width="96" height="96">
+<img src="docs/assets/ourcampus-icon.png" width="88" height="88" alt="OurCampus 图标">
 
 # OurCampus
 
-**从找到一个地点，到一起解决校园里的小事。**
+### 校园变化，与你有关。
 
-校园地图、同学社区与 AUV 校园助手，在同一个入口。
+连接校园地图、动态信息与个人安排的校园服务应用。
 
-[快速开始](docs/quickstart.md) · [项目文档](docs/README.md) · [Android 1.11 体验包](apps/ourcampus/docs/apk/OurCampus-1.11-队友图标与开屏.apk) · [问题反馈](https://github.com/zhchunyu/Chun-Yu/issues) · [开发状态](docs/status.md)
+[<img src="https://img.shields.io/badge/Android-1.17_体验版-176B55?style=for-the-badge&amp;logo=android&amp;logoColor=white" alt="下载 Android 1.17 体验版">](https://github.com/zhchunyu/Chun-Yu/releases/tag/v1.17)
+[<img src="https://img.shields.io/badge/ModelScope-模型下载-6254A4?style=for-the-badge" alt="ModelScope 模型发布页">](https://modelscope.cn/models/chunyuuu/Qwen2.5-7B-Instruct/summary)
+[<img src="https://img.shields.io/badge/SwanLab-实验记录-2C689C?style=for-the-badge" alt="SwanLab 实验记录">](https://swanlab.cn/@zhchunyu/OurCampus-AUV-training/v1/44bg6m/overview)
 
-`React` · `Vite` · `Capacitor` · `Supabase`
+[安装与使用](docs/download.md) · [微信反馈群](#交流与反馈) · [快速开始](docs/quickstart.md) · [文档中心](docs/README.md) · [Issues](https://github.com/zhchunyu/Chun-Yu/issues)
 
-<img src="docs/assets/map-preview.png" alt="OurCampus 校园地图界面：地点搜索、地图标记、按需定位和社区入口" width="340">
-
-归档版本的二维地图界面示例
+`React` · `Vite` · `Capacitor` · `Supabase` · `Qwen / QLoRA`
 
 </div>
 
-## 什么是 OurCampus
+## 找到地点，也找到下一步
 
-OurCampus 是我们团队开发的校园地图与社区应用。地点、交流和助手围绕真实校园生活连接起来：找到餐厅窗口、查看地点相关动态、发布失物线索，或带着当前地点向 AUV 提问。
+去哪里办事、通知是否仍然有效、某个变化与自己的安排有没有关系——OurCampus 把这些问题放到同一个入口。学生可以从地图进入地点、服务和社区，也可以向 AUV 提问，再从回答跳转到相关地点。
 
-项目提供 Web 前端源码和 Android 协作体验包，当前处于开发与联调阶段。
-
-| 校园地图 | 同学社区 | AUV 校园助手 |
+| 探索校园 | 了解变化 | 安排生活 |
 | --- | --- | --- |
-| 搜索地点、查看详情和餐厅窗口，保存收藏与常用路线，按需定位并预览路线。 | 按校园地区交流，主动上报热点、失物与地点反馈，围绕餐厅窗口评分与讨论。 | 登录后提问，主动选择地点与课表上下文，由服务端网关调用模型。 |
+| 地点搜索、附近设施、服务目录、路线预览与导航入口。 | 主动上报、管理员审核、站内通知、失物线索与校园交流。 | 课表导入、地点收藏、常用路线、餐口菜单与评价。 |
 
-## 开始体验
+## 三项能力，连接信息与行动
 
-**Android：**下载 [OurCampus 1.11](apps/ourcampus/docs/apk/OurCampus-1.11-队友图标与开屏.apk)。当前安装包使用 debug 签名，供团队安装体验与反馈。
+<img src="docs/assets/ourcampus-service-flow.svg" width="100%" alt="OurCampus 服务流程：校园上报由 AI 整理草稿，管理员审核后进入带地点、状态与有效期的动态记录；AUV 结合用户主动选择的情境提供回复，并衔接地图、消息与地点操作。">
 
-**本地开发：**需要 Node.js 22.12 或以上版本和 npm。
+**动态信息流。** 以地点和事件为连接点，组织上报、审核、发布与结束。查询依据同时检查事件状态和有效时间；资料不足时保留未知，避免把历史通知直接当作当前事实。
+
+**校园任务适配。** 在开源 Qwen 基座上训练领域适配器，让校园表达对应到系统使用的地点和事件字段。训练、推理与评测资料保留在 [AUV 工程](models/auv/)，最新事实由业务数据提供。
+
+**个人情境关联。** 用户主动选择地点或课表上下文，助手经鉴权网关读取允许访问的资料，再提供相关建议。收藏、路线和订阅共同构成个人服务入口，定位由用户主动触发。
+
+## 下载 Android 1.17
+
+**[下载 OurCampus-1.17.apk](https://github.com/zhchunyu/Chun-Yu/releases/download/v1.17/OurCampus-1.17.apk)** · [版本说明与校验](docs/download.md)
+
+- Android 7.0 及以上；安装包约 **45.23 MiB**，版本号 **1.17 / 18**。
+- 安装包由团队提供，发布时已检查文件完整性；安装后的实际体验欢迎通过反馈群或 Issues 反馈。
+- 此次发布的是独立体验包。仓库现有 Android 构建配置仍为 1.11，源码与二进制的对应范围见[版本说明](docs/download.md#源码与安装包的关系)。
+
+## 源码、模型与实验
+
+| 入口 | 可以找到什么 |
+| --- | --- |
+| [GitHub 源码](https://github.com/zhchunyu/Chun-Yu) | Web 与 Android 工程、业务网关、数据库脚本及项目文档。 |
+| [ModelScope 模型发布页](https://modelscope.cn/models/chunyuuu/Qwen2.5-7B-Instruct/summary) | 团队提供的模型下载入口，文件与使用条件以模型页为准。 |
+| [SwanLab 实验记录](https://swanlab.cn/@zhchunyu/OurCampus-AUV-training/v1/44bg6m/overview) | 训练曲线与实验展示；已有 V7、V10 曲线由历史训练日志后续导入。 |
+| [训练与评测资料](models/auv/) | 数据准备、版本配置、推理部署与验收脚本。 |
+
+ModelScope 当前链接名为 `Qwen2.5-7B-Instruct`；仓库 [V10 配置](models/auv/model-finetune/v10_extract.yaml) 使用 Qwen2.5-14B。两者分别展示，具体权重与实验版本请按对应记录核对。
+
+## 本地运行
+
+需要 Node.js **22.12 或以上**与 npm。
 
 ```powershell
 git clone https://github.com/zhchunyu/Chun-Yu.git
@@ -42,49 +67,36 @@ npm ci
 npm run dev
 ```
 
-启动前填写 `.env.local` 中的腾讯地图 Key、Supabase 地址与 Publishable key；字段见 [.env.example](apps/ourcampus/.env.example)。AUV 模型密钥只保存在服务端。完整配置与运行步骤见[快速开始](docs/quickstart.md)。
+启动前填写 `.env.local` 中的地图与 Supabase 配置。模型密钥仅放在服务端，完整步骤见[快速开始](docs/quickstart.md)。
 
-## 开发进展
-
-当前已形成地图、账号、社区与 AUV 助手入口。团队正在完成多人协作、模型调用和消息送达的联调，并持续校准地图与校园道路。具体接入范围、版本记录和待验证项目见[开发状态](docs/status.md)。
-
-## 仓库导航
-
-```text
-apps/
-  ourcampus/       Web 页面、Android 工程与服务端适配
-models/
-  auv/             模型、训练、推理与评测资料
-docs/              快速开始、架构、部署与开发状态
-archive/           历史方案、研究素材与归档交付
-```
-
-| 想做什么 | 从这里开始 |
+| 想了解什么 | 文档 |
 | --- | --- |
-| 运行应用或构建 Android | [快速开始](docs/quickstart.md) · [应用工程](apps/ourcampus/) |
-| 理解模块与数据流程 | [系统架构](docs/architecture.md) |
-| 配置 Supabase 与 AUV 网关 | [部署说明](docs/deployment.md) |
-| 查看模型与评测资料 | [AUV 工程](models/auv/) |
-| 参与开发或交接模块 | [团队协作](apps/ourcampus/docs/团队协作.md) |
-| 查阅历史方案与归档文件 | [资料归档](archive/) |
+| 页面、数据库和模型怎样协作 | [系统架构](docs/architecture.md) |
+| 怎样构建 Android、配置服务 | [快速开始](docs/quickstart.md) · [部署说明](docs/deployment.md) |
+| 当前实现与已验证范围 | [开发状态](docs/status.md) |
+| 在哪里找代码与历史资料 | [仓库目录](docs/repository-layout.md) · [资料归档](archive/) |
 
-## 参与协作
+## 交流与反馈
 
-欢迎通过 [Issues](https://github.com/zhchunyu/Chun-Yu/issues) 反馈问题或建议。反馈时请附上设备、使用入口、复现步骤和截图，便于对应地图、社区、账号或助手模块排查。
+欢迎加入 **Our Campus 用户反馈群**，交流安装体验与使用建议。
 
-提交前请确认没有包含真实密钥、个人信息或本机配置。应用测试与构建命令、模块负责范围见[应用说明](apps/ourcampus/README.md)和[团队协作](apps/ourcampus/docs/团队协作.md)。
+<p align="center">
+  <img src="docs/assets/wechat-feedback-2026-10-25.png" width="280" alt="Our Campus 微信用户反馈群二维码，原图注明 2026 年 11 月 1 日前有效">
+</p>
 
-## 接下来
+二维码原图注明 **2026 年 11 月 1 日前有效**。过期或群满时，请通过 [Issues](https://github.com/zhchunyu/Chun-Yu/issues) 联系维护者更新；Issues 也是长期反馈入口。
 
-- 校准校园地点与道路，补充信息来源、更新时间和审核反馈。
-- 完成真实账号、多人协作、AUV 调用与消息送达的联调验收。
-- 继续打磨 Web 与 Android 的日常使用体验。
+反馈时附上**应用版本、设备型号、复现步骤和相关截图**。公开反馈请先遮挡账号、联系方式等个人资料。
 
 <details>
-<summary>后续研究：三维浏览与室内导航</summary>
+<summary>查看归档界面预览</summary>
 
-三维素材与历史原型保留在归档区，供后续研究使用。三维浏览将在二维服务稳定后推进；室内导航仍需可靠楼层图与通道数据。
+<p align="center">
+  <img src="docs/assets/map-preview.png" width="300" alt="2026 年 10 月 6 日归档版本的 OurCampus 地图界面">
+</p>
+
+以上为归档版本地图截图，当前界面请以 1.17 安装包实际显示为准。
 
 </details>
 
-<sub>状态核对：2026-10-17。功能说明随代码与联调结果更新。</sub>
+<sub>首页与安装包发布资料更新：2026-10-25。后台系统推送、跨设备流程等具体验收范围以对应版本记录为准。</sub>

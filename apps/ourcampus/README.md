@@ -2,7 +2,7 @@
 
 以手机校园地图为入口，连接地点、导航、大厅、账号、餐厅窗口和课表。前端使用 React + Vite，安卓使用 Capacitor，账号与大厅聊天使用 Supabase；AI 通过服务端网关调用 AUV。
 
-本目录位于共享仓库的 `apps/ourcampus`。当前安卓版本为 **1.11（versionCode 12）**，更新记录截至 2026-10-08。
+本目录位于共享仓库的 `apps/ourcampus`。本目录安卓源码配置为 **1.11（versionCode 12）**，下列功能记录截至 2026-10-08。团队另行提供的 [1.17 体验包](../../docs/download.md)已独立发布；该二进制尚未与本目录源码建立可复现对应关系。
 
 ## 快速运行
 
@@ -10,7 +10,7 @@
 
 ```powershell
 git clone https://github.com/zhchunyu/Chun-Yu.git
-cd Chun-Yu/archive/application-plans/OurCampus
+cd Chun-Yu/apps/ourcampus
 Copy-Item .env.example .env.local
 npm ci
 npm run dev -- --host 0.0.0.0
@@ -46,7 +46,9 @@ npm run android:share # 通过本机网络分享已生成的 APK
 
 ## 安卓安装与构建
 
-可直接下载 [OurCampus 1.11 安装包](docs/apk/OurCampus-1.11-队友图标与开屏.apk)。这是 debug 签名安装包，适合协作演示；正式发布需要负责人保管的签名配置。
+体验最新团队安装包，请使用 [OurCampus 1.17 Release](https://github.com/zhchunyu/Chun-Yu/releases/tag/v1.17)，并阅读[安装说明与包名差异](../../docs/download.md)。
+
+[OurCampus 1.11 安装包](docs/apk/OurCampus-1.11-队友图标与开屏.apk)保留历史归档，使用 debug 签名；下列自行构建步骤对应本目录现有源码。
 
 自行构建需要 **JDK 21、Android SDK API 36**（当前 Build Tools 35.0.0）及 Gradle 依赖。优先复用已有环境。设置 `JAVA_HOME`，并在不提交的 `android/local.properties` 中填写本机 `sdk.dir`。运行 `npm run android:apk` 后，产物位于 `android/app/build/outputs/apk/debug/app-debug.apk`。
 
@@ -86,3 +88,4 @@ output/pdf/                  技术方案书源文档与导出 PDF
 - [校园信息、系统推送与真实餐厅评价交接](docs/校园信息推送交接-2026-10-08/README-先看这里.md)
 
 源码、SQL、安卓工程、可编辑文档及当前 APK 一起共享；依赖缓存、构建缓存、真实密钥、个人截图和旧版压缩包不纳入仓库。部分保留资料不是当前界面的默认资产。
+

@@ -4,11 +4,20 @@ OurCampus 将校园地点、同学社区与 AUV 助手放在同一个入口。�
 
 | 文档 | 内容 |
 | --- | --- |
+| [Android 下载](download.md) | 1.17 体验包、安装说明、文件校验及源码对应范围。 |
 | [快速开始](quickstart.md) | 获取源码、填写配置、启动 Web 与构建 Android。 |
 | [系统架构](architecture.md) | 前端模块、Supabase 服务、AUV 网关与校园信息流程。 |
 | [部署说明](deployment.md) | Web 构建设置、后台配置和 Android 交付。 |
 | [开发状态](status.md) | 已有实现、后台接入记录、验收事项与后续工作。 |
 | [仓库目录](repository-layout.md) | 当前目录职责、旧路径迁移和归档入口。 |
+
+## 模型与社区
+
+- [ModelScope 模型发布页](https://modelscope.cn/models/chunyuuu/Qwen2.5-7B-Instruct/summary)。
+- [SwanLab 实验记录](https://swanlab.cn/@zhchunyu/OurCampus-AUV-training/v1/44bg6m/overview)：已有 V7、V10 曲线为历史日志后续导入。
+- [微信反馈群与 Issues](../README.md#交流与反馈)。
+
+模型链接名为 7B，仓库 V10 配置为 14B；请分别按对应记录核对，详见 [AUV 工程](../models/auv/)。
 
 ## 开发入口
 
@@ -32,3 +41,4 @@ OurCampus 将校园地点、同学社区与 AUV 助手放在同一个入口。�
 历史交接文档保留原始日期，反映当时的操作记录。当前功能范围、已部署状态与待验收事项统一见[开发状态](status.md)。
 
 [返回项目首页](../README.md)
+

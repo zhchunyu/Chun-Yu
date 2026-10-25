@@ -65,7 +65,9 @@ npm run dev -- --host 0.0.0.0
 
 ## Android 安装与构建
 
-已有体验包：[OurCampus 1.11](../apps/ourcampus/docs/apk/OurCampus-1.11-队友图标与开屏.apk)，使用 debug 签名，供团队安装体验。当前版本为 1.11，`versionCode` 为 12。
+最新团队体验包：[OurCampus 1.17](https://github.com/zhchunyu/Chun-Yu/releases/tag/v1.17)，安装要求、校验值与包名差异见[下载说明](download.md)。
+
+仓库当前 Android 源码配置仍为 **1.11 / versionCode 12**；以下构建命令用于当前源码，不代表能重建另行提供的 1.17 APK。[1.11 历史安装包](../apps/ourcampus/docs/apk/OurCampus-1.11-队友图标与开屏.apk)保留归档。
 
 自行构建时设置 `JAVA_HOME`，并在本机 `android/local.properties` 中配置 `sdk.dir`。该文件不提交仓库。然后运行：
 
@@ -83,3 +85,4 @@ npm run android:apk
 - [仓库目录](repository-layout.md)：查找从旧目录迁移的工程与文档。
 
 [返回文档首页](README.md)
+
