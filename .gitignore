@@ -29,7 +29,8 @@ build/
 .venv/
 venv/
 .env
-.env.local
+.env.*
+!.env.example
 
 # 大文件与媒体（按需开启 LFS 或手动管理）
 *.psd
@@ -86,3 +87,7 @@ signing.local.properties
 **/android/**/*.pk8
 **/android/**/*.pem
 !**/android/signing.example.properties
+
+# ---- 本机 AI 记忆：阻止新增入库；已跟踪文件仍受密钥扫描检查 ----
+/.workbuddy-ai/memory/
+/archive/workspace-tools/memory/
