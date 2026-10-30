@@ -21,7 +21,7 @@
 - [x] 浏览器验证：320／390px 无横向溢出、收藏路线焦点恢复；真实文件选择及 JPEG 压缩、移除、换号清空；图库全屏、切图、Esc 和父子层同时卸载恢复 inert；Hall 纯图发送按钮与两个上报入口。
 - [x] 生产权限验证：SQL 事务回归实际执行通过，合成 Auth／Storage fixture 0 残留；安全顾问无新增相关项，既有无关警告保留。
 - [x] 独立复核并修复末轮 P1/P2；记录服务器已部署、客户端待安装的边界，更新 [交接说明](../../releases/OurCampus-1.19-图片与个人页交接.md) 与 [验证记录](../../reviews/2026-10-30-community-images-and-me.md)。
-- [ ] 更新 PR 的最终范围与验证说明。
+- [x] 更新 [PR #4](https://github.com/zhchunyu/Our-Campus/pull/4) 的最终范围与验证说明；源码提交 cf8dd57 已推送至 codex/profile-avatars-app-updates。
 - [ ] 找回匹配原证书的签名材料，构建并核验 1.19/20 APK；真实账号上传、跨账号权限和手机覆盖安装验收。
 - [ ] APK 上传完成后发布 versionCode 20 元数据；保留现有 1.18 对象与记录。
 
