@@ -75,3 +75,9 @@ venv/
 /地名替换清单.md
 /腾讯地图地名核验清单.md
 /提交打包排除清单.md
+
+# Keep credentials and private assistant notes out of future commits
+.env.*
+!.env.example
+/.workbuddy-ai/memory/
+/archive/workspace-tools/memory/
