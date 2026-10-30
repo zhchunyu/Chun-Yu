@@ -209,3 +209,17 @@ describe('hall repair and connection races', () => {
     expect(render().messages.map((entry) => entry.id)).toEqual(['latest'])
   })
 })
+
+it('reuses image message id for retry and starts a new id when the attachments change', async () => {
+ render(); await settle()
+ const firstPath = `${authorA}/44444444-4444-4444-8444-444444444444.jpg`
+ const secondPath = `${authorA}/55555555-5555-4555-8555-555555555555.jpg`
+ mocks.send.mockRejectedValue(new Error('offline'))
+ await expect(render().sendMessage({ content: '', regionId: 'library', imagePaths: [firstPath] })).rejects.toThrow()
+ await expect(render().sendMessage({ content: '', regionId: 'library', imagePaths: [firstPath] })).rejects.toThrow()
+ await expect(render().sendMessage({ content: '', regionId: 'library', imagePaths: [secondPath] })).rejects.toThrow()
+ const attempts = mocks.send.mock.calls.map(([input]) => input)
+ expect(attempts[0].imagePaths).toEqual([firstPath])
+ expect(attempts[0].clientMessageId).toBe(attempts[1].clientMessageId)
+ expect(attempts[2].clientMessageId).not.toBe(attempts[1].clientMessageId)
+})

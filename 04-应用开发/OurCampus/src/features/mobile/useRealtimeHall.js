@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { normalizePostImagePaths } from '../../data/postImages.js'
 import { describeServerError, supabase } from '../../data/supabaseClient.js'
 import { listMemberProfiles } from '../../data/memberProfiles.js'
 import { createClientMessageId, createHallProfileCache, hydrateHallMessages, listHallMessages, mergeHallMessages, retractHallMessage, sendHallMessage } from '../../data/hallService.js'
@@ -176,12 +177,14 @@ export function useRealtimeHall({ userId, regionId }) {
     }
   }, [identity, userId, regionId])
 
-  const sendMessage = useCallback(async ({ content, regionId: targetRegion }) => {
+  const sendMessage = useCallback(async ({ content, regionId: targetRegion, imagePaths = [] }) => {
     if (!userId) throw new Error('请先登录后发消息')
     if (!navigator.onLine) throw new Error('当前离线，草稿已保留，请联网后重试')
     const text = content.trim()
-    if (sendAttempt.current?.userId !== userId || sendAttempt.current?.content !== text || sendAttempt.current?.regionId !== targetRegion) {
-      sendAttempt.current = { userId, content: text, regionId: targetRegion, clientMessageId: createClientMessageId() }
+    const paths = normalizePostImagePaths(imagePaths, userId)
+    const imageKey = paths.join(',')
+    if (sendAttempt.current?.userId !== userId || sendAttempt.current?.content !== text || sendAttempt.current?.regionId !== targetRegion || sendAttempt.current?.imageKey !== imageKey) {
+      sendAttempt.current = { userId, content: text, regionId: targetRegion, imagePaths: paths, imageKey, clientMessageId: createClientMessageId() }
     }
     const attempt = sendAttempt.current
     const connection = connectionRef.current?.identity === identity ? connectionRef.current : null

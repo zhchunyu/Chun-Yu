@@ -6,7 +6,7 @@ import { createMemberProfileLoader, MemberProfileContent } from './MemberProfile
 vi.mock('../../data/memberProfiles.js', () => ({ getMemberProfile: vi.fn(), getAvatarUrl: () => '' }))
 const userId = '11111111-1111-4111-8111-111111111111'
 const messageId = '22222222-2222-4222-8222-222222222222'
-const message = { id: messageId, authorId: userId, content: '明天一起去图书馆', regionId: 'teaching', createdAt: '2026-10-21T04:00:00Z', deletedAt: null }
+const message = { imagePaths: [], id: messageId, authorId: userId, content: '明天一起去图书馆', regionId: 'teaching', createdAt: '2026-10-21T04:00:00Z', deletedAt: null }
 const profile = { user_id: userId, nickname: '青禾', avatar_path: null, email: 'private@example.com', bio: '秘密签名', tags: ['秘密标签'] }
 const ready = { profile, messages: [message], profileStatus: 'ready', messagesStatus: 'ready', profileError: '', messagesError: '' }
 const render = (state) => renderToStaticMarkup(<MemberProfileContent state={state} onRetry={() => {}} />)

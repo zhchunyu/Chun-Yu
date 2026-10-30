@@ -40,8 +40,8 @@ android {
         applicationId "cn.edu.sxau.campustwin"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 19
-        versionName "1.18"
+        versionCode 20
+        versionName "1.19"
         manifestPlaceholders = [
             GETUI_APPID: campusPushProperties.getProperty('GETUI_APP_ID', '').trim(),
             VIVO_PUSH_ENABLED: vivoPushEnabled.toString(),

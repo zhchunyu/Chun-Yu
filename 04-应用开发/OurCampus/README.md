@@ -2,7 +2,7 @@
 
 以手机校园地图为入口，连接地点、导航、社区、账号、餐厅窗口和课表。前端使用 React + Vite，安卓使用 Capacitor，账号与社区聊天使用 Supabase；AI 通过服务端网关调用 AUV。
 
-本目录位于共享仓库的 `04-应用开发/OurCampus`。当前安卓构建为 **1.18（versionCode 19）**，更新记录截至 2026-10-25。安装包、核验结果与应用内更新发布交接见 [1.18 发布记录](docs/releases/OurCampus-1.18-发布交接.md)。
+本目录位于共享仓库的 `04-应用开发/OurCampus`。当前开发版本为 **1.19（versionCode 20，尚未打包发布）**；线上已发布版本仍是 **1.18（versionCode 19）**。1.19 新增社区图片发布并精简个人页，交接与验证见 [1.19 开发交接](docs/releases/OurCampus-1.19-图片与个人页交接.md)。安装包、核验结果与应用内更新发布交接见 [1.18 发布记录](docs/releases/OurCampus-1.18-发布交接.md)。
 
 当前采用 **场景创新赛道** 要求，依据附件 1《场景创新赛道赛题及竞赛规则》和附件 2 技术报告参考大纲。材料要求、评分与七部分报告结构见 [场景创新赛道规则](docs/赛事与规范/README.md)。旧 AI 软件创新赛道要求不再作为当前提交依据。
 
@@ -61,7 +61,7 @@ npm run android:share # 通过本机网络分享已生成的 APK
 
 ## 安卓安装与构建
 
-1.18 安装包入口：[GitHub Release](https://github.com/zhchunyu/Chun-Yu/releases/tag/v1.18)。本次使用原签名生成非 debuggable 的 release APK，证书与保留的 1.17 一致；实体手机覆盖安装仍待验收，应用内通知还需维护者完成 Supabase 发布。核验与交接见 [1.18 发布记录](docs/releases/OurCampus-1.18-发布交接.md)。历史 [1.16 安装包](docs/apk/OurCampus-1.16-校园装扮与全屏地图.apk) 和 [验证记录](docs/reviews/2026-10-16-apk-1.16.md) 继续保留。
+1.18 安装包入口：[GitHub Release](https://github.com/zhchunyu/Chun-Yu/releases/tag/v1.18)。本次使用原签名生成非 debuggable 的 release APK，证书与保留的 1.17 一致；实体手机覆盖安装仍待验收，Supabase 应用内更新记录已发布。核验与交接见 [1.18 发布记录](docs/releases/OurCampus-1.18-发布交接.md)。历史 [1.16 安装包](docs/apk/OurCampus-1.16-校园装扮与全屏地图.apk) 和 [验证记录](docs/reviews/2026-10-16-apk-1.16.md) 继续保留。
 
 1.18 更新：合入队友的每日课表修复，校准后按上海当前日期展示当天安排与下一课；未校准时保留手动选择，不将猜测日期当作今天。沿用头像、个人主页与应用内检查更新功能。课表仍按账号保存在本机。
 

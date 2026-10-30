@@ -21,9 +21,9 @@ beforeEach(() => requireSupabase.mockReset())
 describe('member public hall messages', () => {
   it('projects only the public hall fields and requests this author’s latest 20 unretracted messages', async () => {
     const calls = queryResult({ data: [row], error: null })
-    expect(await listMemberHallMessages(authorId)).toEqual([{ id: messageId, authorId, content: '去图书馆', regionId: 'teaching', createdAt: row.created_at, deletedAt: null }])
+    expect(await listMemberHallMessages(authorId)).toEqual([{ id: messageId, authorId, content: '去图书馆', regionId: 'teaching', createdAt: row.created_at, deletedAt: null, imagePaths: [] }])
     expect(calls).toEqual([
-      ['from', 'hall_messages'], ['select', 'id,author_id,content,region_id,created_at,deleted_at'],
+      ['from', 'hall_messages'], ['select', 'id,author_id,content,region_id,created_at,deleted_at,image_paths'],
       ['eq', 'author_id', authorId], ['is', 'deleted_at', null],
       ['order', 'created_at', { ascending: false }], ['order', 'id', { ascending: false }], ['limit', 20],
     ])
@@ -38,7 +38,7 @@ describe('member public hall messages', () => {
     queryResult({ data: [{ ...row, email: 'private@example.com', signature: 'secret' }, { ...row, id: '33333333-3333-4333-8333-333333333333', deleted_at: '2026-10-21T05:00:00Z' }, { ...row, author_id: messageId }], error: null })
     const messages = await listMemberHallMessages(authorId)
     expect(messages).toHaveLength(1)
-    expect(Object.keys(messages[0])).toEqual(['id', 'authorId', 'content', 'regionId', 'createdAt', 'deletedAt'])
+    expect(Object.keys(messages[0])).toEqual(['id', 'authorId', 'content', 'regionId', 'createdAt', 'deletedAt', 'imagePaths'])
   })
 
   it('propagates server failures instead of showing an empty success', async () => {

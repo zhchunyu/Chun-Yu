@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Bell, CalendarDays, Camera, Check, ChevronRight, FileText, ImagePlus, LockKeyhole, LogOut, Pencil, Route, Settings2, Star, UserRound, X } from 'lucide-react'
+import { Bell, CalendarDays, Camera, Check, ChevronRight, FileText, ImagePlus, LockKeyhole, LogOut, Pencil, Route, Settings2, Star, X } from 'lucide-react'
 import { describeServerError } from '../../data/supabaseClient.js'
 import { DEFAULT_PERSONAL_ARTWORK, loadPersonalHome, resizePersonalImage } from '../../data/personalHome.js'
 import { getAvatarUrl } from '../../data/memberProfiles.js'
@@ -20,13 +20,12 @@ function Cover({ home, children }) {
   </div>
 }
 
-export function PersonalHome({ auth, onBeforeLogout, onOpenLogin, onOpenMessages, unreadCount = 0, onOpenTimetable, onOpenMyPublications, onOpenFavorites, onOpenRoutes, favoriteCount = 0, onOpenMemberProfile }) {
+export function PersonalHome({ auth, onBeforeLogout, onOpenLogin, onOpenMessages, unreadCount = 0, onOpenTimetable, onOpenMyPublications, onOpenFavorites, onOpenRoutes, activeCollection, collectionPanelId, onOpenMemberProfile }) {
   const userId = auth.user?.id ?? null
   const [home, setHome] = useState(() => loadPersonalHome(userId))
   const [draft, setDraft] = useState(home)
   const [avatarDraft, setAvatarDraft] = useState(null)
   const [sheet, setSheet] = useState(null)
-  const [contentTab, setContentTab] = useState('posts')
   const [nickname, setNickname] = useState('')
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
@@ -181,13 +180,10 @@ export function PersonalHome({ auth, onBeforeLogout, onOpenLogin, onOpenMessages
       <section className="personal-private" aria-label="个人快捷入口"><div className="personal-section-label"><LockKeyhole size={14} />只对自己可见</div><div className="personal-shortcuts">
         <button type="button" onClick={onOpenTimetable}><CampusSticker Icon={CalendarDays} tone="sunny" /><span>我的课表</span></button>
         <button type="button" onClick={onOpenMyPublications}><CampusSticker Icon={FileText} tone="coral" /><span>我的发布</span></button>
-        <button type="button" onClick={onOpenFavorites}><CampusSticker Icon={Star} tone="mint" /><span>我的收藏</span></button>
-        <button type="button" onClick={onOpenRoutes}><CampusSticker Icon={Route} tone="lavender" /><span>常用路线</span></button>
+        <button type="button" onClick={onOpenFavorites} aria-expanded={activeCollection === 'favorites'} aria-controls={activeCollection === 'favorites' ? collectionPanelId : undefined}><CampusSticker Icon={Star} tone="mint" /><span>我的收藏</span></button>
+        <button type="button" onClick={onOpenRoutes} aria-expanded={activeCollection === 'routes'} aria-controls={activeCollection === 'routes' ? collectionPanelId : undefined}><CampusSticker Icon={Route} tone="lavender" /><span>常用路线</span></button>
       </div></section>
 
-      <section className="personal-content" aria-label="主页内容"><div className="personal-content__heading"><div><h3>我的校园日常</h3><small>查看你的发布与私人收藏</small></div></div><div className="personal-content__tabs" role="tablist" aria-label="主页内容分类">{[['posts', '动态'], ['favorites', '收藏'], ['about', '关于']].map(([id, label]) => <button type="button" role="tab" aria-selected={contentTab === id} className={contentTab === id ? 'is-active' : ''} key={id} onClick={() => setContentTab(id)}>{label}</button>)}</div>
-        <div className="personal-content__body" role="tabpanel">{contentTab === 'posts' ? <><FileText size={24} /><strong>看看你发布过什么</strong><p>动态、失物、评价和反馈都能在“我的发布”里找到。</p><button type="button" onClick={onOpenMyPublications}>打开我的发布 <ChevronRight size={16} /></button></> : contentTab === 'favorites' ? <><Star size={24} /><strong>{favoriteCount ? `已收藏 ${favoriteCount} 个地点` : '还没有收藏地点'}</strong><p>喜欢的图书馆、餐厅或校园地点，留在这里慢慢收集。</p><button type="button" onClick={onOpenFavorites}>查看我的收藏 <ChevronRight size={16} /></button></> : <><UserRound size={24} /><strong>{userId ? name : '认识一下你'}</strong><p>{home.bio || '在装扮主页里写一句自己的介绍。'}</p>{userId && <button type="button" onClick={openDecorate}>编辑个人介绍 <ChevronRight size={16} /></button>}</>}</div>
-      </section>
     </div>
 
     {!sheet && (notice || auth.error) && <p className="personal-home__notice" role="status">{notice || auth.error}{auth.error && <button type="button" onClick={() => auth.refreshProfile().catch(() => setNotice('资料加载失败，请稍后重试'))}>重试</button>}</p>}

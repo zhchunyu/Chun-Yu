@@ -2,10 +2,12 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ChevronLeft, MessageCircle, RefreshCw, UserRound } from 'lucide-react'
 import { useBackLayer } from '../../app/useBackLayer.js'
+import { acquireInert } from '../../app/modalInert.js'
 import { CAMPUS_HALL_REGIONS } from '../../data/campusHall.js'
 import { isMemberUserId, listMemberHallMessages, MEMBER_HALL_MESSAGE_LIMIT, toMemberHallMessage } from '../../data/memberHallMessages.js'
 import { getAvatarUrl, getMemberProfile } from '../../data/memberProfiles.js'
 import { describeServerError, supabase } from '../../data/supabaseClient.js'
+import { PostImageGallery } from './PostImageGallery.jsx'
 import { ProfileAvatar } from './ProfileAvatar.jsx'
 import './member-profile.css'
 
@@ -91,7 +93,7 @@ function RetryButton({ onRetry }) {
   return <button className="member-profile__retry" type="button" onClick={onRetry}><RefreshCw size={15} />重试</button>
 }
 
-export function MemberProfileContent({ state, onRetry }) {
+export function MemberProfileContent({ state, onRetry, viewerId }) {
   const { profile, messages, profileStatus, messagesStatus, profileError, messagesError } = state
   if (!profile) {
     if (profileStatus === 'loading') return <div className="member-profile__state" role="status"><UserRound size={32} /><p>正在加载成员资料…</p></div>
@@ -104,7 +106,7 @@ export function MemberProfileContent({ state, onRetry }) {
     {profileError && <div className="member-profile__notice" role="alert"><span>{profileError}</span><RetryButton onRetry={onRetry} /></div>}
     <section className="member-profile__messages" aria-labelledby="member-profile-messages-title"><div className="member-profile__heading"><h3 id="member-profile-messages-title">最近的大厅发言</h3><p>最多展示 20 条未撤回的发言</p></div>
       {messagesError && <div className="member-profile__notice" role="alert"><span>{messagesError}</span><RetryButton onRetry={onRetry} /></div>}
-      {messagesStatus === 'loading' && !messages.length ? <div className="member-profile__state" role="status"><p>正在加载大厅发言…</p></div> : messages.length ? <ol className="member-profile__message-list">{messages.map((message) => <li key={message.id}><div><span>{REGION_LABELS.get(message.regionId) || '校园大厅'}</span><time dateTime={message.createdAt}>{DATE_FORMAT.format(new Date(message.createdAt))}</time></div><p>{message.content}</p></li>)}</ol> : messagesStatus === 'ready' && <div className="member-profile__state" role="status"><MessageCircle size={28} /><strong>还没有公开的大厅发言</strong><p>新的大厅发言会显示在这里。</p></div>}
+      {messagesStatus === 'loading' && !messages.length ? <div className="member-profile__state" role="status"><p>正在加载大厅发言…</p></div> : messages.length ? <ol className="member-profile__message-list">{messages.map((message) => <li key={message.id}><div><span>{REGION_LABELS.get(message.regionId) || '校园大厅'}</span><time dateTime={message.createdAt}>{DATE_FORMAT.format(new Date(message.createdAt))}</time></div><p>{message.content}</p><PostImageGallery paths={message.imagePaths} viewerId={viewerId} label="大厅发言照片" /></li>)}</ol> : messagesStatus === 'ready' && <div className="member-profile__state" role="status"><MessageCircle size={28} /><strong>还没有公开的大厅发言</strong><p>新的大厅发言会显示在这里。</p></div>}
     </section>
   </>
 }
@@ -152,8 +154,7 @@ export function MemberProfilePage({ userId, viewerId, onClose }) {
   useEffect(() => {
     const previousFocus = document.activeElement
     const root = document.getElementById('root')
-    const wasInert = root?.inert
-    if (root) root.inert = true
+    const releaseRoot = root ? acquireInert(root) : null
     dialogRef.current?.focus()
     const trapFocus = (event) => {
       if (event.key !== 'Tab') return
@@ -168,7 +169,7 @@ export function MemberProfilePage({ userId, viewerId, onClose }) {
     document.addEventListener('keydown', trapFocus)
     return () => {
       document.removeEventListener('keydown', trapFocus)
-      if (root) root.inert = wasInert
+      releaseRoot?.()
       if (previousFocus?.isConnected) previousFocus.focus()
     }
   }, [])
@@ -178,6 +179,6 @@ export function MemberProfilePage({ userId, viewerId, onClose }) {
   const retry = () => { if (loaderRef.current?.identity === identity) void loaderRef.current.loader.refresh() }
   return createPortal(<div className="personal-sheet-backdrop member-profile-backdrop" onClick={(event) => { if (event.target === event.currentTarget) onClose() }}><section ref={dialogRef} className="personal-sheet personal-sheet--preview member-profile" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
     <header className="personal-sheet__header member-profile__header"><button type="button" aria-label="关闭成员主页" onClick={onClose}><ChevronLeft size={23} /></button><h1 id={titleId}>成员主页</h1><span aria-hidden="true" /></header>
-    <div className="personal-sheet__scroll member-profile__scroll"><MemberProfileContent state={visibleState} onRetry={retry} /></div>
+    <div className="personal-sheet__scroll member-profile__scroll"><MemberProfileContent state={visibleState} onRetry={retry} viewerId={viewerId} /></div>
   </section></div>, document.body)
 }

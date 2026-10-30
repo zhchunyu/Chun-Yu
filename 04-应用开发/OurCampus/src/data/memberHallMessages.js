@@ -1,6 +1,7 @@
+import { safePostImagePaths } from './postImages.js'
 import { requireSupabase } from './supabaseClient.js'
 
-const PUBLIC_MESSAGE_COLUMNS = 'id,author_id,content,region_id,created_at,deleted_at'
+const PUBLIC_MESSAGE_COLUMNS = 'id,author_id,content,region_id,created_at,deleted_at,image_paths'
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 export const MEMBER_HALL_MESSAGE_LIMIT = 20
 
@@ -17,6 +18,7 @@ export function toMemberHallMessage(row, userId) {
     regionId: row.region_id,
     createdAt: row.created_at,
     deletedAt: null,
+    imagePaths: safePostImagePaths(row.image_paths),
   }
 }
 

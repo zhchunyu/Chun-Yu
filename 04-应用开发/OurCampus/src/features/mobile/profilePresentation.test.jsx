@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { HallPanel } from './HallPanel.jsx'
 import { PersonalHome } from './PersonalHome.jsx'
+import { MePanel } from './MePanel.jsx'
+import { DEFAULT_SETTINGS } from '../../data/appSettings.js'
 
 vi.mock('../../app/useBackLayer.js', () => ({ useBackLayer: () => {}, requestAppBack: () => {} }))
 const userId = '11111111-1111-4111-8111-111111111111'
@@ -32,5 +34,36 @@ describe('shared public profile presentation', () => {
     expect(identity).not.toContain(legacy)
     expect(html).toContain('同步本机头像')
     expect(html).toContain('查看公开主页')
+  })
+})
+
+const meProps = {
+  role: 'student', settings: DEFAULT_SETTINGS, locations: [], events: [],
+  auth: { user: { id: userId }, profile: { user_id: userId, nickname: '同学', avatar_path: null } },
+  updates: { supported: true, current: { versionName: '1.18' }, status: 'current' },
+}
+
+describe('compact personal home', () => {
+  it('keeps four real shortcuts without repeated content placeholders', () => {
+    const html = renderToStaticMarkup(<MePanel {...meProps} />)
+    const shortcuts = html.match(/<section[^>]*aria-label="个人快捷入口"[\s\S]*?<\/section>/)?.[0] ?? ''
+    expect((shortcuts.match(/<button/g) ?? [])).toHaveLength(4)
+    for (const label of ['我的课表', '我的发布', '我的收藏', '常用路线']) expect(shortcuts).toContain(label)
+    expect(html).not.toContain('主页内容分类')
+    expect(html).not.toContain('看看你发布过什么')
+    expect(html).not.toContain('aria-label="收藏和常用路线"')
+    expect(html).toContain('aria-label="常用工具"')
+  })
+
+  it('keeps updates and map settings while restricting management to managers', () => {
+    const ordinary = renderToStaticMarkup(<MePanel {...meProps} />)
+    expect(ordinary).toContain('检查更新')
+    expect(ordinary).toContain('默认路线策略')
+    expect(ordinary).not.toContain('校园信息审核')
+    expect(ordinary).not.toContain('餐厅窗口管理')
+    const manager = renderToStaticMarkup(<MePanel {...meProps} role="manager" />)
+    expect(manager).toContain('校园信息审核')
+    expect(manager).toContain('餐厅窗口管理')
+    expect(manager).toContain('地点维护')
   })
 })

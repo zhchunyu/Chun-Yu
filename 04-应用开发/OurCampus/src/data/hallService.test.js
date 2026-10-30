@@ -111,3 +111,8 @@ describe('profile version ordering', () => {
     }
   })
 })
+
+it('retains private image references when author profiles are hydrated', async () => {
+  const imagePath = `${authorId}/44444444-4444-4444-8444-444444444444.jpg`
+  expect((await hall.hydrateHallMessages([{ ...row, content: '', image_paths: [imagePath] }]))[0]).toMatchObject({ content: '', imagePaths: [imagePath] })
+})

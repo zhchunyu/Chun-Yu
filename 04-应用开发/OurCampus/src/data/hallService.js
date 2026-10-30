@@ -1,9 +1,10 @@
+import { normalizePostImagePaths, safePostImagePaths } from './postImages.js'
 import { CAMPUS_HALL_REGIONS } from './campusHall.js'
 import { getAvatarUrl, listMemberProfiles } from './memberProfiles.js'
 import { requireSupabase } from './supabaseClient.js'
 
 const REGION_IDS = new Set(CAMPUS_HALL_REGIONS.filter((entry) => entry.id !== 'all').map((entry) => entry.id))
-const MESSAGE_COLUMNS = 'id,author_id,region_id,content,client_message_id,deleted_at,created_at'
+const MESSAGE_COLUMNS = 'id,author_id,region_id,content,client_message_id,deleted_at,created_at,image_paths'
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 export const HALL_PAGE_SIZE = 50
 
@@ -30,7 +31,7 @@ function authorFields(profile) {
 export function toHallMessage(row, nicknameOrProfile) {
   return {
     id: row.id, authorId: row.author_id, ...authorFields(nicknameOrProfile),
-    regionId: row.region_id, content: row.content, createdAt: row.created_at,
+    regionId: row.region_id, content: row.content, createdAt: row.created_at, imagePaths: safePostImagePaths(row.image_paths),
     clientMessageId: row.client_message_id, deletedAt: row.deleted_at,
     time: new Intl.DateTimeFormat('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(row.created_at)),
   }
@@ -126,19 +127,21 @@ export async function listHallMessages({ regionId = 'all', before = null }) {
   }
 }
 
-export async function sendHallMessage({ content, regionId, clientMessageId, authorId }) {
-  const text = content.trim()
-  if (!text || [...text].length > 200) throw new Error('消息请填写 1–200 个字')
+export async function sendHallMessage({ content, regionId, clientMessageId, authorId, imagePaths = [] }) {
+  const text = String(content ?? '').trim()
+  const paths = normalizePostImagePaths(imagePaths, authorId)
+  if ((!text && !paths.length) || [...text].length > 200) throw new Error('请输入消息或添加照片，文字最多 200 个字')
   if (!REGION_IDS.has(regionId)) throw new Error('请选择消息所属地区')
   if (!UUID_PATTERN.test(clientMessageId) || !UUID_PATTERN.test(authorId)) throw new Error('登录状态或消息标识无效，请重新登录')
   const client = requireSupabase()
   const { data, error } = await client.from('hall_messages').insert({
-    region_id: regionId, content: text, client_message_id: clientMessageId,
+    region_id: regionId, content: text, client_message_id: clientMessageId, image_paths: paths,
   }).select(MESSAGE_COLUMNS).single()
   if (error?.code === '23505') {
     const previous = await client.from('hall_messages').select(MESSAGE_COLUMNS)
       .eq('author_id', authorId).eq('client_message_id', clientMessageId).single()
     if (previous.error) throw previous.error
+    if (previous.data.content !== text || previous.data.region_id !== regionId || JSON.stringify(safePostImagePaths(previous.data.image_paths)) !== JSON.stringify(paths)) throw new Error('消息内容已变化，请重新发送')
     return (await hydrateHallMessages([previous.data]))[0]
   }
   if (error) throw error
